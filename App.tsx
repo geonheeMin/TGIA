@@ -11,7 +11,7 @@ import PurchaseHistory from './src/pages/Profile/PurchaseHistory';
 
 import ListScreen from './src/pages/Board/ListScreen';
 import ItemList from './src/pages/Board/ItemList';
-import ItemDetail from './src/pages/Board/ItemDettail';
+import ItemDetail from './src/pages/Board/ItemDetail';
 import AddScreen from './src/pages/Board/AddScreen';
 import FavScreen from './src/pages/Profile/FavScreen';
 import ChatDetail from './src/pages/Chat/ChatDetail';
@@ -100,7 +100,7 @@ function TabNavi() {
         options={{title: '홈 화면', tabBarStyle: {display: 'none'}}}
       />
       <Tab.Screen
-        name="ListHome"
+        name="List"
         component={ListStackScreen}
         options={{title: '상품 목록', headerShown: false}}
       />
