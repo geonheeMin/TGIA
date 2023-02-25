@@ -28,7 +28,6 @@ const vh = Dimensions.get('window').height;
 
 function HomeScreen({navigation}: HomeScreenProps) {
   const [id, setId] = useState('');
-  const [imgdb, setImgdb] = useState(new Blob());
   const onClick = useCallback(() => {
     // console.log(id);
     // Axios.post(
@@ -71,10 +70,10 @@ function HomeScreen({navigation}: HomeScreenProps) {
         </View>
         <View style={styles.buttons}>
           <TouchableOpacity style={styles.registerButton}>
-            <Text style={{color: 'white'}}>회원가입</Text>
+            <Text style={{color: 'white', fontWeight: '700', fontSize: 15}}>회원가입</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.loginButton} onPress={onClick}>
-            <Text style={{color: 'white'}}>로그인</Text>
+            <Text style={{color: 'white', fontWeight: '700', fontSize: 15}}>로그인</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -99,13 +98,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: vh / 50,
+    marginTop: vh / 2.3,
   },
   idInput: {
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'lightgrey',
     borderRadius: 3,
-    width: vw / 2,
+    width: vw / 1.75,
     height: 30,
     marginBottom: vh / 75,
   },
@@ -114,30 +114,32 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderColor: 'lightgrey',
     borderRadius: 3,
-    width: vw / 2,
+    width: vw / 1.75,
     height: 30,
   },
   buttons: {
-    marginTop: vh / 25,
+    marginTop: vh / 15,
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
   },
   registerButton: {
-    width: 70,
-    height: 30,
+    width: 80,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0981D1',
+    backgroundColor: '#99a6cd',
     borderRadius: 5,
+    marginRight: vw / 50,
   },
   loginButton: {
-    width: 70,
-    height: 30,
+    width: 80,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0981D1',
+    backgroundColor: '#2b0eff',
     borderRadius: 5,
+    marginLeft: vw / 50,
   },
 });
 

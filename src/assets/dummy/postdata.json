@@ -1,0 +1,24 @@
+{
+    "postlist": [
+        {
+            "post_id": 1,
+            "title": "에어팟 5세대 팝니다",
+            "price": 160000,
+            "writer": "geonhee",
+            "category": "digital",
+            "content": "에어팟 5세대 쿨거 원해요",
+            "date" : "2023-02-25 오전 01:41",
+            "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/bugi.png"
+        },
+        {
+            "post_id": 2,
+            "title": "더미데이터 2입니다.",
+            "price": 50000,
+            "writer": "dummyWriter",
+            "category": "book",
+            "content": "더미 내용입니다.",
+            "date": "2023-02-25 오전 01:44",
+            "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
+        }
+    ]
+}

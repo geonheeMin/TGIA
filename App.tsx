@@ -17,6 +17,7 @@ import FavScreen from './src/pages/Profile/FavScreen';
 import ChatDetail from './src/pages/Chat/ChatDetail';
 import ChatListScreen from './src/pages/Chat/ChatListScreen';
 import ChatTitle from './src/pages/Chat/ChatTitle';
+import { not } from 'react-native-reanimated';
 
 
 export type RootStackParamList = {
@@ -43,7 +44,7 @@ export type RootStackParamList = {
 export type LoginStackParamList = {
   LoginHome: undefined;
   TabHome: undefined;
-}
+};
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,7 +55,7 @@ function ListStackScreen() {
       <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{title: '홈화면', headerShown: false}}
+          options={{headerShown: false}}
       />
       <Stack.Screen name="List" options={{headerShown: false}}>
         {props => <ListScreen {...props} />}
@@ -78,7 +79,6 @@ function ListStackScreen() {
   )
 }
 
-
 function ProfileStackScreen() {
   return (
     <Stack.Navigator>
@@ -97,7 +97,7 @@ function TabNavi() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{title: '홈 화면', tabBarStyle: {display: 'none'}}}
+        options={{tabBarStyle: {display: 'none'}, headerTitleStyle: {display: 'none'}}}
       />
       <Tab.Screen
         name="List"

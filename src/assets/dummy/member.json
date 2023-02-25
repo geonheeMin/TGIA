@@ -1,0 +1,14 @@
+{
+    "memberlist": [
+        {
+            "user_id": 1,
+            "name": "geonhee",
+            "email": "garnett0122@hansung.ac.kr"
+        },
+        {
+            "user_id": 2,
+            "name": "dummyWriter",
+            "email": "dummy1234@naver.com"
+        }
+    ]
+}

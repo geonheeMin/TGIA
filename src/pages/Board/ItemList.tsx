@@ -6,9 +6,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  Pressable,
+  Image,
   View,
 } from 'react-native';
+import {styles} from '../../styles/Item/ItemListStyle';
 import Axios from 'axios';
 
 type RootStackParamList = {
@@ -17,18 +19,21 @@ type RootStackParamList = {
 type itemListProps = NativeStackScreenProps<RootStackParamList, 'item'>;
 
 function ItemList({id, board, navigation}: itemListProps) {
-  const [postId, setPostId] = useState(board.id);
+  const [postId, setPostId] = useState(board.post_id);
   const toDetail = useCallback(() => {
     navigation.navigate('Detail', {id: id, board: board});
   }, [id, board, navigation]);
 
   return (
-    <TouchableOpacity
-      style={{flex: 2, flexDirection: 'column'}}
-      onPress={toDetail}>
-      <Text style={{fontSize: 30, color: 'black'}}>{board.title}</Text>
-      <Text style={{fontSize: 15, color: 'black'}}>{board.user}</Text>
-    </TouchableOpacity>
+    <Pressable style={styles.items} onPress={toDetail}>
+      <View style={styles.itemImageZone}>
+        <Image source={{uri: board.img}} style={styles.itemImage}/>
+      </View>
+      <View style={styles.itemInfo}>
+        <Text style={styles.itemTitle}>{board.title}</Text>
+        <Text style={styles.itemPrice}>{board.price.toLocaleString()}원</Text>
+      </View>
+    </Pressable>
   );
 }
 

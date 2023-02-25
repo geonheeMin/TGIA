@@ -16,24 +16,28 @@ import {
   Platform,
   PermissionsAndroid,
   Image,
+  StatusBar,
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useIsFocused} from '@react-navigation/native';
 import Axios from 'axios';
 import ItemList from './ItemList';
+import postlist from '../../assets/dummy/postdata.json';
 
 type RootStackParamList = {
   List: undefined;
 };
 type ListScreenProps = NativeStackScreenProps<RootStackParamList, 'List'>;
 
-interface board {
-  id: number;
+interface Board {
+  post_id: number;
   title: string;
-  user: string;
+  price: number;
+  writer: string;
   category: string;
   content: string;
   date: string;
+  img: string;
 }
 
 const vw = Dimensions.get('window').width;
@@ -41,7 +45,7 @@ const vh = Dimensions.get('window').height;
 
 function ListScreen({route, navigation}: ListScreenProps) {
   const id = route.params.id;
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(postlist.postlist);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
 
@@ -67,7 +71,17 @@ function ListScreen({route, navigation}: ListScreenProps) {
   // };
 
   const renderItem = ({item}) => {
-    return <ItemList id={id} board={item} navigation={navigation} />;
+    const renderBoard:Board = {
+      post_id: item.post_id,
+      title: item.title,
+      price: item.price,
+      writer: item.writer,
+      category: item.category,
+      content: item.content,
+      date: item.date,
+      img: item.img
+    };
+    return <ItemList id={id} board={renderBoard} navigation={navigation} />;
   };
 
   const listRefresh = () => {
@@ -101,14 +115,19 @@ function ListScreen({route, navigation}: ListScreenProps) {
   }, [isFocused]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView>
+        <View style={{
+          height: vh / 10,
+          backgroundColor: '#007eff',
+        }}>
+        <StatusBar barStyle={'light-content'} />
+        </View>
         <View
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            marginTop: 50,
             marginBottom: 30,
           }}>
           {/* <TouchableOpacity onPress={onSelectImage}>
@@ -154,7 +173,7 @@ function ListScreen({route, navigation}: ListScreenProps) {
           <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

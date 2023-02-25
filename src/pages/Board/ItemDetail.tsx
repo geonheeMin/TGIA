@@ -22,11 +22,12 @@ type RootStackParamList = {
 type ItemDetailProps = NativeStackScreenProps<RootStackParamList, 'Detail'>;
 
 interface board {
-  id: number;
+  post_id: number;
   title: string;
-  user: string;
+  writer: string;
   category: string;
   content: string;
+  price: number;
   date: string;
 }
 
@@ -35,7 +36,7 @@ const vh = Dimensions.get('window').height;
 
 function ItemDetail({route, navigation}: ItemDetailProps) {
   const board = route.params.board;
-  const writer = board.user;
+  const writer = board.writer;
   const id = route.params.id ? route.params.id : 'null';
   const toUpdate = useCallback(() => {
     navigation.navigate('Add', {id: id, board: board});
@@ -89,7 +90,7 @@ function ItemDetail({route, navigation}: ItemDetailProps) {
               fontWeight: '400',
               color: 'black',
             }}>
-            {board.id}
+            {board.post_id}
           </Text>
           <Text
             style={{
@@ -105,7 +106,7 @@ function ItemDetail({route, navigation}: ItemDetailProps) {
               fontWeight: '400',
               color: 'black',
             }}>
-            {board.user}
+            {board.writer}
           </Text>
           <Text
             style={{
@@ -130,6 +131,14 @@ function ItemDetail({route, navigation}: ItemDetailProps) {
               color: 'black',
             }}>
             {board.date}
+          </Text>
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: '400',
+              color: 'black',
+            }}>
+              {board.price.toLocaleString()}원
           </Text>
           <TouchableOpacity onPress={favorite}>
             <Text>{isFav}</Text>

@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useCallback, useState, useEffect} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {
   SafeAreaView,
   ScrollView,
@@ -23,6 +24,14 @@ type RootStackParamList = {
 };
 type AddScreenProps = NativeStackScreenProps<RootStackParamList, 'Add'>;
 
+interface Board {
+  title: string;
+  category: string;
+  content: string;
+  user: string;
+  date: string;
+};
+
 const vw = Dimensions.get('window').width;
 const vh = Dimensions.get('window').height;
 
@@ -36,6 +45,8 @@ function AddScreen({route, navigation}: AddScreenProps) {
   const [time, setTime] = useState('');
   const [postButton, setPostButton] = useState('');
   const [opened, setOpened] = useState(false);
+  const [uri, setUri] = useState(null);
+  const [img, setImg] = useState({});
   const [categories, setCategories] = useState([
     {label: '전공도서', value: 'book'},
     {label: '필기구', value: 'pencil'},
@@ -44,9 +55,10 @@ function AddScreen({route, navigation}: AddScreenProps) {
     {label: '뷰티/미용', value: 'beauty'},
     {label: '부기 굿즈', value: 'goods'},
   ]);
+  const formData = new FormData();
 
   var date = new Date();
-  var a = new Intl.DateTimeFormat('locale', {
+  var postTime = new Intl.DateTimeFormat('locale', {
     dateStyle: 'long',
     timeStyle: 'medium',
   }).format(date);
@@ -59,7 +71,7 @@ function AddScreen({route, navigation}: AddScreenProps) {
       setTime(board.date);
       setPostButton('수정');
     } else {
-      setTime(a);
+      setTime(postTime);
       setPostButton('등록');
     }
   }
@@ -86,15 +98,21 @@ function AddScreen({route, navigation}: AddScreenProps) {
   }
 
   function postAdd() {
-    // Axios.get('http://localhost:8080/api/insert', {
-    //   params: {
-    //     title: title,
-    //     user: id,
-    //     category: category,
-    //     content: content,
-    //     date: time,
-    //   },
-    // });
+    const post: Board = {
+      title: title,
+      category: category,
+      content: content,
+      user: id,
+      date: time,
+    };
+    formData.append('post', post); //게시글 객체
+    formData.append('image', {
+      uri: img.uri, //이미지 uri
+      type: img.type, //이미지 타입(image/jpeg)
+      name: img.fileName //이미지 파일 이름
+    })
+    // Axios.post('api', formData, {headers: {'Content-Type': 'multipart/form-data',},});
+    console.log(JSON.stringify(formData));
     onClick();
   }
 
@@ -123,6 +141,23 @@ function AddScreen({route, navigation}: AddScreenProps) {
   const afterUpdate = useCallback(() => {
     navigation.navigate('Detail', {id: id, board: board});
   }, [id, board, navigation]);
+
+  const pickImage = () => {
+    launchImageLibrary({mediaType: 'photo'}, (res) => {
+      if (res.didCancel) {
+        console.log('Canceled');
+      }
+      else if (res.errorCode) {
+        console.log('Errored');
+      }
+      else {
+        setImg(res.assets[0]);
+      };
+        setUri(img.uri);
+      }
+    );
+  };
+  
 
   useEffect(() => {
     renderScreen();
@@ -168,6 +203,10 @@ function AddScreen({route, navigation}: AddScreenProps) {
             }}
             value={content}
           />
+          <TouchableOpacity
+            onPress={pickImage}>
+            <Text>이미지 선택</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.formButtons}>
           <TouchableOpacity

@@ -2,9 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { SafeAreaView, ScrollView, View, Text, Pressable, StyleSheet, Image, Alert } from 'react-native';
 
 function PurchaseHistory() {
-
-  
-
   const onSubmit = useCallback( () => {
     Alert.alert('알림', 'ㅎㅇ');
   }, []);
@@ -61,7 +58,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEEEEE',
     flex: 1,
   },
-
   items: {
     paddingBottom: 5,
     backgroundColor: 'white',
