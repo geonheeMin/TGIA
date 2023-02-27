@@ -25,6 +25,7 @@ export const styles = StyleSheet.create({
         marginTop: 5,
         borderRadius: 8,
         borderWidth: 0.3,
+        overflow: 'hidden'
       },
       itemTitle: {
         fontSize: 18,

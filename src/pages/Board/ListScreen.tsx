@@ -3,26 +3,25 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useCallback, useEffect, useState} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  Button,
   FlatList,
-  ListRenderItem,
   Dimensions,
-  TouchableOpacity,
   RefreshControl,
   Platform,
   PermissionsAndroid,
   Image,
-  StatusBar,
+  Pressable,
+  PixelRatio,
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useIsFocused} from '@react-navigation/native';
 import Axios from 'axios';
 import ItemList from './ItemList';
 import postlist from '../../assets/dummy/postdata.json';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import TabNavi from '../../../App';
 
 type RootStackParamList = {
   List: undefined;
@@ -42,16 +41,52 @@ interface Board {
 
 const vw = Dimensions.get('window').width;
 const vh = Dimensions.get('window').height;
+const Tab = createBottomTabNavigator();
 
 function ListScreen({route, navigation}: ListScreenProps) {
-  const id = route.params.id;
+  const id = route?.params?.id;
   const [posts, setPosts] = useState(postlist.postlist);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
+  const filterList = [
+    {label: '전체보기', value: 'all'},
+    {label: '도서', value: 'book'},
+    {label: '필기구', value: 'pencil'},
+    {label: '생활/가전', value: 'life'},
+    {label: '의류', value: 'clothes'},
+    {label: '뷰티/미용', value: 'beauty'},
+    {label: '전자기기', value: 'digital'},
+    {label: '부기굿즈', value: 'goods'},
+  ];
+  const [filter, setFilter] = useState(filterList[0]);
+  const [newPosts, setNewPosts] = useState([{}]);
 
   const onClick = useCallback(() => {
-    navigation.navigate('List', {id: id});
+    navigation.navigate('Add', {id: id});
   }, [id, navigation]);
+
+  const filtering = () => {
+    if (filter.label === filterList[0].label) {
+      setNewPosts(posts);
+    }
+    else {
+      setNewPosts(posts.filter(post => post.category === filter.value));
+    }
+  };
+
+  const filterCycle = () => {
+    console.log('entered filterCycle');
+    switch(filter.label) {
+      case filterList[0].label: setFilter(filterList[1]); break;
+      case filterList[1].label: setFilter(filterList[2]); break;
+      case filterList[2].label: setFilter(filterList[3]); break;
+      case filterList[3].label: setFilter(filterList[4]); break;
+      case filterList[4].label: setFilter(filterList[5]); break;
+      case filterList[5].label: setFilter(filterList[6]); break;
+      case filterList[6].label: setFilter(filterList[7]); break;
+      case filterList[7].label: setFilter(filterList[0]); break;
+    }
+  }
 
   // const onSelectImage = () => {
   //   launchImageLibrary(
@@ -112,75 +147,90 @@ function ListScreen({route, navigation}: ListScreenProps) {
     // Axios.get('http://localhost:8080/api/list').then(res => {
     //   setPosts(res.data);
     // });
-  }, [isFocused]);
+    filtering();
+    listRefresh();
+  }, [isFocused, filter]);
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={{
-          height: vh / 10,
-          backgroundColor: '#007eff',
-        }}>
-        <StatusBar barStyle={'light-content'} />
+    <SafeAreaView style={styles.container}>
+      <View
+        style={styles.topBar}>
+        <Pressable
+          style={styles.filterButton}
+          onPress={filterCycle}>
+          <Text>{filter.label}</Text><View style={styles.triangle}/>
+        </Pressable>
+        <View style={{flex: 2, alignItems: 'flex-end'}}>
+          <Text>hi</Text>
         </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 30,
-          }}>
-          {/* <TouchableOpacity onPress={onSelectImage}>
-            <Text>사진 저장</Text>
-          </TouchableOpacity>
-          <Image
-            style={{width: 512, height: 341}}
-            source={{uri: response?.assets[0]?.uri}}
-          /> */}
-          <Text
-            style={{
-              fontSize: 30,
-              fontWeight: '400',
-              color: 'black',
-            }}>
-            {id}
-          </Text>
-        </View>
-        <View
-          style={{
-            flex: 3,
-            justifyContent: 'center',
-            marginRight: 20,
-            marginBottom: 20,
-            flexDirection: 'row',
-          }}>
-          <TouchableOpacity style={{marginRight: vw / 50}} onPress={toFav}>
-            <Text>찜 목록</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{marginRight: vw / 50}} onPress={addItem}>
-            <Text>상품 등록</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{marginRight: vw / 50}} onPress={toChatList}>
-            <Text>채팅</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      </View>
       <FlatList
-        style={{height: vh / 1.5}}
-        data={posts}
+        style={styles.itemList}
+        data={newPosts}
         renderItem={renderItem}
+        ItemSeparatorComponent={() => <View style={styles.seperator} />}
         refreshControl={
           <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
-        }
-      />
-    </View>
+        }/>
+      <Pressable
+        style={styles.writeButton}
+        onPress={onClick}>
+        <Text style={{color: 'white'}}>글쓰기</Text>
+      </Pressable>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     backgroundColor: 'white',
+  },
+  seperator: {
+    backgroundColor: '#727272',
+    opacity: 0.4,
+    height: 0.34,
+  },
+  topBar: {
+    borderBottomWidth: 0.2,
+    height: vh / 17.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  itemList: {
+    marginTop: 0,
+  },
+  filterButton: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingLeft: 20,
+    paddingRight: vw / 30,
+    height: vh / 20,
+    width: vw / 4,
+    flexDirection: 'row',
+    alignSelf: 'baseline',
+  },
+  triangle: {
+    width: 0,
+    height: 0,
+    borderTopWidth: 5,
+    borderRightWidth: 3.5,
+    borderLeftWidth: 3.5,
+    borderTopColor: '#000000',
+    borderRightColor: 'transparent',
+    borderLeftColor: 'transparent',
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    left: 77,
+  },
+  writeButton: {
+    backgroundColor: '#0c61fe',
+    position: 'absolute',
+    zIndex: 999,
+    width: 60, height: 60,
+    borderRadius: 30,
+    left: vw / 1.24,
+    top: vh / 1.27,
   },
   receivedID: {},
   titleInput: {},

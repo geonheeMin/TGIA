@@ -48,7 +48,7 @@ function AddScreen({route, navigation}: AddScreenProps) {
   const [uri, setUri] = useState(null);
   const [img, setImg] = useState({});
   const [categories, setCategories] = useState([
-    {label: '전공도서', value: 'book'},
+    {label: '도서', value: 'book'},
     {label: '필기구', value: 'pencil'},
     {label: '의류', value: 'clothes'},
     {label: '디지털 기기', value: 'digital'},

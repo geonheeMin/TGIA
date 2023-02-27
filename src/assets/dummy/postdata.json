@@ -15,10 +15,20 @@
             "title": "더미데이터 2입니다.",
             "price": 50000,
             "writer": "dummyWriter",
-            "category": "book",
+            "category": "beauty",
             "content": "더미 내용입니다.",
             "date": "2023-02-25 오전 01:44",
             "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
+        },
+        {
+            "post_id": 3,
+            "title": "리액트 네이티브 교재 팝니다.",
+            "price": 25000,
+            "writer": "상상부기",
+            "category": "book",
+            "content": "리액트 네이티브 교재 팝니다. A+의 정수가 담긴 교재입니다.",
+            "date": "2023-02-27 오후 04:53",
+            "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/rnbook.png"
         }
     ]
 }

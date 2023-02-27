@@ -2,6 +2,7 @@ import * as React from 'react';
 import {NavigationContainer, ParamListBase} from '@react-navigation/native';
 import {createNativeStackNavigator, NativeStackScreenProps} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {View} from 'react-native';
 import HomeScreen from './src/pages/HomeScreen';
 import Profile from './src/pages/Profile/Profile';
 
@@ -49,16 +50,16 @@ export type LoginStackParamList = {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function ListStackScreen() {
+export function ListStackScreen(route) {
   return (
-    <Stack.Navigator initialRouteName='Home'>
-      <Stack.Screen
+    <Stack.Navigator initialRouteName='List'>
+      {/* <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{headerShown: false}}
-      />
+      /> */}
       <Stack.Screen name="List" options={{headerShown: false}}>
-        {props => <ListScreen {...props} />}
+        {props => <ListScreen {...route} />}
       </Stack.Screen>
       <Stack.Screen name="Add" options={{headerShown: false}}>
         {props => <AddScreen {...props} />}
@@ -79,7 +80,17 @@ function ListStackScreen() {
   )
 }
 
-function ProfileStackScreen() {
+export function FavStackScreen(route) {
+  return (
+    <Stack.Navigator initialRouteName="Fav">
+      <Stack.Screen name="Fav">
+        {props => <FavScreen {...route} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  )
+}
+
+export function ProfileStackScreen() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={Profile} options={{title: '프로필'}}/>
@@ -91,19 +102,24 @@ function ProfileStackScreen() {
   );
 }
 
-function TabNavi() {
+export function TabNavi() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen
+    <Tab.Navigator >
+      <Tab.Screen 
         name="Home"
-        component={HomeScreen}
-        options={{tabBarStyle: {display: 'none'}, headerTitleStyle: {display: 'none'}}}
-      />
+        options={{tabBarStyle: {display: 'none'}, tabBarButton:() => (<View style={{width: 0, height: 0}}></View>),}}>
+          {props => <HomeScreen {...props} />}
+      </Tab.Screen>
       <Tab.Screen
         name="List"
-        component={ListStackScreen}
-        options={{title: '상품 목록', headerShown: false}}
-      />
+        options={{headerShown: false}}>
+          {props => <ListStackScreen {...props} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Fav"
+        options={{title: '상품 목록', headerShown: false}}>
+          {props => <FavStackScreen {...props} />}
+      </Tab.Screen>
       {/* <Tab.Screen
         name="Chatting"
         component={HomeScreen}
