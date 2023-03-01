@@ -22,6 +22,7 @@ import ItemList from './ItemList';
 import postlist from '../../assets/dummy/postdata.json';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabNavi from '../../../App';
+import writeIcon from '../../assets/pen1.png';
 
 type RootStackParamList = {
   List: undefined;
@@ -153,8 +154,7 @@ function ListScreen({route, navigation}: ListScreenProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View
-        style={styles.topBar}>
+      <View style={styles.topBar}>
         <Pressable
           style={styles.filterButton}
           onPress={filterCycle}>
@@ -175,7 +175,7 @@ function ListScreen({route, navigation}: ListScreenProps) {
       <Pressable
         style={styles.writeButton}
         onPress={onClick}>
-        <Text style={{color: 'white'}}>글쓰기</Text>
+        <Image source={writeIcon} style={{width: 60, height: 60}}/>
       </Pressable>
     </SafeAreaView>
   );
@@ -231,6 +231,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     left: vw / 1.24,
     top: vh / 1.27,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   receivedID: {},
   titleInput: {},

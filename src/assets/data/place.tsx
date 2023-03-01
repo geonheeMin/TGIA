@@ -1,0 +1,17 @@
+export const places = [
+    {label: '상관없음', value: 'anywhere'},
+    {label: '상상관', value: 'sangsang'},
+    {label: '미래관', value: 'mirae'},
+    {label: '우촌관', value: 'uchon'},
+    {label: '탐구관', value: 'tamgu'},
+    {label: '진리관', value: 'jilli'},
+    {label: '창의관', value: 'changui'},
+    {label: '연구관', value: 'yeongu'}, 
+    {label: '학송관', value: 'haksong'},
+    {label: '공학관A동', value: 'gonghakA'},
+    {label: '공학관B동', value: 'gonghakB'},
+    {label: '인성관', value: 'inseong'},
+    {label: '지선관', value: 'jiseon'},
+    {label: '광장', value: 'ground'},
+    {label: '상상빌리지', value: 'village'},
+];

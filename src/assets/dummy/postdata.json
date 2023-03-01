@@ -4,20 +4,24 @@
             "post_id": 1,
             "title": "에어팟 5세대 팝니다",
             "price": 160000,
-            "writer": "geonhee",
+            "writer": "건희",
             "category": "digital",
             "content": "에어팟 5세대 쿨거 원해요",
-            "date" : "2023-02-25 오전 01:41",
+            "date": "2023-02-25 오전 01:41",
+            "place": "공학관A동",
+            "track": "웹공학트랙",
             "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/bugi.png"
         },
         {
             "post_id": 2,
             "title": "더미데이터 2입니다.",
             "price": 50000,
-            "writer": "dummyWriter",
+            "writer": "더미부기",
             "category": "beauty",
             "content": "더미 내용입니다.",
             "date": "2023-02-25 오전 01:44",
+            "place": "상상관",
+            "track": "모바일소프트웨어트랙",
             "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
         },
         {
@@ -28,6 +32,8 @@
             "category": "book",
             "content": "리액트 네이티브 교재 팝니다. A+의 정수가 담긴 교재입니다.",
             "date": "2023-02-27 오후 04:53",
+            "place": "미래관",
+            "track": "웹공학트랙",
             "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/rnbook.png"
         }
     ]

@@ -2,12 +2,14 @@
     "memberlist": [
         {
             "user_id": 1,
-            "name": "geonhee",
+            "id": "geonhee",
+            "username": "건희",
             "email": "garnett0122@hansung.ac.kr"
         },
         {
             "user_id": 2,
-            "name": "dummyWriter",
+            "id": "dummyWriter",
+            "username": "더미부기",
             "email": "dummy1234@naver.com"
         }
     ]

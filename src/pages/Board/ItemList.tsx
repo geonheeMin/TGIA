@@ -31,7 +31,7 @@ function ItemList({id, board, navigation}: itemListProps) {
       </View>
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
-        <Text style={styles.itemPrice}>{board.price.toLocaleString()}원</Text>
+        <Text style={styles.itemPrice}>{board.price}원</Text>
       </View>
     </Pressable>
   );
