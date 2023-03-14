@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useCallback, useEffect, useState} from 'react';
+import * as React from "react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -15,41 +15,64 @@ import {
   Image,
   Pressable,
   StatusBar,
-} from 'react-native';
-import Axios from 'axios';
-import ItemList from './ItemList';
-
+  PixelRatio
+} from "react-native";
+import Axios from "axios";
+import ItemList from "./ItemList";
+import useStore from "../../../store";
+import memberlist from "../../assets/dummy/member.json";
+import chatlist from "../../assets/dummy/chatlist.json";
+import bugi from "../../assets/bugi.png";
+import fav from "../../assets/design/favorite.png";
+import unfav from "../../assets/design/unfavorite.png";
 type RootStackParamList = {
   Detail: undefined;
 };
-type ItemDetailProps = NativeStackScreenProps<RootStackParamList, 'Detail'>;
+type ItemDetailProps = NativeStackScreenProps<RootStackParamList, "Detail">;
 
-interface board {
+interface Board {
   post_id: number;
   title: string;
-  writer: string;
   category: string;
   content: string;
-  price: number;
+  writer: string;
   date: string;
+  price: number;
+  place: string;
+  track: string;
+  img: string;
 }
 
-const vw = Dimensions.get('window').width;
-const vh = Dimensions.get('window').height;
+const vw = Dimensions.get("window").width;
+const vh = Dimensions.get("window").height;
 
-function ItemDetail({route, navigation}: ItemDetailProps) {
+function ItemDetail({ route, navigation }: ItemDetailProps) {
+  const { session } = useStore();
   const board = route.params.board;
   const writer = board.writer;
-  const id = route.params.id ? route.params.id : 'null';
-  const [isFav, setIsFav] = useState('');
+  const track = memberlist.memberlist.filter(
+    (item) => board.writer === item.username
+  )[0].trackA;
+  const myname = session.username;
+  const [isFav, setIsFav] = useState("");
   const [pressed, setPressed] = useState(false);
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState("");
   const toUpdate = useCallback(() => {
-    navigation.navigate('Add', {id: id, board: board});
-  }, [id, board, navigation]);
+    navigation.navigate("Add", { board: board });
+  }, [board, navigation]);
+  const chatroom = chatlist.chatlist.filter(
+    (item) => item.post_id === board.post_id && item.memberB === session.user_id
+  )[0]?.chatroom_id;
   const toChat = useCallback(() => {
-    navigation.navigate('ChatDetail', {id: id, other: writer});
-  }, [id, writer, navigation]);
+    /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
+     * 유무 판단해서 있으면 기존 채팅방을 리턴, 없으면 새로 채팅방 만들고 리턴 후 ChatDetail 로 이동
+     */
+
+    navigation.navigate("ChatDetail", {
+      chatroom: chatroom,
+      post: board
+    });
+  }, [board, chatroom, navigation]);
 
   const favorite = () => {
     // isFav === '관심 등록'
@@ -70,13 +93,25 @@ function ItemDetail({route, navigation}: ItemDetailProps) {
   };
 
   const matchingCategories = () => {
-    switch(board.category) {
-      case 'book': setCategory('도서'); break;
-      case 'pencil': setCategory('필기구'); break;
-      case 'clothes': setCategory('의류'); break;
-      case 'digital': setCategory('디지털 기기'); break;
-      case 'beauty': setCategory('뷰티/미용'); break;
-      case 'goods': setCategory('부기 굿즈'); break;
+    switch (board.category) {
+      case "book":
+        setCategory("도서");
+        break;
+      case "pencil":
+        setCategory("필기구");
+        break;
+      case "clothes":
+        setCategory("의류");
+        break;
+      case "digital":
+        setCategory("디지털 기기");
+        break;
+      case "beauty":
+        setCategory("뷰티/미용");
+        break;
+      case "goods":
+        setCategory("부기 굿즈");
+        break;
     }
   };
 
@@ -92,69 +127,125 @@ function ItemDetail({route, navigation}: ItemDetailProps) {
   }, [isFav]);
 
   return (
-    <View style={pressed ? {backgroundColor: 'black'} : styles.container}>
-      <Pressable onPress={changeImageState}>
-        <Image source={{uri: board.img}} style={pressed ? styles.pressedImage : styles.postImage}/>
-      </Pressable>
-      <StatusBar barStyle={pressed ? 'light-content' : 'dark-content'} />
+    <View style={pressed ? { backgroundColor: "black" } : styles.container}>
+      <StatusBar barStyle={pressed ? "light-content" : "dark-content"} />
       <ScrollView>
-        <View
-          style={{
-            marginTop: 15,
-            marginBottom: 30,
-          }}>
-          <TouchableOpacity onPress={id === writer ? toUpdate : toChat}>
-            <Text>{id === writer ? '수정' : '문의하기'}</Text>
-          </TouchableOpacity>
+        <Pressable onPress={changeImageState}>
+          <Image
+            source={{ uri: board.img }}
+            style={pressed ? styles.pressedImage : styles.postImage}
+          />
+        </Pressable>
+        <View style={styles.content}>
+          <View style={styles.postWriterBar}>
+            <Image source={bugi} style={styles.writerImage} />
+            <View style={styles.writerProps}>
+              <View style={styles.propsTop}>
+                <Text style={{ fontSize: 20 }}>{writer}</Text>
+              </View>
+              <View style={styles.propsBottom}>
+                <Text>{track}</Text>
+              </View>
+            </View>
+            <View
+              style={
+                session.username === board.writer
+                  ? styles.postSetting
+                  : { zIndex: -10, opacity: 0 }
+              }
+            >
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Pressable style={styles.updateButton} onPress={toUpdate}>
+                  <Text>수정</Text>
+                </Pressable>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Pressable style={styles.deleteButton}>
+                  <Text>삭제</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+          <View style={styles.hr} />
           <View style={styles.postTitle}>
             <Text
               style={{
-                fontSize: 31.5,
-                fontWeight: '400',
-                color: 'black',
-              }}>
+                fontSize: 25,
+                fontWeight: "400",
+                color: "black"
+              }}
+            >
               {board.title}
             </Text>
           </View>
-          <Text
-            style={styles.postWriter}>
-            {board.writer}
-          </Text>
-          <Text
-            style={{
-              fontSize: 30,
-              fontWeight: '400',
-              color: 'black',
-            }}>
-            {category}
-          </Text>
-          <Text
-            style={{
-              fontSize: 30,
-              fontWeight: '400',
-              color: 'black',
-            }}>
-            {board.content}
-          </Text>
-          <Text
-            style={{
-              fontSize: 30,
-              fontWeight: '400',
-              color: 'black',
-            }}>
-            {board.date}
-          </Text>
-          <Text
-            style={{
-              fontSize: 30,
-              fontWeight: '400',
-              color: 'black',
-            }}>
-              {board.price.toLocaleString()}원
-          </Text>
-          <TouchableOpacity onPress={favorite}>
-            <Text>{isFav}</Text>
-          </TouchableOpacity>
+          <View style={styles.postEtc}>
+            <Pressable>
+              <View style={{ borderBottomWidth: 0.34 }}>
+                <Text
+                  style={{
+                    color: "#a6a6a6",
+                    fontSize: 12
+                  }}
+                >
+                  {category}
+                </Text>
+              </View>
+            </Pressable>
+            <Text style={{ color: "#a6a6a6" }}> · time</Text>
+          </View>
+          <Text style={styles.postContent}>{board.content}</Text>
+          <View style={styles.hr} />
+          <View style={styles.buttonBar}>
+            <View style={styles.favButton}>
+              <Pressable>
+                <Image
+                  source={unfav}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    overflow: "visible"
+                  }}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.vr} />
+            <View style={styles.priceBar}>
+              <View style={styles.priceText}>
+                <Text style={{ fontSize: 20 }}>
+                  {board.price.toLocaleString()}원
+                </Text>
+              </View>
+              <View style={styles.nego}>
+                <Text style={{ fontSize: 12, color: "#7b7b7c" }}>
+                  가격 협상 불가
+                </Text>
+              </View>
+            </View>
+            <View style={styles.functionalSpace}>
+              <Pressable
+                style={styles.functionalButton}
+                onPress={board.writer === myname ? toUpdate : toChat}
+              >
+                <Text
+                  style={{ color: "white", fontSize: 16, fontWeight: "600" }}
+                >
+                  {board.writer === myname ? "채팅목록" : "문의하기"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -162,34 +253,157 @@ function ItemDetail({route, navigation}: ItemDetailProps) {
 }
 
 const styles = StyleSheet.create({
+  hr: {
+    height: 0,
+    borderBottomWidth: 0.34,
+    width: vw - vw / 20,
+    marginLeft: vw / 40,
+    borderColor: "#a8a8a8"
+  },
+  vr: {
+    height: vh / 14,
+    width: 0,
+    borderLeftWidth: 0.33,
+    borderColor: "#a8a8a8"
+  },
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white"
+  },
+  content: {
+    marginTop: vh / 2.2
+  },
+  postWriterBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: vh / 10,
+    width: vw - vw / 4,
+    paddingLeft: 10,
+    borderWidth: 1
+  },
+  writerImage: {
+    width: 55,
+    height: 55,
+    borderWidth: 0.1,
+    borderRadius: 55,
+    overflow: "hidden"
+  },
+  writerProps: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginLeft: 10
+  },
+  propsTop: {
+    height: vh / 20,
+    paddingTop: 20,
+    width: vw - vw / 2.25,
+    marginLeft: -2,
+    justifyContent: "center"
+  },
+  propsBottom: {
+    height: vh / 20,
+    width: vw - vw / 2.25,
+    paddingBottom: 20,
+    justifyContent: "center"
   },
   postImage: {
     width: vw,
-    height: vh / 2.5,
-    overflow: 'hidden'
+    height: vh / 2.2,
+    overflow: "hidden",
+    position: "absolute"
   },
   pressedImage: {
     width: vw,
     height: vh / 1.35,
-    backgroundColor: 'black',
-    marginVertical: vh / 10,
+    backgroundColor: "black",
+    marginVertical: vh / 10
+  },
+  postSetting: {
+    width: vw / 4.5,
+    height: vh / 12.5,
+    borderWidth: 1,
+    marginHorizontal: 5,
+    alignItems: "center"
+  },
+  updateButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: vw / 5.5,
+    height: vh / 32,
+    borderRadius: 30,
+    backgroundColor: "#c3c2d0"
+  },
+  deleteButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: vw / 5.5,
+    height: vh / 32,
+    borderRadius: 30,
+    backgroundColor: "#c3c2d0"
   },
   postTitle: {
-    FlexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginLeft: vw / 70,
+    FlexDirection: "row",
+    justifyContent: "flex-start",
+    marginLeft: 12,
+    marginTop: 12,
+    marginBottom: 5
   },
-  postWriter: {
-    fontSize: 15,
-    fontWeight: '400',
-    color: 'black',
-    marginLeft: vw / 60,
+  postEtc: {
+    flexDirection: "row",
+    marginLeft: 15
   },
-  postCategory: {
-    
+  postContent: {
+    fontSize: 12,
+    marginHorizontal: 12.5,
+    marginTop: 15,
+    fontWeight: "400",
+    color: "black",
+    // height: vh / 4.75,
+    height: vh / 5.75,
+    borderWidth: 0
+  },
+  buttonBar: {
+    height: vh / 12,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  favButton: {
+    width: 65,
+    height: 65,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  priceBar: {
+    height: 65,
+    width: vw - vw / 2.1,
+    marginRight: 5,
+    marginLeft: 5
+  },
+  priceText: {
+    width: vw - vw / 2.1,
+    height: 32.5,
+    flowDirection: "column",
+    justifyContent: "flex-end",
+    paddingLeft: 5
+  },
+  nego: {
+    height: 32.5,
+    paddingLeft: 10
+  },
+  functionalSpace: {
+    width: vw - vw / 1.37,
+    height: vh / 17,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  functionalButton: {
+    width: 95,
+    height: 45,
+    borderRadius: 10,
+    backgroundColor: "#0b60fe",
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 

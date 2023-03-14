@@ -1,25 +1,31 @@
-import * as React from 'react';
-import {NavigationContainer, ParamListBase} from '@react-navigation/native';
-import {createNativeStackNavigator, NativeStackScreenProps} from '@react-navigation/native-stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {View} from 'react-native';
-import HomeScreen from './src/pages/HomeScreen';
-import Profile from './src/pages/Profile/Profile';
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { NavigationContainer, ParamListBase } from "@react-navigation/native";
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps
+} from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, ActivityIndicator } from "react-native";
+import HomeScreen from "./src/pages/HomeScreen";
+import Profile from "./src/pages/Profile/Profile";
 
-import TrackSetting from './src/pages/Profile/TrackSetting';
-import SalesHistory from './src/pages/Profile/SalesHistory';
-import PurchaseHistory from './src/pages/Profile/PurchaseHistory';
+import TrackSetting from "./src/pages/Profile/TrackSetting";
+import SalesHistory from "./src/pages/Profile/SalesHistory";
+import PurchaseHistory from "./src/pages/Profile/PurchaseHistory";
 
-import ListScreen from './src/pages/Board/ListScreen';
-import ItemList from './src/pages/Board/ItemList';
-import ItemDetail from './src/pages/Board/ItemDetail';
-import AddScreen from './src/pages/Board/AddScreen';
-import FavScreen from './src/pages/Profile/FavScreen';
-import ChatDetail from './src/pages/Chat/ChatDetail';
-import ChatListScreen from './src/pages/Chat/ChatListScreen';
-import ChatTitle from './src/pages/Chat/ChatTitle';
-import { not } from 'react-native-reanimated';
+import ListScreen from "./src/pages/Board/ListScreen";
+import ItemList from "./src/pages/Board/ItemList";
+import ItemDetail from "./src/pages/Board/ItemDetail";
+import AddScreen from "./src/pages/Board/AddScreen";
+import FavScreen from "./src/pages/Profile/FavScreen";
+import ChatDetail from "./src/pages/Chat/ChatDetail";
+import ChatListScreen from "./src/pages/Chat/ChatListScreen";
+import ChatTitle from "./src/pages/Chat/ChatTitle";
 
+import useStore from "./store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { not } from "react-native-reanimated";
 
 export type RootStackParamList = {
   Home: undefined;
@@ -50,75 +56,106 @@ export type LoginStackParamList = {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+export function SplashScreen() {
+  return (
+    <View>
+      <ActivityIndicator />
+    </View>
+  );
+}
+
 export function ListStackScreen(route) {
   return (
-    <Stack.Navigator initialRouteName='List'>
+    <Stack.Navigator initialRouteName="List">
       {/* <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{headerShown: false}}
       /> */}
-      <Stack.Screen name="List" options={{headerShown: false}}>
-        {props => <ListScreen {...route} />}
+      <Stack.Screen name="List" options={{ headerShown: false }}>
+        {(props) => <ListScreen {...route} />}
       </Stack.Screen>
-      <Stack.Screen name="Add" options={{headerShown: false}}>
-        {props => <AddScreen {...props} />}
+      <Stack.Screen name="Add" options={{ headerShown: false }}>
+        {(props) => <AddScreen {...props} />}
       </Stack.Screen>
-      <Stack.Screen name="Detail" options={{headerShown: false}}>
-        {props => <ItemDetail {...props} />}
+      <Stack.Screen name="Detail" options={{ headerShown: false }}>
+        {(props) => <ItemDetail {...props} />}
       </Stack.Screen>
-      <Stack.Screen name="Fav" options={{headerShown: false}}>
-        {props => <FavScreen {...props} />}
+      <Stack.Screen name="Fav" options={{ headerShown: false }}>
+        {(props) => <FavScreen {...props} />}
       </Stack.Screen>
-      <Stack.Screen name="ChatList" options={{headerShown: false}}>
-        {props => <ChatListScreen {...props} />}
+      <Stack.Screen name="ChatList" options={{ headerShown: false }}>
+        {(props) => <ChatListScreen {...props} />}
       </Stack.Screen>
-      <Stack.Screen name="ChatDetail" options={{headerShown: false}}>
-        {props => <ChatDetail {...props} />}
+      <Stack.Screen name="ChatDetail" options={{ headerShown: false }}>
+        {(props) => <ChatDetail {...props} />}
       </Stack.Screen>
     </Stack.Navigator>
-  )
+  );
 }
 
 export function FavStackScreen(route) {
   return (
     <Stack.Navigator initialRouteName="Fav">
       <Stack.Screen name="Fav">
-        {props => <FavScreen {...route} />}
+        {(props) => <FavScreen {...route} />}
       </Stack.Screen>
     </Stack.Navigator>
-  )
+  );
 }
 
 export function ProfileStackScreen() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Profile" component={Profile} options={{title: '프로필'}}/>
-      <Stack.Screen name="TrackSetting" component={TrackSetting} options={{title: '트랙 설정'}}/>
-      <Stack.Screen name="SalesHistory" component={SalesHistory} options={{title: ''}}/>
-      <Stack.Screen name="PurchaseHistory" component={PurchaseHistory} options={{title: '구매 내역'}}/>
-      <Stack.Screen name="Fav" component={FavScreen} options={{title: '관심 목록'}}/>
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{ title: "프로필" }}
+      />
+      <Stack.Screen
+        name="TrackSetting"
+        component={TrackSetting}
+        options={{ title: "트랙 설정" }}
+      />
+      <Stack.Screen
+        name="SalesHistory"
+        component={SalesHistory}
+        options={{ title: "" }}
+      />
+      <Stack.Screen
+        name="PurchaseHistory"
+        component={PurchaseHistory}
+        options={{ title: "구매 내역" }}
+      />
+      <Stack.Screen
+        name="Fav"
+        component={FavScreen}
+        options={{ title: "관심 목록" }}
+      />
     </Stack.Navigator>
   );
 }
 
 export function TabNavi() {
   return (
-    <Tab.Navigator >
-      <Tab.Screen 
-        name="Home"
-        options={{tabBarStyle: {display: 'none'}, tabBarButton:() => (<View style={{width: 0, height: 0}}></View>),}}>
-          {props => <HomeScreen {...props} />}
-      </Tab.Screen>
+    <Tab.Navigator>
       <Tab.Screen
-        name="List"
-        options={{headerShown: false}}>
-          {props => <ListStackScreen {...props} />}
+        name="Home"
+        options={{
+          tabBarStyle: { display: "none" },
+          tabBarButton: () => <View style={{ width: 0, height: 0 }}></View>
+        }}
+      >
+        {(props) => <HomeScreen {...props} />}
+      </Tab.Screen>
+      <Tab.Screen name="List" options={{ headerShown: false }}>
+        {(props) => <ListStackScreen {...props} />}
       </Tab.Screen>
       <Tab.Screen
         name="Fav"
-        options={{title: '상품 목록', headerShown: false}}>
-          {props => <FavStackScreen {...props} />}
+        options={{ title: "상품 목록", headerShown: false }}
+      >
+        {(props) => <FavStackScreen {...props} />}
       </Tab.Screen>
       {/* <Tab.Screen
         name="Chatting"
@@ -128,7 +165,7 @@ export function TabNavi() {
       <Tab.Screen
         name="ProfileHome"
         component={ProfileStackScreen}
-        options={{title: '프로필', headerShown: false}}
+        options={{ title: "프로필", headerShown: false }}
       />
     </Tab.Navigator>
   );
@@ -152,9 +189,82 @@ export function TabNavi() {
 // }
 
 function App() {
+  // return (
+  //   <NavigationContainer >
+  //     <TabNavi />
+  //   </NavigationContainer>
+  // );
+  const { session, setSession } = useStore();
+  const [hasSession, setHasSession] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    //   AsyncStorage.multiRemove(["session"], (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log("Keys removed successfully");
+    //   });
+    // }, []);
+    AsyncStorage.getItem("session").then((value) => {
+      if (value !== null) {
+        const user = JSON.parse(value);
+        setSession(user);
+        setHasSession(true);
+        setIsLoading(false);
+      } else {
+        setHasSession(false);
+        setIsLoading(false);
+      }
+    });
+  }, []);
+
+  if (isLoading) {
+    return <SplashScreen />;
+  }
+
+  const sessionCheck = () => {
+    if (JSON.stringify(session) === "{}") return false;
+    else return true;
+  };
+
   return (
-    <NavigationContainer >
-      <TabNavi />
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName={hasSession ? "List" : "Home"}>
+        <Stack.Screen name="Home" options={{ headerShown: false }}>
+          {(props) => <HomeScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="List" options={{ headerShown: false }}>
+          {(props) => <ListScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Detail" options={{ headerShown: false }}>
+          {(props) => <ItemDetail {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="ChatDetail" options={{ headerShown: false }}>
+          {(props) => <ChatDetail {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="ChatList" options={{ headerShown: false }}>
+          {(props) => <ChatListScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Profile" options={{ headerShown: false }}>
+          {(props) => <Profile {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="TrackSetting" options={{ headerShown: false }}>
+          {(props) => <TrackSetting {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="SalesHistory" options={{ headerShown: false }}>
+          {(props) => <SalesHistory {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="PurchaseHistory" options={{ headerShown: false }}>
+          {(props) => <PurchaseHistory {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Fav" options={{ headerShown: false }}>
+          {(props) => <FavScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Add" options={{ headerShown: false }}>
+          {(props) => <AddScreen {...props} />}
+        </Stack.Screen>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
