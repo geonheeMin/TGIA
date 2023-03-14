@@ -297,4 +297,5 @@ buck-out/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+.vscode
 # End of https://www.toptal.com/developers/gitignore/api/reactnative,cocoapods,xcode,android
