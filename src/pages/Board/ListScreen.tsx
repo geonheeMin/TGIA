@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useCallback, useEffect, useState} from 'react';
+import * as React from "react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,80 +14,114 @@ import {
   Image,
   Pressable,
   PixelRatio,
-} from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {useIsFocused} from '@react-navigation/native';
-import Axios from 'axios';
-import ItemList from './ItemList';
-import postlist from '../../assets/dummy/postdata.json';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import TabNavi from '../../../App';
-import writeIcon from '../../assets/pen1.png';
+  Modal
+} from "react-native";
+import { useIsFocused } from "@react-navigation/native";
+import Axios from "axios";
+import ItemList from "./ItemList";
+import postlist from "../../assets/dummy/postdata.json";
+import writeIcon from "../../assets/design/pen1.png";
+import useStore from "../../../store";
+import BottomTabs from "../../components/BottomTabs";
+import IonIcon from "react-native-vector-icons/Ionicons";
+import FeatIcon from "react-native-vector-icons/Feather";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 type RootStackParamList = {
   List: undefined;
 };
-type ListScreenProps = NativeStackScreenProps<RootStackParamList, 'List'>;
+type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
 interface Board {
   post_id: number;
   title: string;
-  price: number;
-  writer: string;
   category: string;
   content: string;
+  writer: string;
   date: string;
+  price: number;
+  place: string;
+  track: string;
   img: string;
 }
 
-const vw = Dimensions.get('window').width;
-const vh = Dimensions.get('window').height;
-const Tab = createBottomTabNavigator();
+const vw = Dimensions.get("window").width;
+const vh = Dimensions.get("window").height;
 
-function ListScreen({route, navigation}: ListScreenProps) {
-  const id = route?.params?.id;
-  const [posts, setPosts] = useState(postlist.postlist);
+function ListScreen({ route, navigation }: ListScreenProps) {
+  const { session } = useStore();
+  const [posts, setPosts] = useState(
+    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const filterList = [
-    {label: '전체보기', value: 'all'},
-    {label: '도서', value: 'book'},
-    {label: '필기구', value: 'pencil'},
-    {label: '생활/가전', value: 'life'},
-    {label: '의류', value: 'clothes'},
-    {label: '뷰티/미용', value: 'beauty'},
-    {label: '전자기기', value: 'digital'},
-    {label: '부기굿즈', value: 'goods'},
+    { label: "전체보기", value: "all" },
+    { label: "도서", value: "book" },
+    { label: "필기구", value: "pencil" },
+    { label: "생활/가전", value: "life" },
+    { label: "의류", value: "clothes" },
+    { label: "뷰티/미용", value: "beauty" },
+    { label: "전자기기", value: "digital" },
+    { label: "부기굿즈", value: "goods" }
   ];
   const [filter, setFilter] = useState(filterList[0]);
   const [newPosts, setNewPosts] = useState([{}]);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [modalBackOpacity, setModalBackOpacity] = useState(0.0);
+  const [emptyArray, setEmptyArray] = useState([]);
+  /** */
+  const [categoryAll, setCategoryAll] = useState(true);
+  const [categoryBooks, setCategoryBooks] = useState(false);
+  const [categoryPencil, setCategoryPencil] = useState(false);
+  const [categoryLife, setCategoryLife] = useState(false);
+  const [categoryClothes, setCategoryClothes] = useState(false);
+  const [categoryBeauty, setCategoryBeauty] = useState(false);
+  const [categoryDigital, setCategoryDigital] = useState(false);
+  const [categoryGoods, setCategoryGoods] = useState(false);
 
+  /** */
   const onClick = useCallback(() => {
-    navigation.navigate('Add', {id: id});
-  }, [id, navigation]);
+    navigation.navigate("Add");
+  }, [navigation]);
 
   const filtering = () => {
     if (filter.label === filterList[0].label) {
       setNewPosts(posts);
-    }
-    else {
-      setNewPosts(posts.filter(post => post.category === filter.value));
+    } else {
+      setNewPosts(posts.filter((post) => post.category === filter.value));
     }
   };
 
   const filterCycle = () => {
-    console.log('entered filterCycle');
-    switch(filter.label) {
-      case filterList[0].label: setFilter(filterList[1]); break;
-      case filterList[1].label: setFilter(filterList[2]); break;
-      case filterList[2].label: setFilter(filterList[3]); break;
-      case filterList[3].label: setFilter(filterList[4]); break;
-      case filterList[4].label: setFilter(filterList[5]); break;
-      case filterList[5].label: setFilter(filterList[6]); break;
-      case filterList[6].label: setFilter(filterList[7]); break;
-      case filterList[7].label: setFilter(filterList[0]); break;
+    console.log("entered filterCycle");
+    switch (filter.label) {
+      case filterList[0].label:
+        setFilter(filterList[1]);
+        break;
+      case filterList[1].label:
+        setFilter(filterList[2]);
+        break;
+      case filterList[2].label:
+        setFilter(filterList[3]);
+        break;
+      case filterList[3].label:
+        setFilter(filterList[4]);
+        break;
+      case filterList[4].label:
+        setFilter(filterList[5]);
+        break;
+      case filterList[5].label:
+        setFilter(filterList[6]);
+        break;
+      case filterList[6].label:
+        setFilter(filterList[7]);
+        break;
+      case filterList[7].label:
+        setFilter(filterList[0]);
+        break;
     }
-  }
+  };
 
   // const onSelectImage = () => {
   //   launchImageLibrary(
@@ -106,18 +140,125 @@ function ListScreen({route, navigation}: ListScreenProps) {
   //   );
   // };
 
-  const renderItem = ({item}) => {
-    const renderBoard:Board = {
+  const renderItem = ({ item }) => {
+    const renderBoard: Board = {
       post_id: item.post_id,
       title: item.title,
       price: item.price,
+      place: item.place,
       writer: item.writer,
       category: item.category,
       content: item.content,
       date: item.date,
+      track: item.track,
       img: item.img
     };
-    return <ItemList id={id} board={renderBoard} navigation={navigation} />;
+    return <ItemList board={renderBoard} navigation={navigation} />;
+  };
+
+  const adjustFilter = () => {
+    if (categoryAll) {
+      setNewPosts(posts);
+    } else {
+      var booksPosts = null;
+      var pencilPosts = null;
+      var lifePosts = null;
+      var clothesPosts = null;
+      var beautyPosts = null;
+      var digitalPosts = null;
+      var goodsPosts = null;
+      var combinedPosts = null;
+      if (categoryBooks) {
+        booksPosts = posts.filter(
+          (item) => item.category === filterList[1].value
+        );
+        if (booksPosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...booksPosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...booksPosts];
+          }
+        }
+      }
+      if (categoryPencil) {
+        pencilPosts = posts.filter(
+          (item) => item.category === filterList[2].value
+        );
+        if (pencilPosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...pencilPosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...pencilPosts];
+          }
+        }
+      }
+      if (categoryLife) {
+        lifePosts = posts.filter(
+          (item) => item.category === filterList[3].value
+        );
+        if (lifePosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...lifePosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...lifePosts];
+          }
+        }
+      }
+      if (categoryClothes) {
+        clothesPosts = posts.filter(
+          (item) => item.category === filterList[4].value
+        );
+        if (clothesPosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...clothesPosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...clothesPosts];
+          }
+        }
+      }
+      if (categoryBeauty) {
+        beautyPosts = posts.filter(
+          (item) => item.category === filterList[5].value
+        );
+        console.log("beautyPosts: " + JSON.stringify(beautyPosts));
+        if (beautyPosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...beautyPosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...beautyPosts];
+          }
+        }
+      }
+      if (categoryDigital) {
+        digitalPosts = posts.filter(
+          (item) => item.category === filterList[6].value
+        );
+        if (digitalPosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...digitalPosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...digitalPosts];
+          }
+        }
+      }
+      if (categoryGoods) {
+        goodsPosts = posts.filter(
+          (item) => item.category === filterList[7].value
+        );
+        if (goodsPosts.length > 0) {
+          if (combinedPosts === null) {
+            combinedPosts = [...goodsPosts];
+          } else {
+            combinedPosts = [...combinedPosts, ...goodsPosts];
+          }
+        }
+      }
+      if (combinedPosts !== null) {
+        combinedPosts.sort((a, b) => b.post_id - a.post_id);
+        setNewPosts(combinedPosts);
+      }
+    }
+    console.log("newPosts: " + JSON.stringify(newPosts[1]));
   };
 
   const listRefresh = () => {
@@ -130,38 +271,244 @@ function ListScreen({route, navigation}: ListScreenProps) {
     //     console.log(error.response.data);
     //   });
     // setIsRefreshing(false);
+    setIsRefreshing(true);
+    adjustFilter();
+    setIsRefreshing(false);
   };
 
   const addItem = useCallback(() => {
-    navigation.navigate('Add', {id: id});
-  }, [navigation, id]);
+    navigation.navigate("Add");
+  }, [navigation]);
 
   const toFav = useCallback(() => {
-    navigation.navigate('Fav', {id: id});
-  }, [navigation, id]);
+    navigation.navigate("Fav");
+  }, [navigation]);
 
   const toChatList = useCallback(() => {
-    navigation.navigate('ChatList', {id: id});
-  }, [navigation, id]);
+    navigation.navigate("ChatList");
+  }, [navigation]);
 
   useEffect(() => {
     // Axios.get('http://localhost:8080/api/list').then(res => {
     //   setPosts(res.data);
     // });
-    filtering();
     listRefresh();
   }, [isFocused, filter]);
 
+  const FilterModal = () => {
+    useEffect(() => {
+      if (!categoryAll) {
+        if (
+          categoryBooks &&
+          categoryPencil &&
+          categoryLife &&
+          categoryClothes &&
+          categoryBeauty &&
+          categoryDigital &&
+          categoryGoods
+        ) {
+          setCategoryAll(!categoryAll);
+        }
+      }
+    }, [
+      categoryAll,
+      categoryBooks,
+      categoryPencil,
+      categoryLife,
+      categoryClothes,
+      categoryBeauty,
+      categoryDigital,
+      categoryGoods
+    ]);
+
+    return (
+      <Modal
+        transparent={true}
+        animationType="none"
+        visible={filterModalVisible}
+        onRequestClose={() => setFilterModalVisible(!filterModalVisible)}
+      >
+        <Pressable
+          onPress={() => setFilterModalVisible(!filterModalVisible)}
+          style={filterModalStyles.background}
+        />
+        <View style={filterModalStyles.modalContainer}>
+          <View style={{ flex: 9, borderWidth: 1 }}>
+            <View style={{ alignItems: "center", flex: 1, borderWidth: 1 }}>
+              <Text style={{ fontSize: 20 }}>필터</Text>
+            </View>
+            <View style={{ flex: 10, borderWidth: 1 }}>
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="전체 보기"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryAll}
+                onPress={(isChecked) => {
+                  setCategoryAll(isChecked);
+                  setCategoryBooks(isChecked);
+                  setCategoryPencil(isChecked);
+                  setCategoryLife(isChecked);
+                  setCategoryClothes(isChecked);
+                  setCategoryBeauty(isChecked);
+                  setCategoryDigital(isChecked);
+                  setCategoryGoods(isChecked);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="도서"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryBooks}
+                onPress={(isChecked) => {
+                  setCategoryBooks(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="필기구"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryPencil}
+                onPress={(isChecked) => {
+                  setCategoryPencil(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="생활/가전"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryLife}
+                onPress={(isChecked) => {
+                  setCategoryLife(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="의류"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryClothes}
+                onPress={(isChecked) => {
+                  setCategoryClothes(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="뷰티/미용"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryBeauty}
+                onPress={(isChecked) => {
+                  setCategoryBeauty(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="전자기기"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryDigital}
+                onPress={(isChecked) => {
+                  setCategoryDigital(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="부기 굿즈"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryGoods}
+                onPress={(isChecked) => {
+                  setCategoryGoods(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+            </View>
+            <View style={{ flex: 10, borderWidth: 1 }}></View>
+          </View>
+          <View style={filterModalStyles.buttonBar}>
+            <Pressable
+              onPress={() => setFilterModalVisible(!filterModalVisible)}
+            >
+              <View style={filterModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={filterModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setFilterModalVisible(!filterModalVisible);
+                listRefresh();
+              }}
+            >
+              <View style={filterModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={filterModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <FilterModal />
       <View style={styles.topBar}>
-        <Pressable
-          style={styles.filterButton}
-          onPress={filterCycle}>
-          <Text>{filter.label}</Text><View style={styles.triangle}/>
-        </Pressable>
-        <View style={{flex: 2, alignItems: 'flex-end'}}>
-          <Text>hi</Text>
+        <View style={styles.filterButton}>
+          <Pressable
+            onPress={() => {
+              console.log(filterModalVisible);
+              setFilterModalVisible(!filterModalVisible);
+            }}
+          >
+            <FeatIcon name="filter" size={25} style={{ marginLeft: 10 }} />
+          </Pressable>
+        </View>
+        <View style={{ flex: 2, alignItems: "flex-end" }}>
+          <Text>{session.username}</Text>
         </View>
       </View>
       <FlatList
@@ -171,44 +518,101 @@ function ListScreen({route, navigation}: ListScreenProps) {
         ItemSeparatorComponent={() => <View style={styles.seperator} />}
         refreshControl={
           <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
-        }/>
-      <Pressable
-        style={styles.writeButton}
-        onPress={onClick}>
-        <Image source={writeIcon} style={{width: 60, height: 60}}/>
+        }
+      />
+      <Pressable style={styles.writeButton} onPress={onClick}>
+        <Image source={writeIcon} style={{ width: 60, height: 60 }} />
       </Pressable>
+      <BottomTabs navigation={navigation} screen="List" />
     </SafeAreaView>
   );
 }
 
+const filterModalStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+    top: -vh / 2,
+    height: vh * 2,
+    backgroundColor: "#000",
+    opacity: 0.5
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderWidth: 0.34,
+    width: vw,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: vh / 1.15,
+    position: "absolute",
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    paddingBottom: vh / 20,
+    bottom: 0
+  },
+  buttonBar: {
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: vw / 10
+  },
+  cancelButton: {
+    flexDirection: "row",
+    height: vh / 20,
+    width: vw / 3.2,
+    borderRadius: 40 / PixelRatio.get(),
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#ababab",
+    marginLeft: vw / 70
+  },
+  cancelText: {
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18,
+    color: "white"
+  },
+  applyButton: {
+    width: vw / 3.2,
+    height: vh / 20,
+    borderRadius: 40 / PixelRatio.get(),
+    marginRight: vw / 70,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#1e4eff"
+  },
+  applyText: {
+    color: "white",
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18
+  }
+});
+
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
-    backgroundColor: 'white',
+    height: vh,
+    backgroundColor: "white"
   },
   seperator: {
-    backgroundColor: '#727272',
+    backgroundColor: "#727272",
     opacity: 0.4,
-    height: 0.34,
+    height: 0.34
   },
   topBar: {
     borderBottomWidth: 0.2,
     height: vh / 17.5,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center"
   },
   itemList: {
-    marginTop: 0,
+    marginTop: 0
   },
   filterButton: {
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingLeft: 20,
-    paddingRight: vw / 30,
-    height: vh / 20,
-    width: vw / 4,
-    flexDirection: 'row',
-    alignSelf: 'baseline',
+    marginLeft: 5,
+    flexDirection: "row",
+    alignItems: "center"
   },
   triangle: {
     width: 0,
@@ -216,29 +620,25 @@ const styles = StyleSheet.create({
     borderTopWidth: 5,
     borderRightWidth: 3.5,
     borderLeftWidth: 3.5,
-    borderTopColor: '#000000',
-    borderRightColor: 'transparent',
-    borderLeftColor: 'transparent',
-    backgroundColor: 'transparent',
-    position: 'absolute',
-    left: 77,
+    borderTopColor: "#000000",
+    borderRightColor: "transparent",
+    borderLeftColor: "transparent",
+    backgroundColor: "transparent",
+    position: "absolute",
+    left: 77
   },
   writeButton: {
-    backgroundColor: '#0c61fe',
-    position: 'absolute',
+    backgroundColor: "#0c61fe",
+    position: "absolute",
     zIndex: 999,
-    width: 60, height: 60,
+    width: 60,
+    height: 60,
     borderRadius: 30,
     left: vw / 1.24,
     top: vh / 1.27,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  receivedID: {},
-  titleInput: {},
-  categoryInput: {},
-  contentInput: {},
-  priceInput: {},
+    alignItems: "center",
+    justifyContent: "center"
+  }
 });
 
 export default ListScreen;

@@ -1,0 +1,10 @@
+{
+  "chatlist": [
+    {
+      "chatroom_id": 1,
+      "post_id": 2,
+      "memberA": 2,
+      "memberB": 1
+    }
+  ]
+}

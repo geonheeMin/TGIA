@@ -1,40 +1,52 @@
 {
-    "postlist": [
-        {
-            "post_id": 1,
-            "title": "에어팟 5세대 팝니다",
-            "price": 160000,
-            "writer": "건희",
-            "category": "digital",
-            "content": "에어팟 5세대 쿨거 원해요",
-            "date": "2023-02-25 오전 01:41",
-            "place": "공학관A동",
-            "track": "웹공학트랙",
-            "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/bugi.png"
-        },
-        {
-            "post_id": 2,
-            "title": "더미데이터 2입니다.",
-            "price": 50000,
-            "writer": "더미부기",
-            "category": "beauty",
-            "content": "더미 내용입니다.",
-            "date": "2023-02-25 오전 01:44",
-            "place": "상상관",
-            "track": "모바일소프트웨어트랙",
-            "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
-        },
-        {
-            "post_id": 3,
-            "title": "리액트 네이티브 교재 팝니다.",
-            "price": 25000,
-            "writer": "상상부기",
-            "category": "book",
-            "content": "리액트 네이티브 교재 팝니다. A+의 정수가 담긴 교재입니다.",
-            "date": "2023-02-27 오후 04:53",
-            "place": "미래관",
-            "track": "웹공학트랙",
-            "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/rnbook.png"
-        }
-    ]
+  "postlist": [
+    {
+      "post_id": 1,
+      "title": "에어팟 3세대 팝니다",
+      "price": 160000,
+      "writer": "건희",
+      "category": "digital",
+      "content": "에어팟 5세대 쿨거 원해요",
+      "date": "2023-02-25 오전 01:41",
+      "place": "gonghakA",
+      "track": "IT",
+      "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/airpod.jpg"
+    },
+    {
+      "post_id": 2,
+      "title": "더미데이터 2입니다.",
+      "price": 50000,
+      "writer": "더미부기",
+      "category": "beauty",
+      "content": "더미 내용입니다.",
+      "date": "2023-02-25 오전 01:44",
+      "place": "sangsang",
+      "track": "inye",
+      "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
+    },
+    {
+      "post_id": 3,
+      "title": "리액트 네이티브 교재 팝니다.",
+      "price": 25000,
+      "writer": "상상부기",
+      "category": "book",
+      "content": "리액트 네이티브 교재 팝니다. A+의 정수가 담긴 교재입니다.",
+      "date": "2023-02-27 오후 04:53",
+      "place": "mirae",
+      "track": "mipl",
+      "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/rnbook.png"
+    },
+    {
+      "post_id": 4,
+      "title": "더미데이터 4입니다.",
+      "price": 32000,
+      "writer": "상상부기",
+      "category": "beauty",
+      "content": "더미데이터 4의 내용입니다.",
+      "date": "2023-03-19 오후 04:27",
+      "place": "mirae",
+      "track": "IT",
+      "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
+    }
+  ]
 }

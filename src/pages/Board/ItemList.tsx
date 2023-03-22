@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useCallback, useEffect, useState} from 'react';
+import * as React from "react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -8,26 +8,28 @@ import {
   Text,
   Pressable,
   Image,
-  View,
-} from 'react-native';
-import {styles} from '../../styles/Item/ItemListStyle';
-import Axios from 'axios';
+  View
+} from "react-native";
+import { styles } from "../../styles/Item/ItemListStyle";
+import useStore from "../../../store";
+import Axios from "axios";
 
 type RootStackParamList = {
   item: undefined;
 };
-type itemListProps = NativeStackScreenProps<RootStackParamList, 'item'>;
+type itemListProps = NativeStackScreenProps<RootStackParamList, "item">;
 
-function ItemList({id, board, navigation}: itemListProps) {
+function ItemList({ board, navigation }: itemListProps) {
+  const { session } = useStore();
   const [postId, setPostId] = useState(board.post_id);
   const toDetail = useCallback(() => {
-    navigation.navigate('Detail', {id: id, board: board});
-  }, [id, board, navigation]);
+    navigation.navigate("Detail", { board: board });
+  }, [board, navigation]);
 
   return (
     <Pressable style={styles.items} onPress={toDetail}>
       <View style={styles.itemImageZone}>
-        <Image source={{uri: board.img}} style={styles.itemImage}/>
+        <Image source={{ uri: board.img }} style={styles.itemImage} />
       </View>
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
