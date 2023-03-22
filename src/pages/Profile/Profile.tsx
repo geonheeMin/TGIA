@@ -26,11 +26,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 function Profile({ navigation, route }: ProfileScreenProps) {
-  const [userName, setUserName] = useState("상상부기부기");
-  const [trackFirst, setTrackFirst] = useState("웹공학");
-  const [trackSecond, setTrackSecond] = useState("모바일소프트웨어");
-  const [manner, setManner] = useState(36.5);
   const { session } = useStore();
+  const [userName, setUserName] = useState("상상부기부기");
+  const [trackFirst, setTrackFirst] = useState(session.firsttrack);
+  const [trackSecond, setTrackSecond] = useState(session.secondtrack);
+  const [manner, setManner] = useState(36.5);
+
   //const id = route.params.id;
 
   const onSubmit = useCallback(() => {

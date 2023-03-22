@@ -23,6 +23,7 @@ import useStore from "../../../store";
 import cancel from "../../assets/design/backIcon.png";
 import nextIcon from "../../assets/design/nextIcon.png";
 import gallery from "../../assets/design/camera.png";
+import Axios from "axios";
 import { categories } from "../../assets/data/category";
 import { places } from "../../assets/data/place";
 import { tracks } from "../../assets/data/track";
@@ -112,17 +113,28 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   /** 새 글 작성시 호출되는 함수 */
   function postAdd() {
-    api
-      .post("/post/insert", {
-        title: title,
-        user: session.id,
-        category: category,
-        content: content,
-        date: time,
-        price: price
-      })
+    const request = {
+      title: title,
+      user_id: session.member_id,
+      category: category,
+      content: content,
+      price: price
+    };
+
+    Axios.post("http://223.194.133.70:8080/post/insert", request, {
+      headers: { "Content-Type": "application/json" }
+    })
       .then((res) => {
         console.log("전송");
+        navigation.navigate("List");
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(title);
+        console.log(category);
+        console.log(content);
+        console.log(isNaN(price));
+        console.log(isNaN(session.member_id));
       });
     // const post: Board = {
     //   title: title,

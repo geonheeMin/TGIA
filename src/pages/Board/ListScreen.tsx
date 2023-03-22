@@ -19,12 +19,12 @@ import {
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import ItemList from "./ItemList";
-import postlist from "../../assets/dummy/postdata.json";
+// import postlist from "../../assets/dummy/postdata.json";
 import writeIcon from "../../assets/design/pen1.png";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
-import FeatIcon from "react-native-vector-icons/Feather";
+import MatIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 type RootStackParamList = {
@@ -50,9 +50,8 @@ const vh = Dimensions.get("window").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
   const { session } = useStore();
-  const [posts, setPosts] = useState(
-    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  );
+  const [posts, setPosts] = useState([]);
+  //postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const filterList = [
@@ -72,13 +71,22 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const [emptyArray, setEmptyArray] = useState([]);
   /** */
   const [categoryAll, setCategoryAll] = useState(true);
-  const [categoryBooks, setCategoryBooks] = useState(false);
-  const [categoryPencil, setCategoryPencil] = useState(false);
-  const [categoryLife, setCategoryLife] = useState(false);
-  const [categoryClothes, setCategoryClothes] = useState(false);
-  const [categoryBeauty, setCategoryBeauty] = useState(false);
-  const [categoryDigital, setCategoryDigital] = useState(false);
-  const [categoryGoods, setCategoryGoods] = useState(false);
+  const [categoryBooks, setCategoryBooks] = useState(true);
+  const [categoryPencil, setCategoryPencil] = useState(true);
+  const [categoryLife, setCategoryLife] = useState(true);
+  const [categoryClothes, setCategoryClothes] = useState(true);
+  const [categoryBeauty, setCategoryBeauty] = useState(true);
+  const [categoryDigital, setCategoryDigital] = useState(true);
+  const [categoryGoods, setCategoryGoods] = useState(true);
+
+  const [previousAll, setPreviousAll] = useState(categoryAll);
+  const [previousBooks, setPreviousBooks] = useState(categoryBooks);
+  const [previousPencil, setPreviousPencil] = useState(categoryPencil);
+  const [previousLife, setPreviousLife] = useState(categoryLife);
+  const [previousClothes, setPreviousClothes] = useState(categoryClothes);
+  const [previousBeauty, setPreviousBeauty] = useState(categoryBeauty);
+  const [previousDigital, setPreviousDigital] = useState(categoryDigital);
+  const [previousGoods, setPreviousGoods] = useState(categoryGoods);
 
   /** */
   const onClick = useCallback(() => {
@@ -254,11 +262,10 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         }
       }
       if (combinedPosts !== null) {
-        combinedPosts.sort((a, b) => b.post_id - a.post_id);
+        combinedPosts.sort((a, b) => a.post_id - b.post_id);
         setNewPosts(combinedPosts);
       }
     }
-    console.log("newPosts: " + JSON.stringify(newPosts[1]));
   };
 
   const listRefresh = () => {
@@ -289,11 +296,19 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [navigation]);
 
   useEffect(() => {
-    // Axios.get('http://localhost:8080/api/list').then(res => {
-    //   setPosts(res.data);
-    // });
+    Axios.get("http://223.194.133.70:8080/post/all")
+      .then((res) => {
+        setPosts(res.data);
+        posts.sort((a, b) => b.post_id - a.post_id);
+        setNewPosts(posts);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(posts);
+      });
     listRefresh();
-  }, [isFocused, filter]);
+    console.log(newPosts);
+  }, [isFocused, filter, categoryAll]);
 
   const FilterModal = () => {
     useEffect(() => {
@@ -311,7 +326,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         }
       }
     }, [
-      categoryAll,
       categoryBooks,
       categoryPencil,
       categoryLife,
@@ -340,7 +354,8 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             <View style={{ flex: 10, borderWidth: 1 }}>
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4, borderColor: "#0092fe" }}
+                fillColor={"#0092fe"}
                 text="전체 보기"
                 textStyle={{
                   marginLeft: -10,
@@ -349,19 +364,33 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryAll}
                 onPress={(isChecked) => {
+                  setPreviousAll(categoryAll);
                   setCategoryAll(isChecked);
+                  setPreviousBooks(categoryBooks);
                   setCategoryBooks(isChecked);
+                  setPreviousPencil(categoryPencil);
                   setCategoryPencil(isChecked);
+                  setPreviousLife(categoryLife);
                   setCategoryLife(isChecked);
+                  setPreviousClothes(categoryClothes);
                   setCategoryClothes(isChecked);
+                  setPreviousBeauty(categoryBeauty);
                   setCategoryBeauty(isChecked);
+                  setPreviousDigital(categoryDigital);
                   setCategoryDigital(isChecked);
+                  setPreviousGoods(categoryGoods);
                   setCategoryGoods(isChecked);
                 }}
               />
               <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                iconStyle={{
+                  borderRadius: 4
+                }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="도서"
                 textStyle={{
                   marginLeft: -10,
@@ -370,13 +399,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryBooks}
                 onPress={(isChecked) => {
+                  setPreviousBooks(categoryBooks);
                   setCategoryBooks(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="필기구"
                 textStyle={{
                   marginLeft: -10,
@@ -385,13 +419,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryPencil}
                 onPress={(isChecked) => {
+                  setPreviousPencil(categoryPencil);
                   setCategoryPencil(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="생활/가전"
                 textStyle={{
                   marginLeft: -10,
@@ -400,13 +439,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryLife}
                 onPress={(isChecked) => {
+                  setPreviousLife(categoryLife);
                   setCategoryLife(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="의류"
                 textStyle={{
                   marginLeft: -10,
@@ -415,13 +459,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryClothes}
                 onPress={(isChecked) => {
+                  setPreviousClothes(categoryClothes);
                   setCategoryClothes(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="뷰티/미용"
                 textStyle={{
                   marginLeft: -10,
@@ -430,13 +479,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryBeauty}
                 onPress={(isChecked) => {
+                  setPreviousBeauty(categoryBeauty);
                   setCategoryBeauty(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="전자기기"
                 textStyle={{
                   marginLeft: -10,
@@ -445,13 +499,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryDigital}
                 onPress={(isChecked) => {
+                  setPreviousDigital(categoryDigital);
                   setCategoryDigital(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{
+                  borderRadius: 4,
+                  borderColor: categoryAll ? "lightgrey" : "#0092fe"
+                }}
+                fillColor={categoryAll ? "lightgrey" : "#0092fe"}
                 text="부기 굿즈"
                 textStyle={{
                   marginLeft: -10,
@@ -460,16 +519,28 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 }}
                 isChecked={categoryGoods}
                 onPress={(isChecked) => {
+                  setPreviousGoods(categoryGoods);
                   setCategoryGoods(isChecked);
-                  setCategoryAll(false);
                 }}
+                disabled={categoryAll ? true : false}
               />
             </View>
             <View style={{ flex: 10, borderWidth: 1 }}></View>
           </View>
           <View style={filterModalStyles.buttonBar}>
             <Pressable
-              onPress={() => setFilterModalVisible(!filterModalVisible)}
+              onPress={() => {
+                setCategoryAll(previousAll);
+                setCategoryBooks(previousBooks);
+                setCategoryPencil(previousPencil);
+                setCategoryLife(previousLife);
+                setCategoryClothes(previousClothes);
+                setCategoryBeauty(previousBeauty);
+                setCategoryDigital(previousDigital);
+                setCategoryGoods(previousGoods);
+                setFilterModalVisible(!filterModalVisible);
+                listRefresh();
+              }}
             >
               <View style={filterModalStyles.cancelButton}>
                 <IonIcon name="close" size={25} color="white" />
@@ -504,7 +575,11 @@ function ListScreen({ route, navigation }: ListScreenProps) {
               setFilterModalVisible(!filterModalVisible);
             }}
           >
-            <FeatIcon name="filter" size={25} style={{ marginLeft: 10 }} />
+            <MatIcon
+              name={categoryAll ? "filter-outline" : "filter"}
+              size={25}
+              style={{ marginLeft: 10 }}
+            />
           </Pressable>
         </View>
         <View style={{ flex: 2, alignItems: "flex-end" }}>

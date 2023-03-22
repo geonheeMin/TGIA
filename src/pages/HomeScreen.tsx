@@ -16,6 +16,7 @@ import {
 import { ScreenContainer } from "react-native-screens";
 import logo from "../../assets/logo.png";
 import api from "../api";
+import Axios from "axios";
 import useStore from "../../store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -49,14 +50,24 @@ function HomeScreen({ navigation }: HomeScreenProps) {
   const { session, setSession } = useStore();
 
   const LogIn = () => {
-    const user = memberlist.memberlist.filter((item) => item.id === loginId)[0];
-    const stringifyUser = JSON.stringify(user);
-    AsyncStorage.setItem("session", stringifyUser).then(() => {
-      AsyncStorage.getItem("session").then((value) => {
-        setSession(JSON.parse(value));
-        navigation.navigate("List");
-      });
-    });
+    Axios.get("http://223.194.133.70:8080/member/get?user_id=" + loginId)
+      .then((res) => {
+        console.log(JSON.stringify(res.data));
+        AsyncStorage.setItem("session", JSON.stringify(res.data)).then(() => {
+          AsyncStorage.getItem("session").then((value) => {
+            setSession(JSON.parse(value));
+            navigation.navigate("List");
+          });
+        });
+      })
+      .catch((error) => console.log(error));
+    // const stringifyUser = JSON.stringify(user);
+    // AsyncStorage.setItem("session", stringifyUser).then(() => {
+    //   AsyncStorage.getItem("session").then((value) => {
+    //     setSession(JSON.parse(value));
+    //     navigation.navigate("List");
+    //   });
+    // });
   };
 
   const test = () => {

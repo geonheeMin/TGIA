@@ -50,9 +50,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const { session } = useStore();
   const board = route.params.board;
   const writer = board.writer;
-  const track = memberlist.memberlist.filter(
-    (item) => board.writer === item.username
-  )[0].trackA;
+  // const track = memberlist.memberlist.filter(
+  //   (item) => board.writer === item.username
+  // )[0].firsttrack;
   const myname = session.username;
   const [isFav, setIsFav] = useState("");
   const [pressed, setPressed] = useState(false);
@@ -144,7 +144,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 <Text style={{ fontSize: 20 }}>{writer}</Text>
               </View>
               <View style={styles.propsBottom}>
-                <Text>{track}</Text>
+                <Text>{session.firsttrack}</Text>
               </View>
             </View>
             <View
