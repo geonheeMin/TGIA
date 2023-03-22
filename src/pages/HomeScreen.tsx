@@ -16,7 +16,6 @@ import {
 import { ScreenContainer } from "react-native-screens";
 import logo from "../../assets/logo.png";
 import api from "../api";
-import member from "../assets/dummy/member.json";
 import useStore from "../../store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -45,23 +44,21 @@ const saveSession = async (data: string) => {
 };
 
 function HomeScreen({ navigation }: HomeScreenProps) {
-  const { session, setSession } = useStore();
+  const memberlist = require("../assets/dummy/member.json");
   const [loginId, setLoginId] = useState("");
-  const onClick = useCallback(async () => {
-    const checking = member.memberlist.filter((item) => item.id === loginId)[0];
-    if (checking.user_id) {
-      const userData = JSON.stringify(checking);
-      AsyncStorage.setItem("session", userData).then((res) => {
-        AsyncStorage.getItem("session").then((value) => {
-          const user = JSON.parse(value);
-          console.log(user.username);
-          setSession(user);
-          console.log("session.username: " + session.username);
-          // navigation.navigate("List");
-        });
+  const { session, setSession } = useStore();
+
+  const LogIn = () => {
+    const user = memberlist.memberlist.filter((item) => item.id === loginId)[0];
+    const stringifyUser = JSON.stringify(user);
+    AsyncStorage.setItem("session", stringifyUser).then(() => {
+      AsyncStorage.getItem("session").then((value) => {
+        setSession(JSON.parse(value));
+        navigation.navigate("List");
       });
-    }
-  }, [navigation]);
+    });
+  };
+
   const test = () => {
     AsyncStorage.removeItem("session").then((res) => {
       console.log(AsyncStorage.getItem("session"));
@@ -85,9 +82,11 @@ function HomeScreen({ navigation }: HomeScreenProps) {
       <ScrollView>
         <View style={styles.informations}>
           <TextInput
-            style={styles.idInput}
-            onChangeText={setLoginId}
             autoCapitalize="none"
+            onChangeText={setLoginId}
+            onSubmitEditing={LogIn}
+            returnKeyType="done"
+            style={styles.idInput}
           />
           <Text>{loginId}</Text>
           <TextInput secureTextEntry={true} style={styles.passwordInput} />
@@ -98,7 +97,7 @@ function HomeScreen({ navigation }: HomeScreenProps) {
               회원가입
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.loginButton} onPress={onClick}>
+          <TouchableOpacity style={styles.loginButton} onPress={LogIn}>
             <Text style={{ color: "white", fontWeight: "700", fontSize: 15 }}>
               로그인
             </Text>

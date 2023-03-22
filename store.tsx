@@ -3,22 +3,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface preset {
   session: Object | null;
-  setSession: (id: string | null) => void;
+  setSession: (id: Object | null) => void;
+  hasSession: boolean;
+  setHasSession: (result: boolean) => void;
 }
-
-type member = {
-  user_id: number;
-  id: string;
-  username: string;
-  email: string;
-  profile_img: string;
-  trackA: string;
-};
 
 const useStore = create<preset>((set) => ({
   session: null,
-  setSession: (request: string | null) => {
+  setSession: (request: Object | null) => {
     set((state) => ({ session: request }));
+  },
+  hasSession: false,
+  setHasSession: (result: boolean) => {
+    set((state) => ({ hasSession: result }));
   }
 }));
 

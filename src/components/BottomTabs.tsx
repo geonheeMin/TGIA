@@ -9,13 +9,8 @@ import {
 } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-
-import iconOnList from "../assets/design/tabbar/home_selected.png";
-import iconOffList from "../assets/design/tabbar/home.png";
-import iconOnChat from "../assets/design/tabbar/chat_selected.png";
-import iconOffChat from "../assets/design/tabbar/chat.png";
-import iconOnProfile from "../assets/design/tabbar/profile_selected.png";
-import iconOffProfile from "../assets/design/tabbar/profile.png";
+import OctIcon from "react-native-vector-icons/Octicons";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 type BottomTabsParamList = {
   Bottom: undefined;
@@ -28,8 +23,13 @@ const vh = Dimensions.get("window").height;
 
 function BottomTabs({ navigation, screen }: BottomTab) {
   const currentScreen = screen;
+
   const toList = useCallback(() => {
     navigation.navigate("List");
+  }, [navigation]);
+
+  const toSearch = useCallback(() => {
+    navigation.navigate("Search");
   }, [navigation]);
 
   const toChatList = useCallback(() => {
@@ -42,16 +42,36 @@ function BottomTabs({ navigation, screen }: BottomTab) {
 
   return (
     <View style={styles.bottomBar}>
-      <Pressable onPress={toList}>
-        <Image
-          source={currentScreen === "List" ? iconOnList : iconOffList}
-          style={{ width: 15, height: 15 }}
+      <Pressable onPress={toList} style={styles.bottomButton}>
+        <OctIcon
+          name="home"
+          color={currentScreen === "List" ? "#336cf6" : "black"}
+          size={25}
         />
         <Text style={currentScreen === "List" ? styles.onList : styles.offList}>
-          List
+          홈
         </Text>
       </Pressable>
-      <Pressable onPress={toChatList}>
+      <Pressable onPress={toSearch} style={styles.bottomButton}>
+        <OctIcon
+          name="search"
+          size={25}
+          color={currentScreen === "Search" ? "#336cf6" : "black"}
+        />
+        <Text
+          style={
+            currentScreen === "Search" ? styles.onSearch : styles.offSearch
+          }
+        >
+          검색
+        </Text>
+      </Pressable>
+      <Pressable onPress={toChatList} style={styles.bottomButton}>
+        <IonIcon
+          name="chatbubbles-outline"
+          size={25}
+          color={currentScreen === "ChatList" ? "#336cf6" : "black"}
+        />
         <Text
           style={
             currentScreen === "ChatList"
@@ -59,16 +79,21 @@ function BottomTabs({ navigation, screen }: BottomTab) {
               : styles.offChatList
           }
         >
-          ChatList
+          채팅
         </Text>
       </Pressable>
-      <Pressable onPress={toProfile}>
+      <Pressable onPress={toProfile} style={styles.bottomButton}>
+        <OctIcon
+          name={"person"}
+          size={25}
+          color={currentScreen === "Profile" ? "#336cf6" : "black"}
+        />
         <Text
           style={
             currentScreen === "Profile" ? styles.onProfile : styles.offProfile
           }
         >
-          Profile
+          프로필
         </Text>
       </Pressable>
     </View>
@@ -77,29 +102,72 @@ function BottomTabs({ navigation, screen }: BottomTab) {
 
 const styles = StyleSheet.create({
   bottomBar: {
+    backgroundColor: "white",
     width: vw,
-    height: vh / 10,
-    borderTopWidth: 1,
+    height: vh / 11,
+    borderTopWidth: 0.5,
+    borderTopColor: "#d3d3d3",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 0,
+    paddingHorizontal: 20
+  },
+  bottomButton: {
+    width: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center"
   },
   onList: {
-    color: "blue"
+    color: "#336cf6",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
   },
   offList: {
-    color: "black"
+    color: "black",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
   },
+  onSearch: {
+    color: "#336cf6",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
+  },
+  offSearch: {
+    color: "black",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
+  },
+
   onChatList: {
-    color: "blue"
+    color: "#336cf6",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
   },
   offChatList: {
-    color: "black"
+    color: "black",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
   },
   onProfile: {
-    color: "blue"
+    color: "#336cf6",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
   },
   offProfile: {
-    color: "black"
+    color: "black",
+    fontSize: 13.5,
+    fontWeight: "600",
+    marginTop: 5
   }
 });
 

@@ -47,12 +47,10 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
   }, []);
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <View>
-          <Text>채팅 리스트</Text>
-        </View>
-      </ScrollView>
+    <SafeAreaView style={{ height: vh, backgroundColor: "white" }}>
+      <View>
+        <Text>채팅 리스트</Text>
+      </View>
       {/* <FlatList
         style={{height: vh / 1.5}}
         data={chats}

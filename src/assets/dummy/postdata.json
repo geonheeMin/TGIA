@@ -35,6 +35,18 @@
       "place": "mirae",
       "track": "mipl",
       "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/rnbook.png"
+    },
+    {
+      "post_id": 4,
+      "title": "더미데이터 4입니다.",
+      "price": 32000,
+      "writer": "상상부기",
+      "category": "beauty",
+      "content": "더미데이터 4의 내용입니다.",
+      "date": "2023-03-19 오후 04:27",
+      "place": "mirae",
+      "track": "IT",
+      "img": "/Users/baekyangdan/Desktop/TGIA-Front/src/assets/diptyque.jpg"
     }
   ]
 }

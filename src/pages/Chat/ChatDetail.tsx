@@ -20,7 +20,7 @@ import myBubble from "../../assets/design/myBubble.png";
 import otherBubble from "../../assets/design/otherBubble.png";
 import sendIcon from "../../assets/design/sendIcon2.png";
 import chatPlus from "../../assets/design/chatPlus.png";
-import backArrow from "../../assets/design/chatBackIcon.png";
+import backArrow from "../../assets/design/backIcon.png";
 import ChatBubble from "./ChatBubble";
 import test from "../../assets/dummy/chat.json";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";

@@ -20,9 +20,9 @@ import {
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
-import cancel from "../../assets/lsrb.png";
-import next from "../../assets/lbrs.png";
-import gallery from "../../assets/camera.png";
+import cancel from "../../assets/design/backIcon.png";
+import nextIcon from "../../assets/design/nextIcon.png";
+import gallery from "../../assets/design/camera.png";
 import { categories } from "../../assets/data/category";
 import { places } from "../../assets/data/place";
 import { tracks } from "../../assets/data/track";
@@ -344,8 +344,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   useEffect(() => {
     renderScreen();
-    console.log(board.img);
-    console.log(img);
   }, []);
 
   useEffect(() => {
@@ -411,7 +409,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           <Text style={{ fontSize: 15 }}>
             {category === "" ? "카테고리 선택" : showCategory(category)}
           </Text>
-          <Image source={next} style={styles.nextIcon} />
+          <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
       </View>
       <View style={styles.priceBar}>
@@ -469,7 +467,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           >
             {place === "" ? "장소 선택" : showPlace(place)}
           </Text>
-          <Image source={next} style={styles.nextIcon} />
+          <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
       </View>
       <View style={styles.trackBar}>
@@ -489,7 +487,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           >
             {track === "" ? "" : showTrack(track)}
           </Text>
-          <Image source={next} style={styles.nextIcon} />
+          <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
       </View>
     </SafeAreaView>
@@ -522,7 +520,8 @@ const styles = StyleSheet.create({
   },
   cancelIcon: {
     width: 35 / 2.3,
-    height: 53 / 2.3
+    height: 53 / 2.3,
+    overflow: "visible"
   },
   postButton: {
     flexDirection: "row",
@@ -597,7 +596,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     width: 35 / 2.3,
-    height: 53 / 2.3
+    height: 53 / 2.3,
+    overflow: "visible"
   },
   priceBar: {
     height: vh / 16,
@@ -616,7 +616,8 @@ const styles = StyleSheet.create({
   freeButton: {
     borderRadius: 15 / PixelRatio.get(),
     width: vh / 32.5,
-    height: vh / 32.5
+    height: vh / 32.5,
+    marginLeft: 5
   },
   contentBar: {
     height: vh / 3.8,

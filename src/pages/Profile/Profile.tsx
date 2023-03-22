@@ -20,15 +20,8 @@ import { RootStackParamList } from "../../../App";
 import { ProgressBar } from "react-native-paper";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import BottomTabs from "../../components/BottomTabs";
-
-interface board {
-  id: number;
-  title: string;
-  user: string;
-  category: string;
-  content: string;
-  date: string;
-}
+import useStore from "../../../store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -36,7 +29,8 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const [userName, setUserName] = useState("상상부기부기");
   const [trackFirst, setTrackFirst] = useState("웹공학");
   const [trackSecond, setTrackSecond] = useState("모바일소프트웨어");
-  const [manner, setManner] = useState("36.5");
+  const [manner, setManner] = useState(36.5);
+  const { session } = useStore();
   //const id = route.params.id;
 
   const onSubmit = useCallback(() => {
@@ -55,6 +49,23 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   // const toFav = useCallback(() => {
   //   navigation.navigate('Fav', {id: id});
   // }, [navigation, id]);
+  const toChangeProfile = useCallback(() => {
+    navigation.navigate("ChangeProfile");
+  }, [navigation]);
+  const toSettings = useCallback(() => {
+    navigation.navigate("Settings");
+  }, [navigation]);
+  const logout = useCallback(() => {
+    AsyncStorage.removeItem("session").then((res) => {
+      navigation.reset({ routes: [{ name: "Home" }] });
+    });
+  }, [navigation]);
+  const logoutAlert = () => {
+    Alert.alert("로그아웃", "로그아웃 하시겠습니까?", [
+      { text: "아니요", style: "cancel" },
+      { text: "예", onPress: logout }
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -77,7 +88,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         <View
           style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
         >
-          <Text>{userName}</Text>
+          <Text>{session.username}</Text>
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>
@@ -143,21 +154,21 @@ function Profile({ navigation, route }: ProfileScreenProps) {
             <TouchableHighlight
               style={styles.menuButton}
               underlayColor="#F6F6F6"
-              onPress={onSubmit}
+              onPress={toChangeProfile}
             >
               <Text>프로필 변경</Text>
             </TouchableHighlight>
             <TouchableHighlight
               style={styles.menuButton}
               underlayColor="#F6F6F6"
-              onPress={onSubmit}
+              onPress={toSettings}
             >
               <Text>환경 설정</Text>
             </TouchableHighlight>
             <TouchableHighlight
               style={styles.menuButton}
               underlayColor="#F6F6F6"
-              onPress={onSubmit}
+              onPress={logoutAlert}
             >
               <Text style={{ color: "#b41b1bba" }}>로그 아웃</Text>
             </TouchableHighlight>

@@ -18,10 +18,13 @@ import ListScreen from "./src/pages/Board/ListScreen";
 import ItemList from "./src/pages/Board/ItemList";
 import ItemDetail from "./src/pages/Board/ItemDetail";
 import AddScreen from "./src/pages/Board/AddScreen";
+import SearchScreen from "./src/pages/Board/SearchScreen";
 import FavScreen from "./src/pages/Profile/FavScreen";
 import ChatDetail from "./src/pages/Chat/ChatDetail";
 import ChatListScreen from "./src/pages/Chat/ChatListScreen";
 import ChatTitle from "./src/pages/Chat/ChatTitle";
+import ChangeProfile from "./src/pages/Profile/ChangeProfile";
+import Settings from "./src/pages/Profile/Settings";
 
 import useStore from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -44,8 +47,8 @@ export type RootStackParamList = {
   ChatList: undefined;
   ChatDetail: undefined;
   ChatTitle: undefined;
-
-  Test2: undefined;
+  ChangeProfile: undefined;
+  Settings: undefined;
 };
 
 export type LoginStackParamList = {
@@ -194,8 +197,7 @@ function App() {
   //     <TabNavi />
   //   </NavigationContainer>
   // );
-  const { session, setSession } = useStore();
-  const [hasSession, setHasSession] = useState(false);
+  const { session, setSession, hasSession, setHasSession } = useStore();
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     //   AsyncStorage.multiRemove(["session"], (err) => {
@@ -231,10 +233,16 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={hasSession ? "List" : "Home"}>
-        <Stack.Screen name="Home" options={{ headerShown: false }}>
+        <Stack.Screen
+          name="Home"
+          options={{ headerShown: false, animation: "none" }}
+        >
           {(props) => <HomeScreen {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="List" options={{ headerShown: false }}>
+        <Stack.Screen
+          name="List"
+          options={{ headerShown: false, animation: "none" }}
+        >
           {(props) => <ListScreen {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Detail" options={{ headerShown: false }}>
@@ -243,10 +251,16 @@ function App() {
         <Stack.Screen name="ChatDetail" options={{ headerShown: false }}>
           {(props) => <ChatDetail {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="ChatList" options={{ headerShown: false }}>
+        <Stack.Screen
+          name="ChatList"
+          options={{ headerShown: false, animation: "none" }}
+        >
           {(props) => <ChatListScreen {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="Profile" options={{ headerShown: false }}>
+        <Stack.Screen
+          name="Profile"
+          options={{ headerShown: false, animation: "none" }}
+        >
           {(props) => <Profile {...props} />}
         </Stack.Screen>
         <Stack.Screen name="TrackSetting" options={{ headerShown: false }}>
@@ -258,11 +272,23 @@ function App() {
         <Stack.Screen name="PurchaseHistory" options={{ headerShown: false }}>
           {(props) => <PurchaseHistory {...props} />}
         </Stack.Screen>
+        <Stack.Screen name="ChangeProfile" options={{ headerShown: false }}>
+          {(props) => <ChangeProfile {...props} />}
+        </Stack.Screen>
         <Stack.Screen name="Fav" options={{ headerShown: false }}>
           {(props) => <FavScreen {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Add" options={{ headerShown: false }}>
           {(props) => <AddScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Settings" options={{ headerShown: false }}>
+          {(props) => <Settings {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Search"
+          options={{ headerShown: false, animation: "none" }}
+        >
+          {(props) => <SearchScreen {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
