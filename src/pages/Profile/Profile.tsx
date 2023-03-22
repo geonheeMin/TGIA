@@ -9,7 +9,8 @@ import {
   Alert,
   TouchableOpacity,
   useWindowDimensions,
-  Animated
+  Animated,
+  Dimensions
 } from "react-native";
 import { NavigationContainer, ParamListBase } from "@react-navigation/native";
 import {
@@ -22,17 +23,23 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 import BottomTabs from "../../components/BottomTabs";
 import useStore from "../../../store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
+const vw = Dimensions.get("window").width;
+const vh = Dimensions.get("window").height;
 
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 function Profile({ navigation, route }: ProfileScreenProps) {
-  const { session } = useStore();
   const [userName, setUserName] = useState("상상부기부기");
-  const [trackFirst, setTrackFirst] = useState(session.firsttrack);
-  const [trackSecond, setTrackSecond] = useState(session.secondtrack);
+  const [trackFirst, setTrackFirst] = useState("웹공학");
+  const [trackSecond, setTrackSecond] = useState("모바일소프트웨어");
   const [manner, setManner] = useState(36.5);
-
-  //const id = route.params.id;
+  const { session } = useStore();
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
@@ -72,7 +79,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
     <SafeAreaView style={styles.safeAreaView}>
       <View
         style={{
-          flex: 0.55,
+          flex: 0.6,
           flexDirection: "row",
           paddingHorizontal: 10,
           paddingBottom: -50
@@ -89,7 +96,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         <View
           style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
         >
-          <Text>{session.username}</Text>
+          <Text style={{ fontSize: 16 }}>{session.username}</Text>
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>
@@ -109,7 +116,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </View>
       <View
-        style={{ flex: 0.35, justifyContent: "center", paddingHorizontal: 15 }}
+        style={{ flex: 0.4, justifyContent: "center", paddingHorizontal: 15 }}
       >
         <Text style={{ fontSize: 16 }}>매너 온도</Text>
         <View style={{ marginTop: 10, paddingRight: 15 }}>
@@ -120,60 +127,94 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           />
         </View>
       </View>
-      <View style={styles.menuZone}>
-        <View style={{ paddingVertical: 20, paddingHorizontal: 15 }}>
-          <Text style={{ fontSize: 16 }}>나의 거래</Text>
-          <View style={{ paddingTop: 8 }}>
-            <TouchableHighlight
-              style={styles.menuButton}
-              underlayColor="#F6F6F6"
-              onPress={toSalesHistory}
-            >
-              <Text>판매내역</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.menuButton}
-              underlayColor="#F6F6F6"
-              onPress={toPurchaseHistory}
-            >
-              <Text>구매내역</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.menuButton}
-              underlayColor="#F6F6F6"
-              //onPress={toFav}
-            >
-              <Text>관심목록</Text>
-            </TouchableHighlight>
-          </View>
+      <View style={styles.menuZoneTop}>
+        <Text style={{ fontSize: 16, fontWeight: "600", marginTop: vh / 80 }}>
+          나의 거래
+        </Text>
+        <View style={{ paddingTop: vh / 100 }}>
+          <TouchableHighlight
+            style={styles.menuButton}
+            underlayColor="#F6F6F6"
+            onPress={toSalesHistory}
+          >
+            <View style={styles.menuButtonContent}>
+              <MaterialCommunityIcons
+                name="clipboard-text-outline"
+                size={28}
+                color={"black"}
+              />
+              <Text style={styles.menuButtonText}>판매내역</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.menuButton}
+            underlayColor="#F6F6F6"
+            onPress={toPurchaseHistory}
+          >
+            <View style={styles.menuButtonContent}>
+              <MaterialCommunityIcons
+                name="shopping-outline"
+                size={28}
+                color={"black"}
+              />
+              <Text style={styles.menuButtonText}>구매내역</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.menuButton}
+            underlayColor="#F6F6F6"
+            //onPress={toFav}
+          >
+            <View style={styles.menuButtonContent}>
+              <Entypo name="heart-outlined" size={28} color={"black"} />
+              <Text style={styles.menuButtonText}>관심목록</Text>
+            </View>
+          </TouchableHighlight>
         </View>
       </View>
-      <View style={styles.menuZone}>
-        <View style={{ paddingVertical: 20, paddingHorizontal: 15 }}>
-          <Text style={{ fontSize: 16 }}>기타</Text>
-          <View style={{ paddingTop: 8 }}>
-            <TouchableHighlight
-              style={styles.menuButton}
-              underlayColor="#F6F6F6"
-              onPress={toChangeProfile}
-            >
-              <Text>프로필 변경</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.menuButton}
-              underlayColor="#F6F6F6"
-              onPress={toSettings}
-            >
-              <Text>환경 설정</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.menuButton}
-              underlayColor="#F6F6F6"
-              onPress={logoutAlert}
-            >
-              <Text style={{ color: "#b41b1bba" }}>로그 아웃</Text>
-            </TouchableHighlight>
-          </View>
+      <View style={styles.menuZoneBottom}>
+        <Text style={{ fontSize: 16, fontWeight: "600", marginTop: vh / 80 }}>
+          기타
+        </Text>
+        <View style={{ paddingTop: 8 }}>
+          <TouchableHighlight
+            style={styles.menuButton}
+            underlayColor="#F6F6F6"
+            onPress={toChangeProfile}
+          >
+            <View style={styles.menuButtonContent}>
+              <Feather name="user" size={28} color={"black"} />
+              <Text style={styles.menuButtonText}>프로필 변경</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.menuButton}
+            underlayColor="#F6F6F6"
+            onPress={toSettings}
+          >
+            <View style={styles.menuButtonContent}>
+              <Ionicons name="md-settings-outline" size={28} color={"black"} />
+              <Text style={styles.menuButtonText}>환경 설정</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.menuButton}
+            underlayColor="#F6F6F6"
+            onPress={logoutAlert}
+          >
+            <View style={styles.menuButtonContent}>
+              <MaterialIcons name="logout" size={28} color={"#b41b1bba"} />
+              <Text
+                style={{
+                  color: "#b41b1bba",
+                  marginLeft: vw / 50,
+                  fontSize: 16
+                }}
+              >
+                로그 아웃
+              </Text>
+            </View>
+          </TouchableHighlight>
         </View>
       </View>
       <BottomTabs navigation={navigation} screen="Profile" />
@@ -187,9 +228,9 @@ const styles = StyleSheet.create({
     flex: 1
   },
   profile: {
-    flex: 0.6,
-    width: "75%",
-    height: "75%",
+    flex: 0.65,
+    width: "85%",
+    height: "85%",
     alignItems: "baseline",
     borderRadius: 100,
     borderWidth: 0.3
@@ -205,19 +246,37 @@ const styles = StyleSheet.create({
   },
   trackbox: {
     backgroundColor: "#3064e7",
-    borderRadius: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 15
+    borderRadius: 20,
+    paddingVertical: vh / 80,
+    paddingHorizontal: vw / 20
   },
-  menuZone: {
+  menuZoneTop: {
     flex: 1.1,
     justifyContent: "flex-start",
     borderTopWidth: 0.4,
-    borderColor: "gray"
+    borderColor: "gray",
+    paddingTop: vh / 50,
+    paddingHorizontal: vw / 30
+  },
+  menuZoneBottom: {
+    flex: 1.5,
+    justifyContent: "flex-start",
+    borderTopWidth: 0.4,
+    borderColor: "gray",
+    paddingTop: vh / 50,
+    paddingHorizontal: vw / 30
   },
   menuButton: {
-    marginVertical: 10,
-    paddingVertical: 10
+    marginVertical: vh / 75,
+    paddingVertical: vh / 190
+  },
+  menuButtonContent: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  menuButtonText: {
+    marginLeft: vw / 50,
+    fontSize: 16
   }
 });
 

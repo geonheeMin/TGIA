@@ -564,6 +564,204 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
+  const FilterModal = () => {
+    useEffect(() => {
+      if (!categoryAll) {
+        if (
+          categoryBooks &&
+          categoryPencil &&
+          categoryLife &&
+          categoryClothes &&
+          categoryBeauty &&
+          categoryDigital &&
+          categoryGoods
+        ) {
+          setCategoryAll(!categoryAll);
+        }
+      }
+    }, [
+      categoryAll,
+      categoryBooks,
+      categoryPencil,
+      categoryLife,
+      categoryClothes,
+      categoryBeauty,
+      categoryDigital,
+      categoryGoods
+    ]);
+
+    return (
+      <Modal
+        transparent={true}
+        animationType="none"
+        visible={filterModalVisible}
+        onRequestClose={() => setFilterModalVisible(!filterModalVisible)}
+      >
+        <Pressable
+          onPress={() => setFilterModalVisible(!filterModalVisible)}
+          style={filterModalStyles.background}
+        />
+        <View style={filterModalStyles.modalContainer}>
+          <View style={{ flex: 9, borderWidth: 1 }}>
+            <View style={{ alignItems: "center", flex: 1, borderWidth: 1 }}>
+              <Text style={{ fontSize: 20 }}>필터</Text>
+            </View>
+            <View style={{ flex: 10, borderWidth: 1 }}>
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="전체 보기"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryAll}
+                onPress={(isChecked) => {
+                  setCategoryAll(isChecked);
+                  setCategoryBooks(isChecked);
+                  setCategoryPencil(isChecked);
+                  setCategoryLife(isChecked);
+                  setCategoryClothes(isChecked);
+                  setCategoryBeauty(isChecked);
+                  setCategoryDigital(isChecked);
+                  setCategoryGoods(isChecked);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="도서"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryBooks}
+                onPress={(isChecked) => {
+                  setCategoryBooks(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="필기구"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryPencil}
+                onPress={(isChecked) => {
+                  setCategoryPencil(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="생활/가전"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryLife}
+                onPress={(isChecked) => {
+                  setCategoryLife(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="의류"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryClothes}
+                onPress={(isChecked) => {
+                  setCategoryClothes(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="뷰티/미용"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryBeauty}
+                onPress={(isChecked) => {
+                  setCategoryBeauty(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="전자기기"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryDigital}
+                onPress={(isChecked) => {
+                  setCategoryDigital(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+              <BouncyCheckbox
+                iconStyle={{ borderRadius: 4 }}
+                innerIconStyle={{ borderRadius: 4 }}
+                text="부기 굿즈"
+                textStyle={{
+                  marginLeft: -10,
+                  color: "black",
+                  textDecorationLine: "none"
+                }}
+                isChecked={categoryGoods}
+                onPress={(isChecked) => {
+                  setCategoryGoods(isChecked);
+                  setCategoryAll(false);
+                }}
+              />
+            </View>
+            <View style={{ flex: 10, borderWidth: 1 }}></View>
+          </View>
+          <View style={filterModalStyles.buttonBar}>
+            <Pressable
+              onPress={() => setFilterModalVisible(!filterModalVisible)}
+            >
+              <View style={filterModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={filterModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setFilterModalVisible(!filterModalVisible);
+                listRefresh();
+              }}
+            >
+              <View style={filterModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={filterModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <FilterModal />

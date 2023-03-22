@@ -11,10 +11,12 @@ import {
   Image,
   TouchableHighlight,
   Animated,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -32,7 +34,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
 
   const tabUnderline = (tabNum: number) => {
     Animated.spring(position, {
-      //toValue: tabNum === 0 ? 0 : tabNum === 1 ? 1 : 2,
       toValue: tabNum === 0 ? 0 : 1,
       useNativeDriver: false
     }).start();
@@ -176,10 +177,11 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
           onPress={toProfile}
           activeOpacity={0.7}
         >
-          <Image
+          <FontAwesome5 name="arrow-left" size={30} color="black" />
+          {/* <Image
             source={require("../../assets/design/backIcon.png")}
             style={styles.backButton}
-          />
+          /> */}
         </TouchableOpacity>
       </View>
       <View style={styles.topzone}>
@@ -281,11 +283,10 @@ const styles = StyleSheet.create({
   },
   compliteButton: {
     alignItems: "center",
-    marginLeft: vw / 3,
+    marginLeft: vw / 2.5,
     marginRight: vw / 20,
     marginTop: vh / 40,
     paddingVertical: vh / 80,
-    paddingHorizontal: -vw,
     backgroundColor: "#3064e7",
     borderRadius: 10
   },
@@ -293,9 +294,9 @@ const styles = StyleSheet.create({
     color: "white"
   },
   profile: {
-    flex: 0.6,
-    width: "75%",
-    height: "75%",
+    flex: 0.56,
+    width: "77%",
+    height: "77%",
     alignItems: "baseline",
     borderRadius: 100,
     borderWidth: 0.3
