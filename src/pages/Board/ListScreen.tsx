@@ -346,11 +346,26 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           style={filterModalStyles.background}
         />
         <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 9, borderWidth: 1 }}>
-            <View style={{ alignItems: "center", flex: 1, borderWidth: 1 }}>
+          <View style={{ flex: 9 }}>
+            <View
+              style={{
+                alignItems: "center",
+                flex: 1,
+                borderBottomWidth: 0.25,
+                borderColor: "lightgrey"
+              }}
+            >
               <Text style={{ fontSize: 20 }}>필터</Text>
             </View>
-            <View style={{ flex: 10, borderWidth: 1 }}>
+            <View
+              style={{
+                flex: 10,
+                paddingHorizontal: 15,
+                marginTop: 10,
+                borderBottomWidth: 0.25,
+                borderColor: "lightgrey"
+              }}
+            >
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
                 innerIconStyle={{ borderRadius: 4, borderColor: "#0092fe" }}
@@ -524,7 +539,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 disabled={categoryAll ? true : false}
               />
             </View>
-            <View style={{ flex: 10, borderWidth: 1 }}></View>
+            <View style={{ flex: 10 }}></View>
           </View>
           <View style={filterModalStyles.buttonBar}>
             <Pressable
@@ -619,7 +634,6 @@ const filterModalStyles = StyleSheet.create({
     height: vh / 1.15,
     position: "absolute",
     paddingTop: 15,
-    paddingHorizontal: 15,
     paddingBottom: vh / 20,
     bottom: 0
   },
@@ -628,7 +642,9 @@ const filterModalStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
-    paddingHorizontal: vw / 10
+    paddingHorizontal: vw / 10,
+    borderTopWidth: 0.25,
+    borderColor: "lightgrey"
   },
   cancelButton: {
     flexDirection: "row",
