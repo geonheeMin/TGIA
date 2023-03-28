@@ -123,6 +123,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     //   res.data === 1 ? setIsFav('관심 해제') : setIsFav('관심 등록');
     // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log(board);
     matchingCategories();
   }, [isFav]);
 
@@ -144,7 +145,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 <Text style={{ fontSize: 20 }}>{writer}</Text>
               </View>
               <View style={styles.propsBottom}>
-                <Text>{track}</Text>
+                <Text>{session.firsttrack}</Text>
               </View>
             </View>
             <View

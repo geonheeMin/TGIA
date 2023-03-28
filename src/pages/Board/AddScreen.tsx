@@ -121,7 +121,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       price: price
     };
 
-    Axios.post("http://223.194.133.70:8080/post/insert", request, {
+    Axios.post("http://52.78.189.232:8080/post/insert", request, {
       headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
