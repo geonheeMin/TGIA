@@ -569,7 +569,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
-  const FilterModal = () => {
+  const FilterModal2 = () => {
     useEffect(() => {
       if (!categoryAll) {
         if (
