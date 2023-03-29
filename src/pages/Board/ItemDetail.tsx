@@ -55,6 +55,16 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
 
+  const doFav = () => {
+    Axios.post(
+      `${url}/profile/add_favorite`,
+      {},
+      { params: { postId: board.post_id, userId: session.member_id } }
+    ).then((res) => {
+      console.log(`${board.post_id} 와 ${session.member_id} 전송 성공`);
+    });
+  };
+
   // const chatroom = chatlist.chatlist.filter(
   //   (item) => item.post_id === board.post_id && item.memberB === session.user_id
   // )[0]?.chatroom_id;
@@ -162,7 +172,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         <Pressable onPress={changeImageState}>
           <Image
             source={{
-              uri: "http://223.194.128.219:8080/images/" + board?.images
+              uri: `${url}/images/${board?.images}`
             }}
             style={pressed ? styles.pressedImage : styles.postImage}
           />
@@ -243,7 +253,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           <View style={styles.hr} />
           <View style={styles.buttonBar}>
             <View style={styles.favButton}>
-              <Pressable>
+              <Pressable onPress={doFav}>
                 <Image
                   source={unfav}
                   style={{

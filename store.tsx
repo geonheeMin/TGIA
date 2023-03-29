@@ -18,7 +18,7 @@ const useStore = create<preset>((set) => ({
   setHasSession: (result: boolean) => {
     set((state) => ({ hasSession: result }));
   },
-  url: "http://223.194.134.32:8080"
+  url: "http://223.194.128.244:8080"
 }));
 
 export default useStore;
