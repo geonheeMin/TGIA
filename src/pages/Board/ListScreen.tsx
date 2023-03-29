@@ -296,7 +296,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [navigation]);
 
   useEffect(() => {
-    Axios.get("http://223.194.133.70:8080/post/all")
+    Axios.get("http://223.194.128.244:8080/post/all")
       .then((res) => {
         setPosts(res.data);
         posts.sort((a, b) => b.post_id - a.post_id);
@@ -564,7 +564,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
-  const FilterModal = () => {
+  const FilterModal2 = () => {
     useEffect(() => {
       if (!categoryAll) {
         if (

@@ -10,8 +10,8 @@ function SmartFactory() {
     {
       id: 't57',
       num: 0,
-      name: '스마트팩토리컨설팅학과', 
-      value: 57
+      name: '스마트팩토리컨설팅학과',
+      value: '스마트팩토리컨설팅학과',
     }
   ]
 

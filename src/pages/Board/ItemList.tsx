@@ -8,7 +8,7 @@ import {
   Text,
   Pressable,
   Image,
-  View
+  View,
 } from "react-native";
 import { styles } from "../../styles/Item/ItemListStyle";
 import useStore from "../../../store";
@@ -23,6 +23,8 @@ function ItemList({ board, navigation }: itemListProps) {
   const { session } = useStore();
   const [postId, setPostId] = useState(board.post_id);
   const toDetail = useCallback(() => {
+    // Axios.get('http://223.194.128.244:8080/post/details', {params: {postId: postId, userId: session.member_id}})
+    // .then((res) => console.log(res.data));
     navigation.navigate("Detail", { board: board });
   }, [board, navigation]);
 

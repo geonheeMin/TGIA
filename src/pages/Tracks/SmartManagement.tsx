@@ -10,32 +10,32 @@ function SmartManagement() {
     {
       id: 't52',
       num: 0,
-      name: '산업공학트랙', 
-      value: 52
+      name: '산업공학트랙',
+      value: '산업공학트랙',
     },
     {
       id: 't53',
       num: 1,
       name: '지능형제조시스템트랙',
-      value: 53
+      value: '지능형제조시스템트랙',
     },
     {
       id: 't54',
       num: 2,
-      name: '시스템경영공학트랙', 
-      value: 54
+      name: '시스템경영공학트랙',
+      value: '시스템경영공학트랙',
     },
     {
       id: 't55',
       num: 3,
       name: '생산물류시스템트랙',
-      value: 55
+      value: '생산물류시스템트랙',
     },
     {
       id: 't56',
       num: 4,
       name: '컨설팅트랙',
-      value: 56
+      value: '컨설팅트랙',
     }
   ]
 

@@ -144,7 +144,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 <Text style={{ fontSize: 20 }}>{writer}</Text>
               </View>
               <View style={styles.propsBottom}>
-                <Text>{track}</Text>
+                {/* <Text>{track}</Text> */}
               </View>
             </View>
             <View

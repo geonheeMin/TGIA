@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
   safeAreaView: {
     backgroundColor: 'white',
     flex: 1,
+    marginLeft: vw / 30,
   },
   menuButton: {
     marginHorizontal: 15,
@@ -21,9 +22,7 @@ export const styles = StyleSheet.create({
   centeredView: {
     position: 'absolute',
     flex: 1,
-    top: vh * 0.27,
-    //top: '27%',
-    //left: '8%',
+    top: vh * 0.33,
     left: vw * 0.08,
   },
   modalView: {

@@ -16,7 +16,12 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
+import postlist from "../../assets/dummy/postdata.json"
+import { useIsFocused } from "@react-navigation/native";
+import Axios from "axios";
+import useStore from "../../../store";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -29,8 +34,21 @@ type ChangeProfileScreenProps = NativeStackScreenProps<
 >;
 
 function SalesHistory({ navigation }: ChangeProfileScreenProps) {
+  const { session } = useStore();
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const isFocused = useIsFocused();
+  //const [posts, setPosts] = useState([]);
+  const [newPosts, setNewPosts] = useState([{}]);
+  const [posts, setPosts] = useState(
+    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
+  );
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [complitedPosts, setComplitedPosts] = useState([]);
+  // const [complitedPosts, setComplitedPosts] = useState(
+  //   postlist.postlist.sort((a, b) => b.post_id - a.post_id)
+  // );
 
   const tabUnderline = (tabNum: number) => {
     Animated.spring(position, {
@@ -47,11 +65,84 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
 
+  function ItemList({board}) {
+
+    return (
+      <Pressable style={styles.items} onPress={onSubmit}>
+        <View style={styles.itemImageZone}>
+          <Image source={{ uri: board.img }} style={styles.itemImage} />
+        </View>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemTitle}>{board.title}</Text>
+          <Text style={styles.itemPrice}>{board.price}원</Text>
+        </View>
+      </Pressable>
+    );
+  }
+
+
   function OnSale() {
     tabUnderline(0);
+
+    const renderItem = ({ item }) => {
+      const renderBoard = {
+        post_id: item.post_id,
+        title: item.title,
+        price: item.price,
+        locationType: item.locationType,
+        location_text: item.location_text,
+        writer: item.writer,
+        category: item.category,
+        text: item.text,
+        date: item.date,
+        track: item.track,
+        images: item.images,
+        member_id: item.member_id,
+        likes: item.likes,
+        views: item.views,
+        createdDate: item.createdDate
+      };
+      return <ItemList board={renderBoard} navigation={navigation} />;
+    };
+
+    // 찜목록 불러오기
+    //Axios.get("http://223.194.128.244:8080/profile/favorite_list?userId=" + session.member_id)
+    
+    useEffect(() => {
+      if (!isLoaded) {
+        Axios.get("http://223.194.128.244:8080/post/my_list?userId=" + session.member_id)
+        .then((res) => {
+          setPosts(res.data);
+          posts.sort((a, b) => b.post_id - a.post_id);
+          setNewPosts(posts);
+          console.log("완료");
+          setIsLoaded(!isLoaded);
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(posts);
+        });
+      }
+    }, []);
+
     return (
       <View>
-        <Pressable style={styles.items} onPress={onSubmit}>
+        {posts.length >= 1 ? 
+          <FlatList
+          style={{marginTop: 0}}
+          data={posts}
+          renderItem={renderItem}
+          refreshing={isRefreshing}
+        />
+          :
+          <View style={styles.tabContentNone }>
+            <Text>
+              판매중인 게시물이 없어요.
+            </Text>
+          </View>     
+        }
+
+        {/* <Pressable style={styles.items} onPress={onSubmit}>
           <View style={styles.itemImageZone}>
             <Image
               source={require("../../assets/diptyque.jpg")}
@@ -71,21 +162,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
           </View>
         </Pressable>
 
-        <TouchableHighlight onPress={onSubmit}>
-          <View style={styles.items}>
-            <View style={styles.itemImageZone}>
-              <Image
-                source={require("../../assets/diptyque.jpg")}
-                style={styles.itemImage}
-              />
-            </View>
-            <View style={styles.itemInfo}>
-              <Text style={styles.itemTitle}>에어팟 3세대 팝니다</Text>
-              <Text style={styles.itemPrice}>160,000원</Text>
-            </View>
-          </View>
-        </TouchableHighlight>
-
         <Pressable style={styles.items} onPress={onSubmit}>
           <View style={styles.itemImageZone}>
             <Image
@@ -97,52 +173,8 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
             <Text style={styles.itemTitle}>에어팟 4세대 팝니다</Text>
             <Text style={styles.itemPrice}>160,000원</Text>
           </View>
-        </Pressable>
+        </Pressable> */}
 
-        <Pressable style={styles.items} onPress={onSubmit}>
-          <View style={styles.itemImageZone}>
-            <Image
-              source={require("../../assets/diptyque.jpg")}
-              style={styles.itemImage}
-            />
-          </View>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 5세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
-          </View>
-        </Pressable>
-
-        <Pressable style={styles.items} onPress={onSubmit}>
-          <View style={styles.itemImageZone}>
-            <Image
-              source={require("../../assets/bugi.png")}
-              style={styles.itemImage}
-            />
-          </View>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 6세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
-          </View>
-        </Pressable>
-
-        <Pressable style={styles.items} onPress={onSubmit}>
-          <View style={styles.itemImageZone}>
-            <Image
-              source={require("../../assets/diptyque.jpg")}
-              style={styles.itemImage}
-            />
-          </View>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 7세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
-          </View>
-        </Pressable>
-
-        {/* <View style={styles.tabContentNone }>
-          <Text>
-            판매중인 게시물이 없어요.
-          </Text>
-        </View>      */}
       </View>
     );
   }
@@ -151,11 +183,15 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
     tabUnderline(1);
     return (
       <View>
+        {complitedPosts.length >=1 ? 
+        <View><Text>test</Text></View>
+        : 
         <View style={styles.tabContentNone}>
           <Text style={{ fontSize: 16, color: "gray" }}>
             거래완료 게시글이 없어요.
           </Text>
         </View>
+      }
       </View>
     );
   }
@@ -245,7 +281,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         ]}
       />
       <View style={styles.listZone}>
-        <ScrollView>{selectComponent(content)}</ScrollView>
+        {selectComponent(content)}
       </View>
     </SafeAreaView>
   );
@@ -278,20 +314,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
-    height: vh / 17.5
-    //backgroundColor: '#3064e7',
-  },
-  compliteButton: {
-    alignItems: "center",
-    marginLeft: vw / 2.5,
-    marginRight: vw / 20,
-    marginTop: vh / 40,
-    paddingVertical: vh / 80,
-    backgroundColor: "#3064e7",
-    borderRadius: 10
-  },
-  compliteText: {
-    color: "white"
+    height: vh / 17.5,
   },
   profile: {
     flex: 0.56,
@@ -382,7 +405,7 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "800",
     marginTop: 20,
     marginLeft: 16
   },
