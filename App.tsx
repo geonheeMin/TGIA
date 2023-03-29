@@ -25,6 +25,7 @@ import ChatListScreen from "./src/pages/Chat/ChatListScreen";
 import ChatTitle from "./src/pages/Chat/ChatTitle";
 import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
+import Creative from "./src/pages/Tracks/Creative";
 
 import useStore from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -49,6 +50,7 @@ export type RootStackParamList = {
   ChatTitle: undefined;
   ChangeProfile: undefined;
   Settings: undefined;
+  Creative: undefined;
 };
 
 export type LoginStackParamList = {
@@ -289,6 +291,9 @@ function App() {
           options={{ headerShown: false, animation: "none" }}
         >
           {(props) => <SearchScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Creative" options={{ headerShown: false }}>
+          {(props) => <Creative {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

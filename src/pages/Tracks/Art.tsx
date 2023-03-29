@@ -1,46 +1,64 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Modal, Alert } from 'react-native';
 import { styles } from '../../styles/TrackListStyle';
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-function Art() {
+type ArtPramList = {
+  Art: undefined,
+}
+
+type Art = NativeStackScreenProps<ArtPramList, "Art">;
+
+function Art({navigation}: Art) {
   const [modalVisible, setModalVisible] = useState(false);
   const [trackNum, setTrackNum] = useState(0);
+
+  const toProfile = useCallback(() => {
+    navigation.reset({ routes: [{ name: "Profile" }] });
+  }, [navigation]);
+
+  function changeTrack() {
+    Alert.alert("변경되었습니다", "", [
+      { text: "OK", onPress: toProfile }
+    ])
+  } 
+
   const tracks = [
     {
       id: 't10',
       num: 0,
-      name: '동양화전공', 
-      value: 10
+      name: '동양화전공',
+      value: '동양화전공',
     },
     {
       id: 't11',
       num: 1,
       name: '서양화전공',
-      value: 11
+      value: '서양화전공',
     },
     {
       id: 't12',
       num: 2,
-      name: '한국무용전공', 
-      value: 12
+      name: '한국무용전공',
+      value: '한국무용전공',
     },
     {
       id: 't13',
       num: 3,
       name: '현대무용전공',
-      value: 13
+      value: '현대무용전공',
     },
     {
       id: 't14',
       num: 4,
-      name: '발레전공', 
-      value: 14
+      name: '발레전공',
+      value: '발레전공',
     },
     {
       id: 't15',
       num: 5,
       name: '이민ㆍ다문화트랙',
-      value: 15
+      value: '이민ㆍ다문화트랙',
     }    
   ]
 
@@ -69,7 +87,10 @@ function Art() {
             <View style={styles.selectZone}>
             <Pressable
               style={styles.buttonSelect}
-              onPress={() => setModalVisible(!modalVisible)}>
+              onPress={() => {
+                setModalVisible(!modalVisible)
+                changeTrack()
+              }}>
               <Text style={styles.textSelect}>1트랙으로 설정</Text>
             </Pressable>
             <Pressable

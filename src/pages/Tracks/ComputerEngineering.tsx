@@ -10,26 +10,26 @@ function ComputerEngineering() {
     {
       id: 't39',
       num: 0,
-      name: '모바일소프트웨어트랙', 
-      value: 39
+      name: '모바일소프트웨어트랙',
+      value: '모바일소프트웨어트랙',
     },
     {
       id: 't40',
       num: 1,
       name: '빅데이터트랙',
-      value: 40
+      value: '빅데이터트랙',
     },
     {
       id: 't41',
       num: 2,
-      name: '디지털콘텐츠ㆍ가상현실트랙', 
-      value: 41
+      name: '디지털콘텐츠ㆍ가상현실트랙',
+      value: '디지털콘텐츠ㆍ가상현실트랙',
     },
     {
       id: 't42',
       num: 3,
       name: '웹공학트랙',
-      value: 42
+      value: '웹공학트랙',
     }
   ]
 

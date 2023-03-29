@@ -9,20 +9,20 @@ function GlobalFashion() {
     {
       id: 't27',
       num: 0,
-      name: '패션디자인트랙', 
-      value: 27
+      name: '패션디자인트랙',
+      value: '패션디자인트랙',
     },
     {
       id: 't28',
       num: 1,
       name: '패션마케팅트랙',
-      value: 28
+      value: '패션마케팅트랙',
     },
     {
       id: 't29',
       num: 2,
-      name: '패션크리에이티브디렉션트랙', 
-      value: 29
+      name: '패션크리에이티브디렉션트랙',
+      value: '패션크리에이티브디렉션트랙',
     },
   ]
 

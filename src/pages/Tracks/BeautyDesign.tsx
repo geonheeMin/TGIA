@@ -10,14 +10,14 @@ function BeautyDesign() {
     {
       id: 't37',
       num: 0,
-      name: '뷰티디자인매니지먼트학과', 
-      value: 37
+      name: '뷰티디자인매니지먼트학과',
+      value: '뷰티디자인매니지먼트학과',
     },
     {
       id: 't38',
       num: 1,
       name: '뷰티매니지먼트계약학과',
-      value: 38
+      value: '뷰티매니지먼트계약학과',
     },
   ]
 

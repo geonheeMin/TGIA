@@ -10,26 +10,26 @@ function ITConvergence() {
     {
       id: 't48',
       num: 0,
-      name: '지능시스템트랙', 
-      value: 48
+      name: '지능시스템트랙',
+      value: '지능시스템트랙',
     },
     {
       id: 't49',
       num: 1,
       name: '사물인터넷트랙',
-      value: 49
+      value: '사물인터넷트랙',
     },
     {
       id: 't50',
       num: 2,
-      name: '사이버보안트랙', 
-      value: 50
+      name: '사이버보안트랙',
+      value: '사이버보안트랙',
     },
     {
       id: 't51',
       num: 3,
       name: 'ICT융합엔터테인먼트트랙',
-      value: 51
+      value: 'ICT융합엔터테인먼트트랙',
     },
   ]
 

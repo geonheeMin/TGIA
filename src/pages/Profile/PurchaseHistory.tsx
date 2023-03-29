@@ -9,20 +9,36 @@ import {
   Pressable,
   Image,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
+import postlist from "../../assets/dummy/postdata.json"
+import { useIsFocused } from "@react-navigation/native";
+import useStore from "../../../store";
+import Axios from "axios";
+import ItemList from "../Board/ItemList";
 
 type PurchaseHistoryScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "PurchaseHistory"
 >;
 
+
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
+  const [purchased, setPurchased] = useState([]);
+  const { session } = useStore();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const isFocused = useIsFocused();
+  const [posts, setPosts] = useState(
+    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
+  );
+  const [newPosts, setNewPosts] = useState([{}]);
+
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
@@ -30,6 +46,42 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
+
+  const renderItem = ({ item }) => {
+    const renderBoard = {
+      post_id: item.post_id,
+      title: item.title,
+      price: item.price,
+      locationType: item.locationType,
+      location_text: item.location_text,
+      writer: item.writer,
+      category: item.category,
+      text: item.text,
+      date: item.date,
+      track: item.track,
+      images: item.images,
+      member_id: item.member_id,
+      likes: item.likes,
+      views: item.views,
+      createdDate: item.createdDate
+    };
+    return <ItemList board={renderBoard} navigation={navigation} />;
+  };
+
+  useEffect(() => {
+    Axios.get("http://223.194.128.244:8080/post/buy_list?userId=" + session.member_id)
+    .then((res) => {
+      setPosts(res.data);
+      posts.sort((a, b) => b.post_id - a.post_id);
+      setNewPosts(posts);
+      console.log("완료11");
+    })
+    .catch((error) => {
+      console.log(error);
+      console.log(posts);
+    });
+    console.log(posts);
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -50,7 +102,35 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
           구매내역
         </Text>
       </View>
-      <ScrollView>
+
+
+      <View>
+        <FlatList
+          style={{marginTop: 0}}
+          data={posts}
+          renderItem={renderItem}
+          refreshing={isRefreshing}
+        />
+      </View>
+
+      {/* <View>
+        {purchased.length >= 1 ? 
+          <FlatList
+          style={{marginTop: 0}}
+          data={posts}
+          renderItem={renderItem}
+          refreshing={isRefreshing}
+          />
+            :
+            <View style={styles.contentNone }>
+              <Text>
+                구매완료한 게시물이 없어요.
+              </Text>
+            </View>     
+          }
+      </View> */}
+
+      {/* <ScrollView>
         <Pressable style={styles.items} onPress={onSubmit}>
           <View style={styles.itemImageZone}>
             <Image
@@ -98,7 +178,8 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
         <Pressable style={styles.reviewBtn} onPress={onSubmit}>
           <Text style={styles.reviewText}>거래후기 남기기</Text>
         </Pressable>
-      </ScrollView>
+      </ScrollView> */}
+
     </SafeAreaView>
   );
 }
@@ -186,7 +267,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#3064e7",
     textAlign: "center"
-  }
+  },
+  contentNone: {
+    position: "absolute",
+    alignItems: "center",
+    marginVertical: vh / 3,
+    left: "28.5%"
+  },
 });
 
 export default PurchaseHistory;

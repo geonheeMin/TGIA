@@ -8,15 +8,10 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  useWindowDimensions,
   Animated,
   Dimensions
 } from "react-native";
-import { NavigationContainer, ParamListBase } from "@react-navigation/native";
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps
-} from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import { ProgressBar } from "react-native-paper";
 import { TouchableHighlight } from "react-native-gesture-handler";
@@ -28,6 +23,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Axios from "axios";
+import { useIsFocused } from "@react-navigation/native";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -35,19 +32,36 @@ const vh = Dimensions.get("window").height;
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 function Profile({ navigation, route }: ProfileScreenProps) {
-  const [userName, setUserName] = useState("상상부기부기");
-  const [trackFirst, setTrackFirst] = useState("웹공학");
-  const [trackSecond, setTrackSecond] = useState("모바일소프트웨어");
-  const [manner, setManner] = useState(36.5);
-  const { session } = useStore();
+  const { session } = useStore(); // 사용자 아이디
+  const [trackFirst, setTrackFirst] = useState(""); // 제 1트랙
+  const [trackSecond, setTrackSecond] = useState(""); // 제 2트랙
+  const [manner, setManner] = useState(36.5); // 매너온도
+  const isFocused = useIsFocused();
+  const [aTrackId, setATrackId] = useState(7);
+  const [bTrackId, setBTrackId] = useState(9);
+  
+  useEffect(() => {
+    Axios.get("http://223.194.128.244:8080/profile?userId=" + session.member_id)
+      .then((res) => {
+        //console.log("받은 데이터" + res);
+        console.log(session);
+        setTrackFirst(res.data.firstTrack);
+        setTrackSecond(res.data.secondTrack);
+        setATrackId(res.data.atrackId);
+        setBTrackId(res.data.btrackId);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [isFocused]);
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
 
-  const toTrackSetting = useCallback(() => {
-    navigation.navigate("TrackSetting");
-  }, [navigation]);
+  const toTrackSetting = () => {
+    navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId ]});
+  };
   const toSalesHistory = useCallback(() => {
     navigation.navigate("SalesHistory");
   }, [navigation]);
@@ -55,7 +69,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
     navigation.navigate("PurchaseHistory");
   }, [navigation]);
   // const toFav = useCallback(() => {
-  //   navigation.navigate('Fav', {id: id});
+  //   navigation.navigate("Fav", {id: id});
   // }, [navigation, id]);
   const toChangeProfile = useCallback(() => {
     navigation.navigate("ChangeProfile");
@@ -97,6 +111,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
         >
           <Text style={{ fontSize: 16 }}>{session.username}</Text>
+          <Text>id : {aTrackId} {bTrackId}</Text>
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>

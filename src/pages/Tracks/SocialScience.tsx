@@ -9,68 +9,68 @@ function SocialScience() {
     {
       id: 't16',
       num: 0,
-      name: '국제무역트랙', 
-      value: 16
+      name: '국제무역트랙',
+      value: '국제무역트랙',
     },
     {
       id: 't17',
       num: 1,
       name: '글로벌비즈니스트랙',
-      value: 17
+      value: '글로벌비즈니스트랙',
     },
     {
       id: 't18',
       num: 2,
-      name: '기업ㆍ경제분석트랙', 
-      value: 18
+      name: '기업ㆍ경제분석트랙',
+      value: '기업ㆍ경제분석트랙',
     },
     {
       id: 't19',
       num: 3,
       name: '경제금융투자트랙',
-      value: 19
+      value: '경제금융투자트랙',
     },
     {
       id: 't20',
       num: 4,
-      name: '공공행정트랙', 
-      value: 20
+      name: '공공행정트랙',
+      value: '공공행정트랙',
     },
     {
       id: 't21',
       num: 5,
       name: '법&정책트랙',
-      value: 21
+      value: '법&정책트랙',
     },
     {
       id: 't22',
       num: 6,
-      name: '부동산자산관리트랙', 
-      value: 22
+      name: '부동산자산관리트랙',
+      value: '부동산자산관리트랙',
     },
     {
       id: 't23',
       num: 7,
       name: '스마트도시계획ㆍ환경비즈니스트랙',
-      value: 23
+      value: '스마트도시계획ㆍ환경비즈니스트랙',
     },
     {
       id: 't24',
       num: 8,
-      name: '기업경영트랙', 
-      value: 24
+      name: '기업경영트랙',
+      value: '기업경영트랙',
     },
     {
       id: 't25',
       num: 9,
       name: '벤쳐경영트랙',
-      value: 25
+      value: '벤쳐경영트랙',
     },
     {
       id: 't26',
       num: 10,
-      name: '회계ㆍ재무경영트랙', 
-      value: 26
+      name: '회계ㆍ재무경영트랙',
+      value: '회계ㆍ재무경영트랙',
     }
   ]
 

@@ -10,32 +10,32 @@ function Mechanical() {
     {
       id: 't43',
       num: 0,
-      name: '전자트랙', 
-      value: 43
+      name: '전자트랙',
+      value: '전자트랙',
     },
     {
       id: 't44',
       num: 1,
       name: '정보시스템트랙',
-      value: 44
+      value: '정보시스템트랙',
     },
     {
       id: 't45',
       num: 2,
-      name: '기계설계트랙', 
-      value: 45
+      name: '기계설계트랙',
+      value: '기계설계트랙',
     },
     {
       id: 't46',
       num: 3,
       name: '기계자동화트랙',
-      value: 46
+      value: '기계자동화트랙',
     },
     {
       id: 't47',
       num: 4,
       name: '시스템반도체트랙',
-      value: 47
+      value: '시스템반도체트랙',
     }
   ]
 
