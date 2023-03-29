@@ -136,7 +136,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   // };
 
   const renderItem = ({ item }) => {
-    const renderBoard: Board = {
+    const renderBoard = {
       post_id: item.post_id,
       title: item.title,
       price: item.price,
