@@ -20,7 +20,7 @@ type RootStackParamList = {
 type itemListProps = NativeStackScreenProps<RootStackParamList, "item">;
 
 function ItemList({ board, navigation }: itemListProps) {
-  const { session } = useStore();
+  const { session, url } = useStore();
   const [postId, setPostId] = useState(board.post_id);
   const toDetail = useCallback(() => {
     navigation.navigate("Detail", { board: board });
@@ -29,7 +29,12 @@ function ItemList({ board, navigation }: itemListProps) {
   return (
     <Pressable style={styles.items} onPress={toDetail}>
       <View style={styles.itemImageZone}>
-        <Image source={{ uri: board.img }} style={styles.itemImage} />
+        <Image
+          source={{
+            uri: `${url}/images/${board?.images}`
+          }}
+          style={styles.itemImage}
+        />
       </View>
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>

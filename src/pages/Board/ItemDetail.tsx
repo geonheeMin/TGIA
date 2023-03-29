@@ -25,29 +25,17 @@ import chatlist from "../../assets/dummy/chatlist.json";
 import bugi from "../../assets/bugi.png";
 import fav from "../../assets/design/favorite.png";
 import unfav from "../../assets/design/unfavorite.png";
+
 type RootStackParamList = {
   Detail: undefined;
 };
 type ItemDetailProps = NativeStackScreenProps<RootStackParamList, "Detail">;
 
-interface Board {
-  post_id: number;
-  title: string;
-  category: string;
-  content: string;
-  writer: string;
-  date: string;
-  price: number;
-  place: string;
-  track: string;
-  img: string;
-}
-
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function ItemDetail({ route, navigation }: ItemDetailProps) {
-  const { session } = useStore();
+  const { session, url } = useStore();
   const board = route.params.board;
   const writer = board.writer;
   // const track = memberlist.memberlist.filter(
@@ -57,21 +45,62 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const [isFav, setIsFav] = useState("");
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
+  const [chatroom, setChatroom] = useState();
+  const timestamp = board.createdDate;
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
+
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
-  const chatroom = chatlist.chatlist.filter(
-    (item) => item.post_id === board.post_id && item.memberB === session.user_id
-  )[0]?.chatroom_id;
-  const toChat = useCallback(() => {
+
+  // const chatroom = chatlist.chatlist.filter(
+  //   (item) => item.post_id === board.post_id && item.memberB === session.user_id
+  // )[0]?.chatroom_id;
+  const toMyChat = useCallback(() => {
+    const chatStartRequestDTO = {
+      post_id: board.post_id,
+      member_id: 6
+    };
+    Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
+      headers: { "Content-Type": "application/json" }
+    })
+      .then((res) => {
+        console.log(res.data);
+        navigation.navigate("ChatDetail", {
+          chatroom: res.data.chatroom_id,
+          post: board
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [navigation]);
+  const toQuest = useCallback(() => {
     /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
      * 유무 판단해서 있으면 기존 채팅방을 리턴, 없으면 새로 채팅방 만들고 리턴 후 ChatDetail 로 이동
      */
-
-    navigation.navigate("ChatDetail", {
-      chatroom: chatroom,
-      post: board
-    });
+    const chatStartRequestDTO = {
+      post_id: board.post_id,
+      member_id: session.member_id
+    };
+    console.log(chatStartRequestDTO);
+    Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
+      headers: { "Content-Type": "application/json" }
+    })
+      .then((res) => {
+        console.log(res.data);
+        navigation.navigate("ChatDetail", {
+          chatroom: res.data.chatroom_id,
+          post: board
+        });
+      })
+      .catch((error) => console.log(error));
+    // navigation.navigate("ChatDetail", {
+    //   chatroom: chatroom,
+    //   post: board
+    // });
   }, [board, chatroom, navigation]);
 
   const favorite = () => {
@@ -123,7 +152,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     //   res.data === 1 ? setIsFav('관심 해제') : setIsFav('관심 등록');
     // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    console.log(board);
     matchingCategories();
   }, [isFav]);
 
@@ -133,7 +161,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       <ScrollView>
         <Pressable onPress={changeImageState}>
           <Image
-            source={{ uri: board.img }}
+            source={{
+              uri: "http://223.194.128.219:8080/images/" + board?.images
+            }}
             style={pressed ? styles.pressedImage : styles.postImage}
           />
         </Pressable>
@@ -150,7 +180,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             </View>
             <View
               style={
-                session.username === board.writer
+                session.member_id === board.member_id
                   ? styles.postSetting
                   : { zIndex: -10, opacity: 0 }
               }
@@ -193,20 +223,23 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           </View>
           <View style={styles.postEtc}>
             <Pressable>
-              <View style={{ borderBottomWidth: 0.34 }}>
+              <View style={{}}>
                 <Text
                   style={{
                     color: "#a6a6a6",
-                    fontSize: 12
+                    fontSize: 14
                   }}
                 >
-                  {category}
+                  {board.category}
                 </Text>
               </View>
             </Pressable>
-            <Text style={{ color: "#a6a6a6" }}> · time</Text>
+            <Text style={{ color: "#a6a6a6", fontSize: 14 }}>
+              {" "}
+              · {diff}분 전
+            </Text>
           </View>
-          <Text style={styles.postContent}>{board.content}</Text>
+          <Text style={styles.postContent}>{board.text}</Text>
           <View style={styles.hr} />
           <View style={styles.buttonBar}>
             <View style={styles.favButton}>
@@ -237,12 +270,14 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             <View style={styles.functionalSpace}>
               <Pressable
                 style={styles.functionalButton}
-                onPress={board.writer === myname ? toUpdate : toChat}
+                onPress={board.writer === myname ? toMyChat : toQuest}
               >
                 <Text
                   style={{ color: "white", fontSize: 16, fontWeight: "600" }}
                 >
-                  {board.writer === myname ? "채팅목록" : "문의하기"}
+                  {board.member_id === session.member_id
+                    ? "채팅목록"
+                    : "문의하기"}
                 </Text>
               </Pressable>
             </View>
@@ -279,8 +314,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: vh / 10,
     width: vw - vw / 4,
-    paddingLeft: 10,
-    borderWidth: 1
+    paddingLeft: 10
   },
   writerImage: {
     width: 55,

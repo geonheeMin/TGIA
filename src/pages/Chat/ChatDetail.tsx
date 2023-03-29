@@ -40,14 +40,12 @@ const vh = Dimensions.get("window").height;
 
 function ChatDetail({ route, navigation }: ChatDetailProps) {
   const [msgRef, setMsgRef] = useState(null);
-  const { session } = useStore();
+  const { session, url } = useStore();
   const params = route.params;
   const chatroom = params.chatroom;
   const post = params.post;
   const other = post.writer;
-  const [chats, setChats] = useState(
-    test.chat.filter((item) => item.chatroom_id === chatroom)
-  );
+  const [chats, setChats] = useState([]);
   const [msg, setMsg] = useState("hi");
   const [time, setTime] = useState("");
 
@@ -79,7 +77,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   }, [navigation]);
 
   const renderChat = ({ item }) => {
-    const previousList = test.chat.filter(
+    const previousList = chats.filter(
       (msg) =>
         msg.chat_id < item.chat_id && msg.chatroom_id === item.chatroom_id
     );
@@ -87,11 +85,10 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       previousList.length > 1
         ? previousList[previousList.length - 1].sender_id
         : null;
-    console.log(previous);
     return (
       <ChatBubble
         previousSender={previous}
-        sender_id={item.sender_id}
+        sender_id={item.sender}
         message={item.message}
       ></ChatBubble>
     );
@@ -106,25 +103,32 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   const sendMessage = () => {
-    // setTime(sendingTime);
-    // Axios.post(
-    //   "http://localhost:8080/api/chatsend",
-    //   {},
-    //   {
-    //     params: {
-    //       chatroom_id: chatroom ? chatroom.chatroom_id : 0,
-    //       sender: user,
-    //       msg: msg
-    //     }
-    //   }
-    // ).then((res) => {
-    //   rendering();
-    //   setMsg("");
-    // });
+    const SendMessageRequestDTO = {
+      chatroom_id: chatroom,
+      sender_id: session.member_id,
+      message: msg
+    };
+    Axios.post(`${url}/chat/send_V2`, SendMessageRequestDTO, {
+      headers: { "Content-Type": "application/json" }
+    })
+      .then((res) => {
+        setChats(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     setMsg("");
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    Axios.get(`${url}/chat/get_chat_message_list?id=${chatroom}`)
+      .then((res) => {
+        console.log(res.data);
+        console.log(session.member_id);
+        setChats(res.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

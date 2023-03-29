@@ -6,6 +6,7 @@ interface preset {
   setSession: (id: Object | null) => void;
   hasSession: boolean;
   setHasSession: (result: boolean) => void;
+  url: string;
 }
 
 const useStore = create<preset>((set) => ({
@@ -16,7 +17,8 @@ const useStore = create<preset>((set) => ({
   hasSession: false,
   setHasSession: (result: boolean) => {
     set((state) => ({ hasSession: result }));
-  }
+  },
+  url: "http://223.194.134.32:8080"
 }));
 
 export default useStore;

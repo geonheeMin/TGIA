@@ -47,10 +47,10 @@ const saveSession = async (data: string) => {
 function HomeScreen({ navigation }: HomeScreenProps) {
   const memberlist = require("../assets/dummy/member.json");
   const [loginId, setLoginId] = useState("");
-  const { session, setSession } = useStore();
+  const { session, setSession, url } = useStore();
 
   const LogIn = () => {
-    Axios.get("http://223.194.133.70:8080/member/get?user_id=" + loginId)
+    Axios.get(`${url}/member/get?user_id=${loginId}`)
       .then((res) => {
         console.log(JSON.stringify(res.data));
         AsyncStorage.setItem("session", JSON.stringify(res.data)).then(() => {

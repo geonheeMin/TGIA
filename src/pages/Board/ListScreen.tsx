@@ -32,24 +32,11 @@ type RootStackParamList = {
 };
 type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
-interface Board {
-  post_id: number;
-  title: string;
-  category: string;
-  content: string;
-  writer: string;
-  date: string;
-  price: number;
-  place: string;
-  track: string;
-  img: string;
-}
-
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
-  const { session } = useStore();
+  const { session, url } = useStore();
   const [posts, setPosts] = useState([{}]);
   //postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -153,13 +140,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       post_id: item.post_id,
       title: item.title,
       price: item.price,
-      place: item.place,
+      locationType: item.locationType,
+      location_text: item.location_text,
       writer: item.writer,
       category: item.category,
-      content: item.content,
+      text: item.text,
       date: item.date,
       track: item.track,
-      img: item.img
+      images: item.images,
+      member_id: item.member_id,
+      likes: item.likes,
+      views: item.views,
+      createdDate: item.createdDate
     };
     return <ItemList board={renderBoard} navigation={navigation} />;
   };
@@ -296,10 +288,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [navigation]);
 
   useEffect(() => {
-    Axios.get("http://52.78.189.232:8080/post/all")
+    Axios.get(`${url}/post/all`)
       .then((res) => {
         res.data.sort((a, b) => b.post_id - a.post_id);
-        console.log(res.data);
         setPosts(res.data);
         setNewPosts(res.data);
       })
