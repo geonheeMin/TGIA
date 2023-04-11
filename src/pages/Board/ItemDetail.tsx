@@ -42,7 +42,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   //   (item) => board.writer === item.username
   // )[0].firsttrack;
   const myname = session.username;
-  const [isFav, setIsFav] = useState("");
+  //const [isFav, setIsFav] = useState("");
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
@@ -50,23 +50,65 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const date = new Date(timestamp);
   const now = new Date();
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
+  const [isFav, setIsFav] = useState(route.params.isFav);
+  const [isFavOn, setIsFavOn] = useState(false);
+  const [favId, setFavId] = useState(0);
+
 
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
 
+  const favControll = useEffect(() => {
+    if (isFav === 0 )
+      setIsFavOn(false);
+    else
+      setIsFavOn(true);
+  }, []);
+
   const doFav = () => {
+    setIsFavOn(!isFavOn);
     Axios.post(
       `${url}/profile/add_favorite`,
       {},
       { params: { postId: board.post_id, userId: session.member_id } }
     ).then((res) => {
-      console.log(`${board.post_id} 와 ${session.member_id} 전송 성공`);
+      console.log("좋아요 Id : " + res.data);
+      setFavId(res.data);
+      //console.log(`${board.post_id} 와 ${session.member_id} 전송 성공`);
     });
   };
 
+  const unFav = () => {
+    setIsFavOn(!isFavOn);
+    Axios.delete(`${url}/profile/delete_favorite`, { params: { favoriteId: favId } })
+    .then((res) => {
+      console.log("좋아요 취소 : " + favId);
+    })
+    .catch((error) => {
+      console.log(error);
+      console.log("취소 실패 : " + favId)
+    });
+  }
+
   const toMyChat = useCallback(() => {
-    navigation.navigate("ChatListFromPost", { post_id: board.post_id });
+    const chatStartRequestDTO = {
+      post_id: board.post_id,
+      member_id: 6
+    };
+    Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
+      headers: { "Content-Type": "application/json" }
+    })
+      .then((res) => {
+        console.log(res.data);
+        navigation.navigate("ChatDetail", {
+          chatroom: res.data.chatroom_id,
+          post: board
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [navigation]);
   const toQuest = useCallback(() => {
     /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
@@ -76,6 +118,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       post_id: board.post_id,
       member_id: session.member_id
     };
+    console.log(chatStartRequestDTO);
     Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
       headers: { "Content-Type": "application/json" }
     })
@@ -233,9 +276,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           <View style={styles.hr} />
           <View style={styles.buttonBar}>
             <View style={styles.favButton}>
-              <Pressable onPress={doFav}>
+              <Pressable onPress={isFavOn ? unFav : doFav}>
                 <Image
-                  source={unfav}
+                  source={isFavOn ? fav : unfav}
                   style={{
                     width: 30,
                     height: 30,

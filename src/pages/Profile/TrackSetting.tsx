@@ -67,7 +67,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
         <Text
           style={{ fontSize: 18, fontWeight: "500", paddingLeft: vw / 3.1 }}
         >
-          트랙 설정 {aTrackId} {bTrackId}
+          트랙 설정
         </Text>
       </View>
       <ScrollView>

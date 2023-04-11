@@ -31,7 +31,7 @@ const vh = Dimensions.get("window").height;
 
 function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const [purchased, setPurchased] = useState([]);
-  const { session } = useStore();
+  const { session, url } = useStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const [posts, setPosts] = useState(
@@ -67,9 +67,9 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
     };
     return <ItemList board={renderBoard} navigation={navigation} />;
   };
-
+  
   useEffect(() => {
-    Axios.get("http://223.194.128.244:8080/post/buy_list?userId=" + session.member_id)
+    Axios.get(`${url}/post/buy_list?userId=` + session.member_id)
     .then((res) => {
       setPosts(res.data);
       posts.sort((a, b) => b.post_id - a.post_id);
@@ -113,7 +113,7 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
         />
       </View>
 
-      {/* <View>
+      <View>
         {purchased.length >= 1 ? 
           <FlatList
           style={{marginTop: 0}}
@@ -123,12 +123,15 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
           />
             :
             <View style={styles.contentNone }>
-              <Text>
-                구매완료한 게시물이 없어요.
+              <Text style={styles.contentNoneText}>
+                구매 내역이 없어요.
+              </Text>
+              <Text style={styles.contentNoneText}>
+                학우들과 교류하며 거래를 해보세요.
               </Text>
             </View>     
           }
-      </View> */}
+      </View>
 
       {/* <ScrollView>
         <Pressable style={styles.items} onPress={onSubmit}>
@@ -271,8 +274,12 @@ const styles = StyleSheet.create({
   contentNone: {
     position: "absolute",
     alignItems: "center",
-    marginVertical: vh / 3,
-    left: "28.5%"
+    marginVertical: vh / 2.6,
+    left: "22%"
+  },
+  contentNoneText: {
+    fontSize: 16,
+    color: "gray",
   },
 });
 

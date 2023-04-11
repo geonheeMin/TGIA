@@ -56,6 +56,10 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
     console.log(chat.count);
   }, []);
 
+  useEffect(() => {
+    console.log(chat.memberA);
+  });
+
   return (
     <Pressable
       style={{

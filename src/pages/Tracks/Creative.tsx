@@ -15,7 +15,7 @@ type CreativePramList = {
 type Creative = NativeStackScreenProps<CreativePramList, "Creative">;
 
 function Creative({ navigation, aTrack, bTrack }: Creative) {
-  const { session, setSession } = useStore();
+  const { session, url } = useStore();
   const [userId, setUserId] = useState(session.member_id);
   const [modalVisible, setModalVisible] = useState(false);
   const [trackNum, setTrackNum] = useState(0);
@@ -23,8 +23,6 @@ function Creative({ navigation, aTrack, bTrack }: Creative) {
   const isFocused = useIsFocused();
   const [trackId, setTrackId] = useState(300);
   const [trackName, setTrackName] = useState("트랙네임");
-  const [idFirst, setIdFirst] = useState(0);
-  const [idSecond, setIdSecond] = useState(0);
 
   const toProfile = useCallback(() => {
     navigation.reset({ routes: [{ name: "Profile" }] });
@@ -42,7 +40,7 @@ function Creative({ navigation, aTrack, bTrack }: Creative) {
       trackname: trackName // 트랙명
     };
 
-    Axios.post("http://223.194.128.244:8080/profile/list/", request)
+    Axios.post(`${url}/profile/list/`, request)
     .then((res) => {
       console.log(res);
       console.log("변경됨");
@@ -167,8 +165,7 @@ function Creative({ navigation, aTrack, bTrack }: Creative) {
   return(
     <View style={styles.safeAreaView}>
       <TrackModal/>
-      <Text>name : {userId}</Text>
-      {/* <Text>id : {idFirst} {idSecond}</Text> */}
+      {/* <Text>name : {userId}</Text> */}
       <Text>trackId : {aTrack} {bTrack}</Text>
       {trackList}                 
     </View>

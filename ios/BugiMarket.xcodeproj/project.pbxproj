@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* BugiMarketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* BugiMarketTests.m */; };
+		01599AF9C355ACE82C748DBB /* libPods-BugiMarket-BugiMarketTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8434222325F8D74D873749E1 /* libPods-BugiMarket-BugiMarketTests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2AAC8F3BEC4E7D335B016ECD /* libPods-BugiMarket-BugiMarketTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6D62FA4F371D6179AC3C2D /* libPods-BugiMarket-BugiMarketTests.a */; };
-		68059B3BDABF160282DA0D1D /* libPods-BugiMarket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9898CAC6F9D6B40F782C30FF /* libPods-BugiMarket.a */; };
+		6EDD092365C2CDBDFBE7A126 /* libPods-BugiMarket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBC28BBEAA379CCE04302239 /* libPods-BugiMarket.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -36,14 +36,14 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BugiMarket/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BugiMarket/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BugiMarket/main.m; sourceTree = "<group>"; };
-		4A6D62FA4F371D6179AC3C2D /* libPods-BugiMarket-BugiMarketTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BugiMarket-BugiMarketTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		63EEE7C79BCD5BC3578E37CF /* Pods-BugiMarket-BugiMarketTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket-BugiMarketTests.release.xcconfig"; path = "Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests.release.xcconfig"; sourceTree = "<group>"; };
-		79300BFC510AC4EEF0DAEBF3 /* Pods-BugiMarket-BugiMarketTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket-BugiMarketTests.debug.xcconfig"; path = "Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests.debug.xcconfig"; sourceTree = "<group>"; };
+		3A2A9004C15C0A176096A66F /* Pods-BugiMarket-BugiMarketTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket-BugiMarketTests.release.xcconfig"; path = "Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests.release.xcconfig"; sourceTree = "<group>"; };
+		77C977D8F0A423B1D6C75DE4 /* Pods-BugiMarket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket.release.xcconfig"; path = "Target Support Files/Pods-BugiMarket/Pods-BugiMarket.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BugiMarket/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9898CAC6F9D6B40F782C30FF /* libPods-BugiMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BugiMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A07103059EEE2F0C406C494C /* Pods-BugiMarket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket.debug.xcconfig"; path = "Target Support Files/Pods-BugiMarket/Pods-BugiMarket.debug.xcconfig"; sourceTree = "<group>"; };
-		D5B7D82A341CC69D1E4351BC /* Pods-BugiMarket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket.release.xcconfig"; path = "Target Support Files/Pods-BugiMarket/Pods-BugiMarket.release.xcconfig"; sourceTree = "<group>"; };
+		8434222325F8D74D873749E1 /* libPods-BugiMarket-BugiMarketTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BugiMarket-BugiMarketTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CBB5072581FED48A0DAC239 /* Pods-BugiMarket-BugiMarketTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket-BugiMarketTests.debug.xcconfig"; path = "Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests.debug.xcconfig"; sourceTree = "<group>"; };
+		A667AD1ABD395891A69D0CD7 /* Pods-BugiMarket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BugiMarket.debug.xcconfig"; path = "Target Support Files/Pods-BugiMarket/Pods-BugiMarket.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		FBC28BBEAA379CCE04302239 /* libPods-BugiMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BugiMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2AAC8F3BEC4E7D335B016ECD /* libPods-BugiMarket-BugiMarketTests.a in Frameworks */,
+				01599AF9C355ACE82C748DBB /* libPods-BugiMarket-BugiMarketTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				68059B3BDABF160282DA0D1D /* libPods-BugiMarket.a in Frameworks */,
+				6EDD092365C2CDBDFBE7A126 /* libPods-BugiMarket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,8 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				9898CAC6F9D6B40F782C30FF /* libPods-BugiMarket.a */,
-				4A6D62FA4F371D6179AC3C2D /* libPods-BugiMarket-BugiMarketTests.a */,
+				FBC28BBEAA379CCE04302239 /* libPods-BugiMarket.a */,
+				8434222325F8D74D873749E1 /* libPods-BugiMarket-BugiMarketTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -140,10 +140,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				A07103059EEE2F0C406C494C /* Pods-BugiMarket.debug.xcconfig */,
-				D5B7D82A341CC69D1E4351BC /* Pods-BugiMarket.release.xcconfig */,
-				79300BFC510AC4EEF0DAEBF3 /* Pods-BugiMarket-BugiMarketTests.debug.xcconfig */,
-				63EEE7C79BCD5BC3578E37CF /* Pods-BugiMarket-BugiMarketTests.release.xcconfig */,
+				A667AD1ABD395891A69D0CD7 /* Pods-BugiMarket.debug.xcconfig */,
+				77C977D8F0A423B1D6C75DE4 /* Pods-BugiMarket.release.xcconfig */,
+				9CBB5072581FED48A0DAC239 /* Pods-BugiMarket-BugiMarketTests.debug.xcconfig */,
+				3A2A9004C15C0A176096A66F /* Pods-BugiMarket-BugiMarketTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -155,12 +155,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "BugiMarketTests" */;
 			buildPhases = (
-				D2AA2FD4432CDE173F451EC5 /* [CP] Check Pods Manifest.lock */,
+				9EA6C15D3640027082E8906B /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				679AD7597F45C25F226D1F1C /* [CP] Embed Pods Frameworks */,
-				462C224C6BC8A6B04A532695 /* [CP] Copy Pods Resources */,
+				046D760FADB76B15BF6F5F7C /* [CP] Embed Pods Frameworks */,
+				5421BE7656AA7C0791F338C3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -176,14 +176,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BugiMarket" */;
 			buildPhases = (
-				4A57DAF92BDF90622D75F56D /* [CP] Check Pods Manifest.lock */,
+				5E6A4FDD71AD9B4D510DDC64 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				A6E40D6D49A67FE4EA82CAF5 /* [CP] Embed Pods Frameworks */,
-				F304C03F71B109F26FD0D930 /* [CP] Copy Pods Resources */,
+				E3DF6EC04065EDE5056488B0 /* [CP] Embed Pods Frameworks */,
+				22598E465BB52110BE33F5FC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -266,7 +266,41 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		462C224C6BC8A6B04A532695 /* [CP] Copy Pods Resources */ = {
+		046D760FADB76B15BF6F5F7C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		22598E465BB52110BE33F5FC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5421BE7656AA7C0791F338C3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -283,7 +317,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4A57DAF92BDF90622D75F56D /* [CP] Check Pods Manifest.lock */ = {
+		5E6A4FDD71AD9B4D510DDC64 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -305,41 +339,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		679AD7597F45C25F226D1F1C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket-BugiMarketTests/Pods-BugiMarket-BugiMarketTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A6E40D6D49A67FE4EA82CAF5 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D2AA2FD4432CDE173F451EC5 /* [CP] Check Pods Manifest.lock */ = {
+		9EA6C15D3640027082E8906B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -361,21 +361,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F304C03F71B109F26FD0D930 /* [CP] Copy Pods Resources */ = {
+		E3DF6EC04065EDE5056488B0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BugiMarket/Pods-BugiMarket-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -430,7 +430,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79300BFC510AC4EEF0DAEBF3 /* Pods-BugiMarket-BugiMarketTests.debug.xcconfig */;
+			baseConfigurationReference = 9CBB5072581FED48A0DAC239 /* Pods-BugiMarket-BugiMarketTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -457,7 +457,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 63EEE7C79BCD5BC3578E37CF /* Pods-BugiMarket-BugiMarketTests.release.xcconfig */;
+			baseConfigurationReference = 3A2A9004C15C0A176096A66F /* Pods-BugiMarket-BugiMarketTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -481,7 +481,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A07103059EEE2F0C406C494C /* Pods-BugiMarket.debug.xcconfig */;
+			baseConfigurationReference = A667AD1ABD395891A69D0CD7 /* Pods-BugiMarket.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -507,7 +507,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5B7D82A341CC69D1E4351BC /* Pods-BugiMarket.release.xcconfig */;
+			baseConfigurationReference = 77C977D8F0A423B1D6C75DE4 /* Pods-BugiMarket.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
