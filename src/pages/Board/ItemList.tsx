@@ -79,7 +79,6 @@ function ItemList({ board, navigation }: itemListProps) {
               overflow: "visible"
             }}
           />
-          <Text>{isFav}</Text>
         </Pressable>
         <Text style={styles.itemFavCount}>
           <Entypo name="heart-outlined" size={18} color={"gray"} />
