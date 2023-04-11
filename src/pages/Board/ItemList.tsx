@@ -68,7 +68,6 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
         <Text style={styles.itemPrice}>{board.price}원</Text>
-        <Text style={styles.itemPrice}>favId={favId}</Text>
       </View>
       <View style={styles.likesInfo}>
         <Pressable style={styles.likeButton}>
