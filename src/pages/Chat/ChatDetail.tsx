@@ -39,15 +39,22 @@ const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function ChatDetail({ route, navigation }: ChatDetailProps) {
-  const [msgRef, setMsgRef] = useState(null);
+  const chatRef = useRef(null);
   const { session, url } = useStore();
   const params = route.params;
   const chatroom = params.chatroom;
   const post = params.post;
-  const other = post.writer;
+  const other =
+    session.member_id === chatroom.member_a
+      ? chatroom.member_b
+      : chatroom.member_a;
   const [chats, setChats] = useState([]);
   const [msg, setMsg] = useState("hi");
-  const [time, setTime] = useState("");
+  const [otherName, setOtherName] = useState("");
+  /** isChatLoaded: Axios 통신으로 받아온 데이터 처리 완료 여부, true면 Axios 함수 처리가 완전히 끝난 것으로 Axios 통신해도 되는 상태
+   * false면 아직 Axios로 받아온 데이터를 처리하는 과정으로 Axios 통신하면 안된다는 것을 의미
+   */
+  const [isChatLoaded, setIsChatLoaded] = useState(true);
 
   var date = new Date();
   var sendingTime = new Intl.DateTimeFormat("locale", {
@@ -79,11 +86,11 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const renderChat = ({ item }) => {
     const previousList = chats.filter(
       (msg) =>
-        msg.chat_id < item.chat_id && msg.chatroom_id === item.chatroom_id
+        msg.message_id < item.message_id && msg.chatroom_id === item.chatroom_id
     );
     const previous =
       previousList.length > 1
-        ? previousList[previousList.length - 1].sender_id
+        ? previousList[previousList.length - 1].sender
         : null;
     return (
       <ChatBubble
@@ -102,9 +109,13 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     // });
   };
 
+  const handleScrollToEnd = () => {
+    chatRef.current?.scrollToEnd({ animated: true });
+  };
+
   const sendMessage = () => {
     const SendMessageRequestDTO = {
-      chatroom_id: chatroom,
+      chatroom_id: chatroom.chatroom_id,
       sender_id: session.member_id,
       message: msg
     };
@@ -117,17 +128,32 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       .catch((error) => {
         console.log(error);
       });
+    handleScrollToEnd();
     setMsg("");
   };
 
-  useEffect(() => {
-    Axios.get(`${url}/chat/get_chat_message_list?id=${chatroom}`)
+  const getChats = () => {
+    Axios.get(`${url}/chat/get_chat_message_list`, {
+      params: { id: chatroom.chatroom_id, member_id: session.member_id }
+    })
       .then((res) => {
-        console.log(res.data);
-        console.log(session.member_id);
+        setIsChatLoaded(!isChatLoaded);
         setChats(res.data);
+        setIsChatLoaded(!isChatLoaded);
       })
       .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    getChats();
+    Axios.get(`${url}/chat/get_username?id=${other}`)
+      .then((res) => setOtherName(res.data))
+      .catch((error) => console.log(error));
+    const refreshChat = setInterval(() => {
+      getChats();
+    }, 500);
+
+    return () => clearInterval(refreshChat);
   }, []);
 
   return (
@@ -147,13 +173,14 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             style={{ width: vw / 15, height: vw / 15 }}
           />
         </Pressable>
-        <Text style={{ marginLeft: 10 }}>{other}</Text>
+        <Text style={{ marginLeft: 10 }}>{otherName}</Text>
       </View>
       <View style={{ paddingTop: 5, height: vh - vh / 3.9 }}>
         <FlatList
           data={chats}
           renderItem={renderChat}
           showsVerticalScrollIndicator={false}
+          ref={chatRef}
         />
       </View>
       <View

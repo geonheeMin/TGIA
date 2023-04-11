@@ -54,6 +54,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const [isFavOn, setIsFavOn] = useState(false);
   const [favId, setFavId] = useState(0);
 
+
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
@@ -90,9 +91,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     });
   }
 
-  // const chatroom = chatlist.chatlist.filter(
-  //   (item) => item.post_id === board.post_id && item.memberB === session.user_id
-  // )[0]?.chatroom_id;
   const toMyChat = useCallback(() => {
     const chatStartRequestDTO = {
       post_id: board.post_id,
@@ -127,7 +125,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       .then((res) => {
         console.log(res.data);
         navigation.navigate("ChatDetail", {
-          chatroom: res.data.chatroom_id,
+          chatroom: res.data,
           post: board
         });
       })
@@ -305,7 +303,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             <View style={styles.functionalSpace}>
               <Pressable
                 style={styles.functionalButton}
-                onPress={board.writer === myname ? toMyChat : toQuest}
+                onPress={
+                  board.member_id === session.member_id ? toMyChat : toQuest
+                }
               >
                 <Text
                   style={{ color: "white", fontSize: 16, fontWeight: "600" }}

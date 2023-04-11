@@ -25,19 +25,19 @@ function BottomTabs({ navigation, screen }: BottomTab) {
   const currentScreen = screen;
 
   const toList = useCallback(() => {
-    navigation.navigate("List");
+    navigation.replace("List");
   }, [navigation]);
 
   const toSearch = useCallback(() => {
-    navigation.navigate("Search");
+    navigation.replace("Search");
   }, [navigation]);
 
   const toChatList = useCallback(() => {
-    navigation.navigate("ChatList");
+    navigation.replace("ChatList");
   }, [navigation]);
 
   const toProfile = useCallback(() => {
-    navigation.navigate("Profile");
+    navigation.replace("Profile");
   }, [navigation]);
 
   return (

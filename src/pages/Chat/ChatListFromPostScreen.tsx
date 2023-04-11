@@ -22,17 +22,20 @@ import chatlist from "../../assets/dummy/chatlist.json";
 import chats from "../../assets/dummy/chat.json";
 
 type RootStackParamList = {
-  ChatList: undefined;
+  ChatListFromPost: undefined;
 };
-type ChatListScreenProps = NativeStackScreenProps<
+type ChatListFromPostScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  "ChatList"
+  "ChatListFromPost"
 >;
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
-function ChatListScreen({ route, navigation }: ChatListScreenProps) {
+function ChatListFromPostScreen({
+  route,
+  navigation
+}: ChatListFromPostScreenProps) {
   const post = route.params?.post_id;
   const [chats, setChats] = useState([]);
   const { session, url } = useStore();
@@ -40,28 +43,25 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
     return <ChatTitle chat={item} navigation={navigation} />;
   };
 
-  const getMyChats = () => {
-    Axios.get(
-      `${url}/chat/get_chatroom_member_id?member_id=${session.member_id}`
-    ).then((res) => {
-      setChats(res.data);
-      console.log(res.data);
-    });
-  };
-
   useEffect(() => {
-    // const refreshMyChats = setInterval(() => {
-    //   getMyChats();
-    // }, 500);
-
-    // return () => clearInterval(refreshMyChats);
-    getMyChats();
+    if (post !== undefined) {
+      Axios.get(`${url}/chat/get_chat_room_list?id=${post}`)
+        .then((res) => {
+          setChats(res.data);
+        })
+        .catch((error) => console.log(error));
+    }
+    // setChats(
+    //   chatlist.chatlist.filter(
+    //     (item) => item.memberA === 1 || item.memberB === 1
+    //   )
+    // );
   }, []);
 
   return (
     <SafeAreaView style={{ height: vh, backgroundColor: "white" }}>
       <View>
-        <Text>채팅 리스트</Text>
+        <Text>채팅 리스트2</Text>
       </View>
       <FlatList
         style={{ height: vh / 1.5 }}
@@ -73,4 +73,4 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
   );
 }
 
-export default ChatListScreen;
+export default ChatListFromPostScreen;
