@@ -569,32 +569,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
-  const FilterModal2 = () => {
-    useEffect(() => {
-      if (!categoryAll) {
-        if (
-          categoryBooks &&
-          categoryPencil &&
-          categoryLife &&
-          categoryClothes &&
-          categoryBeauty &&
-          categoryDigital &&
-          categoryGoods
-        ) {
-          setCategoryAll(!categoryAll);
-        }
-      }
-    }, [
-      categoryAll,
-      categoryBooks,
-      categoryPencil,
-      categoryLife,
-      categoryClothes,
-      categoryBeauty,
-      categoryDigital,
-      categoryGoods
-    ]);
-
   return (
     <SafeAreaView style={styles.container}>
       <FilterModal />

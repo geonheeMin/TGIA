@@ -65,27 +65,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     });
   };
 
-  // const chatroom = chatlist.chatlist.filter(
-  //   (item) => item.post_id === board.post_id && item.memberB === session.user_id
-  // )[0]?.chatroom_id;
   const toMyChat = useCallback(() => {
-    const chatStartRequestDTO = {
-      post_id: board.post_id,
-      member_id: 6
-    };
-    Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
-      headers: { "Content-Type": "application/json" }
-    })
-      .then((res) => {
-        console.log(res.data);
-        navigation.navigate("ChatDetail", {
-          chatroom: res.data.chatroom_id,
-          post: board
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    navigation.navigate("ChatListFromPost", { post_id: board.post_id });
   }, [navigation]);
   const toQuest = useCallback(() => {
     /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
@@ -95,14 +76,13 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       post_id: board.post_id,
       member_id: session.member_id
     };
-    console.log(chatStartRequestDTO);
     Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
       headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
         console.log(res.data);
         navigation.navigate("ChatDetail", {
-          chatroom: res.data.chatroom_id,
+          chatroom: res.data,
           post: board
         });
       })
@@ -280,7 +260,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             <View style={styles.functionalSpace}>
               <Pressable
                 style={styles.functionalButton}
-                onPress={board.writer === myname ? toMyChat : toQuest}
+                onPress={
+                  board.member_id === session.member_id ? toMyChat : toQuest
+                }
               >
                 <Text
                   style={{ color: "white", fontSize: 16, fontWeight: "600" }}

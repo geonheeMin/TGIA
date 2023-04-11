@@ -22,6 +22,7 @@ import SearchScreen from "./src/pages/Board/SearchScreen";
 import FavScreen from "./src/pages/Profile/FavScreen";
 import ChatDetail from "./src/pages/Chat/ChatDetail";
 import ChatListScreen from "./src/pages/Chat/ChatListScreen";
+import ChatListFromPostScreen from "./src/pages/Chat/ChatListFromPostScreen";
 import ChatTitle from "./src/pages/Chat/ChatTitle";
 import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
@@ -46,6 +47,7 @@ export type RootStackParamList = {
   Detail: undefined;
   Fav: undefined;
   ChatList: undefined;
+  ChatListFromPost: undefined;
   ChatDetail: undefined;
   ChatTitle: undefined;
   ChangeProfile: undefined;
@@ -258,6 +260,12 @@ function App() {
           options={{ headerShown: false, animation: "none" }}
         >
           {(props) => <ChatListScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="ChatListFromPost"
+          options={{ headerShown: false, animation: "none" }}
+        >
+          {(props) => <ChatListFromPostScreen {...props} />}
         </Stack.Screen>
         <Stack.Screen
           name="Profile"

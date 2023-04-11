@@ -68,6 +68,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [placeVisible, setPlaceVisible] = useState(false);
   const [trackVisible, setTrackVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false); //모달 open시 배경 어둡게 하기 위한 state
+
+  const [isCategoryRecommended, setIsCategoryRecommended] = useState(false);
+  const [testResult, setTestResult] = useState("");
   const formData = new FormData(); //서버로 전송할 데이터 공간
 
   var date = new Date();
@@ -190,6 +193,20 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     navigation.navigate("Detail", { board: board });
   }, [board, navigation]);
 
+  const getCategoryRecommend = () => {
+    Axios.get(`${url}/send-data`)
+      .then((res) => {
+        if (res.data !== "null") {
+          console.log(res.data);
+          setTestResult(res.data);
+          setIsCategoryRecommended(!isCategoryRecommended);
+        } else {
+          setTimeout(() => getCategoryRecommend(), 1000);
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
   /** 갤러리에서 이미지 선택하는 함수 */
   const pickImage = () => {
     launchImageLibrary({ mediaType: "photo" }, (res) => {
@@ -213,6 +230,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           .then((res) => {
             console.log(res.data + "성공");
             setFilename(res.data);
+            setTimeout(() => getCategoryRecommend(), 3000);
           })
           .catch((error) => console.log(error));
         setImg(res.assets[0]);
@@ -432,12 +450,18 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       <View style={styles.categoryBar}>
         <Pressable
           style={styles.categoryButton}
+          disabled={!isCategoryRecommended}
           onPress={() => {
             categoryModalControl();
           }}
         >
-          <Text style={{ fontSize: 15 }}>
-            {category === "" ? "카테고리 선택" : showCategory(category)}
+          <Text
+            style={{
+              fontSize: 15,
+              color: isCategoryRecommended ? "black" : "grey"
+            }}
+          >
+            {!isCategoryRecommended ? "카테고리 선택" : testResult}
           </Text>
           <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
