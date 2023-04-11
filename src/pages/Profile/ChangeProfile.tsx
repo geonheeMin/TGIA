@@ -16,6 +16,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import { launchImageLibrary } from "react-native-image-picker";
 import useStore from "../../../store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Axios from "axios";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -25,31 +27,79 @@ type ChangeProfileScreenProps = NativeStackScreenProps<
   "ChangeProfile"
 >;
 
-function ChangeProfile({ navigation }: ChangeProfileScreenProps) {
-  const [text, setText] = useState("");
-  const { session } = useStore();
+function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
+  const { session, setSession, url } = useStore();
+  const [nickname, setNickname] = useState(session.username);
+  const [profileImg, setProfileImg] = useState(route.params.profile_img)
+  const [selectedImg, setSelectedImg] = useState(324);
+  const [img, setImg] = useState({});
 
-  const toProfile = useCallback(() => {
-    navigation.navigate("Profile");
-  }, [navigation]);
-  const confirm = useCallback(() => {
-    navigation.navigate("Profile");
-    //setId('');
-  }, [navigation]);
-
-  /** 갤러리에서 이미지 선택하는 함수 */
-  const pickImage = () => {
-    launchImageLibrary({ mediaType: "photo" }, (res) => {
-      if (res.didCancel) {
-        console.log("Canceled");
-      } else if (res.errorCode) {
-        console.log("Errored");
-      } else {
-        console.log(res);
-        // setImg(res.assets[0]);
-      }
-    });
+  const toProfile = () => {
+    navigation.reset({ routes: [{ name: "Profile" }] });
   };
+
+    /** 갤러리에서 이미지 선택하는 함수 */
+    const pickImage = () => {
+      launchImageLibrary({ mediaType: "photo" }, (res) => {
+        if (res.didCancel) {
+          console.log("Canceled");
+        } else if (res.errorCode) {
+          console.log("Errored");
+        } else {
+          const formData = new FormData();
+          formData.append("image", {
+            uri: res.assets[0].uri,
+            type: "image/jpg",
+            name: res.assets[0].fileName
+          });
+          Axios.post(`${url}/image/send_image`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          })
+            .then((res) => {
+              console.log(res.data + "성공");
+              setSelectedImg(res.data);
+              //setFilename(res.data);
+            })
+            .catch((error) => console.log(error));
+          setImg(res.assets[0]);
+        }
+      });
+    };
+
+
+  const confirm = () => {
+    const request = {
+      member_id: route.params.member_id, // 유저 아이디
+      username: nickname, // 변경할 유저 닉네임
+      image_filename: selectedImg, // 선택한 이미지
+    };
+
+    Axios.post(`${url}/profile/change`, request)
+    .then((res) => {
+      console.log(res.data);
+      console.log("변경됨");
+      AsyncStorage.removeItem("session").then(() => {
+        console.log("1");
+        AsyncStorage.setItem("session", JSON.stringify(res.data)).then(() => {
+          AsyncStorage.getItem("session").then((value) => {
+            console.log(value);
+            setSession(JSON.parse(value));
+            toProfile();
+          }).catch((error) => console.log("3 문제"));
+        }).catch((error) => console.log("2 문제"));
+      }).catch((error) => console.log("1 문제"));
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  };
+
+
+  useEffect(() => {
+    console.log(route.params);
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -76,7 +126,12 @@ function ChangeProfile({ navigation }: ChangeProfileScreenProps) {
       <View style={styles.imgZone}>
         <Pressable style={styles.imgUploadButton} onPress={pickImage}>
           <Image
-            source={require("../../assets/bugi.png")}
+            //source={require("../../assets/bugi.png")}
+            source={
+              Object.keys(img).length === 0
+                ? { uri: `${url}/images/${profileImg}`}
+                : { uri: img?.uri }
+            }
             style={styles.buttonImg}
           />
         </Pressable>
@@ -88,10 +143,11 @@ function ChangeProfile({ navigation }: ChangeProfileScreenProps) {
         <View style={styles.inputBox}>
           <TextInput
             style={styles.nameInput}
-            value={text}
-            onChangeText={setText}
-            //onChange={e => setId(e.nativeEvent.text)}
+            value={nickname}
+            onChangeText={setNickname}
+            onSubmitEditing={confirm}
             autoCapitalize="none"
+            returnKeyType="done"
             placeholder="닉네임을 입력해주세요."
           />
         </View>

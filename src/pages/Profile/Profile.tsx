@@ -25,6 +25,7 @@ import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Axios from "axios";
 import { useIsFocused } from "@react-navigation/native";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -32,27 +33,40 @@ const vh = Dimensions.get("window").height;
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 function Profile({ navigation, route }: ProfileScreenProps) {
-  const { session } = useStore(); // 사용자 아이디
+  const { session, url } = useStore(); // 사용자 아이디
   const [trackFirst, setTrackFirst] = useState(""); // 제 1트랙
   const [trackSecond, setTrackSecond] = useState(""); // 제 2트랙
   const [manner, setManner] = useState(36.5); // 매너온도
   const isFocused = useIsFocused();
   const [aTrackId, setATrackId] = useState(7);
   const [bTrackId, setBTrackId] = useState(9);
+  const [profileImg, setProfileImg] = useState();
+  const [img, setImg] = useState({});
   
   useEffect(() => {
-    Axios.get("http://223.194.128.244:8080/profile?userId=" + session.member_id)
+    Axios.get(`${url}/profile?userId=` + session.member_id)
       .then((res) => {
-        //console.log("받은 데이터" + res);
-        console.log(session);
+        console.log(res.data);
         setTrackFirst(res.data.firstTrack);
         setTrackSecond(res.data.secondTrack);
         setATrackId(res.data.atrackId);
         setBTrackId(res.data.btrackId);
+        //setProfileImg(res.data.imageFileName);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log("프로필 에러");
+      });
+  }, [isFocused]);
+
+  useEffect(() => {
+    Axios.get(`${url}/profile/Img?userId=` + session.member_id)
+      .then((res) => {
+        setProfileImg(res.data);
       })
       .catch((error) => {
         console.log(error);
-      });
+      })
   }, [isFocused]);
 
   const onSubmit = useCallback(() => {
@@ -71,9 +85,9 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   // const toFav = useCallback(() => {
   //   navigation.navigate("Fav", {id: id});
   // }, [navigation, id]);
-  const toChangeProfile = useCallback(() => {
-    navigation.navigate("ChangeProfile");
-  }, [navigation]);
+  const toChangeProfile = () => {
+    navigation.navigate("ChangeProfile", { member_id: session.member_id, profile_img:profileImg});
+  };
   const toSettings = useCallback(() => {
     navigation.navigate("Settings");
   }, [navigation]);
@@ -89,6 +103,8 @@ function Profile({ navigation, route }: ProfileScreenProps) {
     ]);
   };
 
+
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View
@@ -103,15 +119,17 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <Image
-            source={require("../../assets/bugi.png")}
-            style={styles.profile}
+          source={{
+            uri: `${url}/images/${profileImg}`
+          }}
+          style={styles.profile}
           />
         </View>
         <View
           style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
         >
           <Text style={{ fontSize: 16 }}>{session.username}</Text>
-          <Text>id : {aTrackId} {bTrackId}</Text>
+          <Text>{profileImg}</Text>
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>

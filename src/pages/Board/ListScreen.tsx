@@ -32,25 +32,12 @@ type RootStackParamList = {
 };
 type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
-interface Board {
-  post_id: number;
-  title: string;
-  category: string;
-  content: string;
-  writer: string;
-  date: string;
-  price: number;
-  place: string;
-  track: string;
-  img: string;
-}
-
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
-  const { session } = useStore();
-  const [posts, setPosts] = useState([]);
+  const { session, url } = useStore();
+  const [posts, setPosts] = useState([{}]);
   //postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
@@ -65,7 +52,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     { label: "부기굿즈", value: "goods" }
   ];
   const [filter, setFilter] = useState(filterList[0]);
-  const [newPosts, setNewPosts] = useState([{}]);
+  const [newPosts, setNewPosts] = useState([]);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [modalBackOpacity, setModalBackOpacity] = useState(0.0);
   const [emptyArray, setEmptyArray] = useState([]);
@@ -149,17 +136,22 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   // };
 
   const renderItem = ({ item }) => {
-    const renderBoard: Board = {
+    const renderBoard = {
       post_id: item.post_id,
       title: item.title,
       price: item.price,
-      place: item.place,
+      locationType: item.locationType,
+      location_text: item.location_text,
       writer: item.writer,
       category: item.category,
-      content: item.content,
+      text: item.text,
       date: item.date,
       track: item.track,
-      img: item.img
+      images: item.images,
+      member_id: item.member_id,
+      likes: item.likes,
+      views: item.views,
+      createdDate: item.createdDate
     };
     return <ItemList board={renderBoard} navigation={navigation} />;
   };
@@ -296,18 +288,16 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [navigation]);
 
   useEffect(() => {
-    Axios.get("http://223.194.128.244:8080/post/all")
+    Axios.get(`${url}/post/all`)
       .then((res) => {
+        res.data.sort((a, b) => b.post_id - a.post_id);
         setPosts(res.data);
-        posts.sort((a, b) => b.post_id - a.post_id);
-        setNewPosts(posts);
+        setNewPosts(res.data);
       })
       .catch((error) => {
         console.log(error);
         console.log(posts);
       });
-    listRefresh();
-    console.log(newPosts);
   }, [isFocused, filter, categoryAll]);
 
   const FilterModal = () => {
@@ -347,11 +337,26 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           style={filterModalStyles.background}
         />
         <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 9, borderWidth: 1 }}>
-            <View style={{ alignItems: "center", flex: 1, borderWidth: 1 }}>
+          <View style={{ flex: 9 }}>
+            <View
+              style={{
+                alignItems: "center",
+                flex: 1,
+                borderBottomWidth: 0.25,
+                borderColor: "lightgrey"
+              }}
+            >
               <Text style={{ fontSize: 20 }}>필터</Text>
             </View>
-            <View style={{ flex: 10, borderWidth: 1 }}>
+            <View
+              style={{
+                flex: 10,
+                paddingHorizontal: 15,
+                marginTop: 10,
+                borderBottomWidth: 0.25,
+                borderColor: "lightgrey"
+              }}
+            >
               <BouncyCheckbox
                 iconStyle={{ borderRadius: 4 }}
                 innerIconStyle={{ borderRadius: 4, borderColor: "#0092fe" }}
@@ -525,7 +530,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 disabled={categoryAll ? true : false}
               />
             </View>
-            <View style={{ flex: 10, borderWidth: 1 }}></View>
+            <View style={{ flex: 10 }}></View>
           </View>
           <View style={filterModalStyles.buttonBar}>
             <Pressable
@@ -541,204 +546,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
                 setFilterModalVisible(!filterModalVisible);
                 listRefresh();
               }}
-            >
-              <View style={filterModalStyles.cancelButton}>
-                <IonIcon name="close" size={25} color="white" />
-                <Text style={filterModalStyles.cancelText}>취소</Text>
-              </View>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setFilterModalVisible(!filterModalVisible);
-                listRefresh();
-              }}
-            >
-              <View style={filterModalStyles.applyButton}>
-                <IonIcon name="checkmark" size={25} color="white" />
-                <Text style={filterModalStyles.applyText}>적용</Text>
-              </View>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
-
-  const FilterModal2 = () => {
-    useEffect(() => {
-      if (!categoryAll) {
-        if (
-          categoryBooks &&
-          categoryPencil &&
-          categoryLife &&
-          categoryClothes &&
-          categoryBeauty &&
-          categoryDigital &&
-          categoryGoods
-        ) {
-          setCategoryAll(!categoryAll);
-        }
-      }
-    }, [
-      categoryAll,
-      categoryBooks,
-      categoryPencil,
-      categoryLife,
-      categoryClothes,
-      categoryBeauty,
-      categoryDigital,
-      categoryGoods
-    ]);
-
-    return (
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={filterModalVisible}
-        onRequestClose={() => setFilterModalVisible(!filterModalVisible)}
-      >
-        <Pressable
-          onPress={() => setFilterModalVisible(!filterModalVisible)}
-          style={filterModalStyles.background}
-        />
-        <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 9, borderWidth: 1 }}>
-            <View style={{ alignItems: "center", flex: 1, borderWidth: 1 }}>
-              <Text style={{ fontSize: 20 }}>필터</Text>
-            </View>
-            <View style={{ flex: 10, borderWidth: 1 }}>
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="전체 보기"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryAll}
-                onPress={(isChecked) => {
-                  setCategoryAll(isChecked);
-                  setCategoryBooks(isChecked);
-                  setCategoryPencil(isChecked);
-                  setCategoryLife(isChecked);
-                  setCategoryClothes(isChecked);
-                  setCategoryBeauty(isChecked);
-                  setCategoryDigital(isChecked);
-                  setCategoryGoods(isChecked);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="도서"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryBooks}
-                onPress={(isChecked) => {
-                  setCategoryBooks(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="필기구"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryPencil}
-                onPress={(isChecked) => {
-                  setCategoryPencil(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="생활/가전"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryLife}
-                onPress={(isChecked) => {
-                  setCategoryLife(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="의류"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryClothes}
-                onPress={(isChecked) => {
-                  setCategoryClothes(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="뷰티/미용"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryBeauty}
-                onPress={(isChecked) => {
-                  setCategoryBeauty(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="전자기기"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryDigital}
-                onPress={(isChecked) => {
-                  setCategoryDigital(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-              <BouncyCheckbox
-                iconStyle={{ borderRadius: 4 }}
-                innerIconStyle={{ borderRadius: 4 }}
-                text="부기 굿즈"
-                textStyle={{
-                  marginLeft: -10,
-                  color: "black",
-                  textDecorationLine: "none"
-                }}
-                isChecked={categoryGoods}
-                onPress={(isChecked) => {
-                  setCategoryGoods(isChecked);
-                  setCategoryAll(false);
-                }}
-              />
-            </View>
-            <View style={{ flex: 10, borderWidth: 1 }}></View>
-          </View>
-          <View style={filterModalStyles.buttonBar}>
-            <Pressable
-              onPress={() => setFilterModalVisible(!filterModalVisible)}
             >
               <View style={filterModalStyles.cancelButton}>
                 <IonIcon name="close" size={25} color="white" />
@@ -818,7 +625,6 @@ const filterModalStyles = StyleSheet.create({
     height: vh / 1.15,
     position: "absolute",
     paddingTop: 15,
-    paddingHorizontal: 15,
     paddingBottom: vh / 20,
     bottom: 0
   },
@@ -827,7 +633,9 @@ const filterModalStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
-    paddingHorizontal: vw / 10
+    paddingHorizontal: vw / 10,
+    borderTopWidth: 0.25,
+    borderColor: "lightgrey"
   },
   cancelButton: {
     flexDirection: "row",

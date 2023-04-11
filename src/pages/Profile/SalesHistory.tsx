@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
+import ItemList from "../Board/ItemList";
 import postlist from "../../assets/dummy/postdata.json"
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
@@ -34,7 +35,7 @@ type ChangeProfileScreenProps = NativeStackScreenProps<
 >;
 
 function SalesHistory({ navigation }: ChangeProfileScreenProps) {
-  const { session } = useStore();
+  const { session,url } = useStore();
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -65,20 +66,20 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
 
-  function ItemList({board}) {
+  // function ItemList({board}) {
 
-    return (
-      <Pressable style={styles.items} onPress={onSubmit}>
-        <View style={styles.itemImageZone}>
-          <Image source={{ uri: board.img }} style={styles.itemImage} />
-        </View>
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemTitle}>{board.title}</Text>
-          <Text style={styles.itemPrice}>{board.price}원</Text>
-        </View>
-      </Pressable>
-    );
-  }
+  //   return (
+  //     <Pressable style={styles.items} onPress={onSubmit}>
+  //       <View style={styles.itemImageZone}>
+  //         <Image source={{ uri: board.img }} style={styles.itemImage} />
+  //       </View>
+  //       <View style={styles.itemInfo}>
+  //         <Text style={styles.itemTitle}>{board.title}</Text>
+  //         <Text style={styles.itemPrice}>{board.price}원</Text>
+  //       </View>
+  //     </Pressable>
+  //   );
+  // }
 
 
   function OnSale() {
@@ -110,7 +111,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
     
     useEffect(() => {
       if (!isLoaded) {
-        Axios.get("http://223.194.128.244:8080/post/my_list?userId=" + session.member_id)
+        Axios.get(`${url}/post/my_list?userId=` + session.member_id)
         .then((res) => {
           setPosts(res.data);
           posts.sort((a, b) => b.post_id - a.post_id);
@@ -136,7 +137,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         />
           :
           <View style={styles.tabContentNone }>
-            <Text>
+            <Text style={styles.tabContentNoneText}>
               판매중인 게시물이 없어요.
             </Text>
           </View>     
@@ -187,8 +188,8 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         <View><Text>test</Text></View>
         : 
         <View style={styles.tabContentNone}>
-          <Text style={{ fontSize: 16, color: "gray" }}>
-            거래완료 게시글이 없어요.
+          <Text style={styles.tabContentNoneText}>
+            거래 완료된 게시글이 없어요.
           </Text>
         </View>
       }
@@ -213,11 +214,11 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
           onPress={toProfile}
           activeOpacity={0.7}
         >
-          <FontAwesome5 name="arrow-left" size={30} color="black" />
-          {/* <Image
+          {/* <FontAwesome5 name="arrow-left" size={30} color="black" /> */}
+          <Image
             source={require("../../assets/design/backIcon.png")}
             style={styles.backButton}
-          /> */}
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.topzone}>
@@ -379,7 +380,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     marginVertical: vh / 3,
-    left: "28.5%"
+    left: "27.5%"
+  },
+  tabContentNoneText: {
+    fontSize: 16,
+    color: "gray",
   },
   items: {
     paddingBottom: 5,

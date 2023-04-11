@@ -18,6 +18,8 @@ import ChatTitle from "./ChatTitle";
 import Axios from "axios";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
+import chatlist from "../../assets/dummy/chatlist.json";
+import chats from "../../assets/dummy/chat.json";
 
 type RootStackParamList = {
   ChatList: undefined;
@@ -35,7 +37,7 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
   const [chats, setChats] = useState([]);
   const { session } = useStore();
   const renderItem = ({ item }) => {
-    return <ChatTitle id={session.id} chat={item} navigation={navigation} />;
+    return <ChatTitle id={1} chat={item} navigation={navigation} />;
   };
 
   useEffect(() => {
@@ -44,6 +46,12 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
     // }).then(res => {
     //   setChats(res.data);
     // });
+    setChats(
+      chatlist.chatlist.filter(
+        (item) => item.memberA === 1 || item.memberB === 1
+      )
+    );
+    console.log(session);
   }, []);
 
   return (
@@ -51,11 +59,11 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
       <View>
         <Text>채팅 리스트</Text>
       </View>
-      {/* <FlatList
-        style={{height: vh / 1.5}}
+      <FlatList
+        style={{ height: vh / 1.5 }}
         data={chats}
         renderItem={renderItem}
-      /> */}
+      />
       <BottomTabs navigation={navigation} screen="ChatList" />
     </SafeAreaView>
   );

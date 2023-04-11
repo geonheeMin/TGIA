@@ -51,13 +51,14 @@ const vh = Dimensions.get("window").height;
 
 function AddScreen({ route, navigation }: AddScreenProps) {
   const params = route.params;
-  const { session } = useStore(); //작성자 id
+  const { session, url } = useStore(); //작성자 id
   const board = params?.board ? params.board : "new"; //새 글 작성 or 기존 글 수정 판단
   const [title, setTitle] = useState(""); //게시글 제목
   const [category, setCategory] = useState(""); //게시글 카테고리
   const [content, setContent] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
   const [img, setImg] = useState({}); //게시글 이미지
+  const [filename, setFilename] = useState("");
   const [price, setPrice] = useState<number | null>(); //게시글 가격
   const [free, setFree] = useState(false); //게시글 나눔 확인(true or false)
   const [place, setPlace] = useState(""); //게시글 거래 장소
@@ -118,10 +119,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       user_id: session.member_id,
       category: category,
       content: content,
-      price: price
+      price: price,
+      images: filename
     };
 
-    Axios.post("http://223.194.133.70:8080/post/insert", request, {
+    Axios.post(`${url}/post/insert`, request, {
       headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
@@ -197,6 +199,22 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         console.log("Errored");
       } else {
         console.log(res);
+        const formData = new FormData();
+        formData.append("images", {
+          uri: res.assets[0].uri,
+          type: "image/jpg",
+          name: res.assets[0].fileName
+        });
+        Axios.post(`${url}/image/send_images`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+          .then((res) => {
+            console.log(res.data + "성공");
+            setFilename(res.data);
+          })
+          .catch((error) => console.log(error));
         setImg(res.assets[0]);
       }
     });

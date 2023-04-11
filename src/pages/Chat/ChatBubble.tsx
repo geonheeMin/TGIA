@@ -21,19 +21,17 @@ type chat = {
 
 function ChatBubble(chat: chat) {
   const { session } = useStore();
-  const sender = member.memberlist.filter(
-    (item) => item.user_id === chat.sender_id
-  )[0];
-  const sendername = sender.username;
+  const sender = chat.sender_id;
+  const my_id = session.member_id;
   const previous = chat.previousSender;
-  if (session.user_id === sender.user_id) {
+  if (my_id === sender) {
     return (
       <View style={styles.myBubbleBox}>
         <Text style={{ color: "white" }}>{chat.message}</Text>
       </View>
     );
   } else {
-    if (previous !== sender.user_id) {
+    if (previous !== sender) {
       return (
         <View
           style={{
@@ -44,7 +42,7 @@ function ChatBubble(chat: chat) {
         >
           <View style={{ flexDirection: "row", marginBottom: 5 }}>
             <Image
-              source={{ uri: sender.profile_img }}
+              source={{ uri: sender?.profile_img }}
               style={{
                 marginLeft: 10,
                 width: 30,
