@@ -21,8 +21,6 @@ import postlist from "../../assets/dummy/postdata.json"
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -40,7 +38,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
-  //const [posts, setPosts] = useState([]);
   const [newPosts, setNewPosts] = useState([{}]);
   const [posts, setPosts] = useState(
     postlist.postlist.sort((a, b) => b.post_id - a.post_id)
@@ -66,22 +63,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
 
-  // function ItemList({board}) {
-
-  //   return (
-  //     <Pressable style={styles.items} onPress={onSubmit}>
-  //       <View style={styles.itemImageZone}>
-  //         <Image source={{ uri: board.img }} style={styles.itemImage} />
-  //       </View>
-  //       <View style={styles.itemInfo}>
-  //         <Text style={styles.itemTitle}>{board.title}</Text>
-  //         <Text style={styles.itemPrice}>{board.price}원</Text>
-  //       </View>
-  //     </Pressable>
-  //   );
-  // }
-
-
   function OnSale() {
     tabUnderline(0);
 
@@ -105,9 +86,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
       };
       return <ItemList board={renderBoard} navigation={navigation} />;
     };
-
-    // 찜목록 불러오기
-    //Axios.get("http://223.194.128.244:8080/profile/favorite_list?userId=" + session.member_id)
     
     useEffect(() => {
       if (!isLoaded) {
@@ -142,40 +120,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
             </Text>
           </View>     
         }
-
-        {/* <Pressable style={styles.items} onPress={onSubmit}>
-          <View style={styles.itemImageZone}>
-            <Image
-              source={require("../../assets/diptyque.jpg")}
-              style={styles.itemImage}
-            />
-          </View>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 3세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
-            <TouchableHighlight
-              style={styles.compliteButton}
-              onPress={onSubmit}
-              underlayColor="#4e77e1"
-            >
-              <Text style={styles.compliteText}>판매완료</Text>
-            </TouchableHighlight>
-          </View>
-        </Pressable>
-
-        <Pressable style={styles.items} onPress={onSubmit}>
-          <View style={styles.itemImageZone}>
-            <Image
-              source={require("../../assets/bugi.png")}
-              style={styles.itemImage}
-            />
-          </View>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 4세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
-          </View>
-        </Pressable> */}
-
       </View>
     );
   }
@@ -192,7 +136,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
             거래 완료된 게시글이 없어요.
           </Text>
         </View>
-      }
+        }
       </View>
     );
   }
@@ -220,11 +164,14 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
             style={styles.backButton}
           />
         </TouchableOpacity>
+        <Text style={{fontSize: 18, fontWeight: "600", marginLeft: vw / 40}}>
+          판매내역
+        </Text>
       </View>
       <View style={styles.topzone}>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.titlezone}>
-            <Text style={{ fontSize: 20, marginLeft: vw / 50 }}>
+            <Text style={{ fontSize: 20, fontWeight: "500", marginLeft: vw / 50 }}>
               나의 판매내역
             </Text>
           </View>

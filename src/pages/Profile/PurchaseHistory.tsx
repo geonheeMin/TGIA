@@ -18,7 +18,6 @@ import postlist from "../../assets/dummy/postdata.json"
 import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
-import ItemList from "../Board/ItemList";
 
 type PurchaseHistoryScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -46,6 +45,68 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
+
+  type RootStackParamList_2 = {
+    item: undefined;
+  };
+  type itemListProps = NativeStackScreenProps<RootStackParamList_2, "item">;
+
+  function ItemList({ board, navigation }: itemListProps) {
+    const { session, url } = useStore();
+    const [postId, setPostId] = useState(board.post_id);
+    const [isFav, setIsFav] = useState(0);
+    const [review, setReview] = useState(1); // 리뷰 했다면 0, 리뷰 안했다면 1
+    const isFocused = useIsFocused();
+  
+    const toDetail = useCallback(() => {    
+      navigation.navigate("Detail", { board: board, isFav: isFav });
+    }, [board, navigation]);
+  
+    const toReview = useCallback(() => {
+      Alert.alert("리뷰입니다", "네");
+    }, []);
+
+    const favorite = () => {
+      Axios.get(`${url}/profile/is_favorite`, {params: {postId: board.post_id, userId: session.member_id}})
+      .then((res) => {
+      console.log(res.data)
+      console.log("좋아함");
+      setIsFav(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    };
+  
+    useEffect(() => {
+      favorite();
+    }, [isFocused]);
+
+    return (
+      <View>
+        <Pressable style={styles.items} onPress={toDetail}>
+          <View style={styles.itemImageZone}>
+            <Image
+              source={{
+                uri: `${url}/images/${board?.images}`
+              }}
+              style={styles.itemImage}
+            />
+          </View>
+          <View style={styles.itemInfo}>
+            <Text style={styles.itemTitle}>{board.title}</Text>
+            <Text style={styles.itemPrice}>{board.price}원</Text>
+          </View>
+        </Pressable>
+        <Pressable style={styles.reviewBtn} onPress={toReview}>
+          { review === 1
+            ? <Text style={styles.reviewText}>거래 후기 남기기</Text> 
+            : <Text style={styles.reviewCompliteText}>거래 후기 남기기</Text> 
+          }
+        </Pressable>
+      </View>
+    );
+  }
 
   const renderItem = ({ item }) => {
     const renderBoard = {
@@ -96,25 +157,13 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
             style={styles.backButton}
           />
         </TouchableOpacity>
-        <Text
-          style={{ fontSize: 18, fontWeight: "500", paddingLeft: vw / 3.1 }}
-        >
+        <Text style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}>
           구매내역
         </Text>
       </View>
 
-
       <View>
-        <FlatList
-          style={{marginTop: 0}}
-          data={posts}
-          renderItem={renderItem}
-          refreshing={isRefreshing}
-        />
-      </View>
-
-      <View>
-        {purchased.length >= 1 ? 
+        {posts.length >= 1 ? 
           <FlatList
           style={{marginTop: 0}}
           data={posts}
@@ -137,7 +186,7 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
         <Pressable style={styles.items} onPress={onSubmit}>
           <View style={styles.itemImageZone}>
             <Image
-              source={require("../../assets/diptyque.jpg")}
+              source={require("../../assets/airpod.jpg")}
               style={styles.itemImage}
             />
           </View>
@@ -147,39 +196,39 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
           </View>
         </Pressable>
         <Pressable style={styles.reviewBtn} onPress={onSubmit}>
-          <Text style={styles.reviewText}>거래후기 남기기</Text>
+          <Text style={styles.reviewText}>거래 후기 남기기</Text>
         </Pressable>
 
         <Pressable style={styles.items} onPress={onSubmit}>
           <View style={styles.itemImageZone}>
             <Image
-              source={require("../../assets/bugi.png")}
+              source={require("../../assets/diptyque.jpg")}
               style={styles.itemImage}
             />
           </View>
           <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 4세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
+            <Text style={styles.itemTitle}>딥티크 향수 팔아요</Text>
+            <Text style={styles.itemPrice}>150,000원</Text>
           </View>
         </Pressable>
-        <Pressable style={styles.reviewBtn} onPress={onSubmit}>
-          <Text style={styles.reviewText}>거래후기 남기기</Text>
+        <Pressable style={styles.reviewBtn}>
+          <Text style={styles.reviewCompliteText}>후기 작성 완료</Text>
         </Pressable>
 
         <Pressable style={styles.items} onPress={onSubmit}>
           <View style={styles.itemImageZone}>
             <Image
-              source={require("../../assets/bugi.png")}
+              source={require("../../assets/rnbook.png")}
               style={styles.itemImage}
             />
           </View>
           <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>에어팟 5세대 팝니다</Text>
-            <Text style={styles.itemPrice}>160,000원</Text>
+            <Text style={styles.itemTitle}>리액트 네이티브 책 팝니다</Text>
+            <Text style={styles.itemPrice}>25,000원</Text>
           </View>
         </Pressable>
-        <Pressable style={styles.reviewBtn} onPress={onSubmit}>
-          <Text style={styles.reviewText}>거래후기 남기기</Text>
+        <Pressable style={styles.reviewBtn}>
+          <Text style={styles.reviewCompliteText}>후기 작성 완료</Text>
         </Pressable>
       </ScrollView> */}
 
@@ -225,13 +274,13 @@ const styles = StyleSheet.create({
     height: vh / 20
   },
   items: {
-    paddingBottom: 5,
+    paddingBottom: vh / 150,
     backgroundColor: "white",
     flexDirection: "row"
   },
   itemImageZone: {
     flex: 1,
-    paddingVertical: 15
+    paddingVertical: vh / 60,
   },
   itemInfo: {
     flex: 2
@@ -241,26 +290,26 @@ const styles = StyleSheet.create({
     width: "85%",
     height: "85%",
     paddingVertical: "39%",
-    marginLeft: 18,
-    marginTop: 5,
+    marginLeft: vw / 20.5,
+    marginTop: vh / 140,
     borderRadius: 8,
     borderWidth: 0.3
   },
   itemTitle: {
     fontSize: 18,
     fontWeight: "800",
-    marginTop: 20,
-    marginLeft: 16
+    marginTop: vh / 45,
+    marginLeft: vw / 25,
   },
   itemPrice: {
     fontSize: 15,
     fontWeight: "400",
-    marginTop: 10,
-    marginLeft: 16
+    marginTop: vh / 90,
+    marginLeft: vw / 25,
   },
   reviewBtn: {
     backgroundColor: "white",
-    paddingVertical: 10,
+    paddingVertical: vh / 86,
     borderTopWidth: 2,
     borderBottomWidth: 2,
     borderColor: "#EEEEEE"
@@ -270,6 +319,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#3064e7",
     textAlign: "center"
+  },
+  reviewCompliteText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "gray",
+    textAlign: "center",
   },
   contentNone: {
     position: "absolute",

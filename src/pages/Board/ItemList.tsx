@@ -70,16 +70,6 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemPrice}>{board.price}원</Text>
       </View>
       <View style={styles.likesInfo}>
-        <Pressable style={styles.likeButton}>
-          <Image
-            source={isFav === 0 ? unfav : fav}
-            style={{
-              width: 25,
-              height: 25,
-              overflow: "visible"
-            }}
-          />
-        </Pressable>
         <Text style={styles.itemFavCount}>
           <Entypo name="heart-outlined" size={18} color={"gray"} />
           {board.likes}
@@ -104,6 +94,7 @@ export const styles = StyleSheet.create({
   },
   likesInfo: {
     flex: 0.45,
+    //backgroundColor: 'orange'
   },
   itemImage: {
     flex: 1,
@@ -133,7 +124,7 @@ export const styles = StyleSheet.create({
   },
   itemFavCount: {
     fontSize: 18,
-    marginTop: vh / 23,
+    marginTop: vh / 8.7,
     fontWeight: '300',
     color: "gray",
   },
