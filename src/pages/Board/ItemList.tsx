@@ -73,16 +73,6 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text>{board.department}</Text>
       </View>
       <View style={styles.likesInfo}>
-        <Pressable style={styles.likeButton}>
-          <Image
-            source={isFav === 0 ? unfav : fav}
-            style={{
-              width: 25,
-              height: 25,
-              overflow: "visible"
-            }}
-          />
-        </Pressable>
         <Text style={styles.itemFavCount}>
           <Entypo name="heart-outlined" size={18} color={"gray"} />
           {board.likes}
@@ -136,10 +126,11 @@ export const styles = StyleSheet.create({
   },
   itemFavCount: {
     fontSize: 18,
-    marginTop: vh / 23,
-    fontWeight: "300",
-    color: "gray"
-  }
-});
+    marginTop: vh / 8.7,
+    fontWeight: '300',
+    color: "gray",
+  },
+})
+
 
 export default ItemList;

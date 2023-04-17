@@ -1,62 +1,23 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal, Alert } from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { View, Text, Pressable, Modal, Alert } from 'react-native';
 import { styles } from '../../styles/TrackListStyle';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import useStore from "../../../store";
 import { useIsFocused } from "@react-navigation/native";
-
 
 type CreativePramList = {
   Creative: undefined,
 }
-
 type Creative = NativeStackScreenProps<CreativePramList, "Creative">;
 
 function Creative({ navigation, aTrack, bTrack }: Creative) {
   const { session, url } = useStore();
-  const [userId, setUserId] = useState(session.member_id);
   const [modalVisible, setModalVisible] = useState(false);
+  const [userId, setUserId] = useState(session.member_id);
   const [trackNum, setTrackNum] = useState(0);
-  const outSection = useRef();
-  const isFocused = useIsFocused();
-  const [trackId, setTrackId] = useState(300);
+  const [trackId, setTrackId] = useState(0);
   const [trackName, setTrackName] = useState("트랙네임");
-
-  const toProfile = useCallback(() => {
-    navigation.reset({ routes: [{ name: "Profile" }] });
-  }, [navigation]);
-
-  async function changeTrack(trackNum: number, trackId: number, trackName: string) {
-    setTrackNum(trackNum);
-    setTrackId(trackId);
-    setTrackName(trackName);
-    
-    const request = {
-      userId: userId, // 유저 아이디
-      trackNumber: trackNum,  // 1트랙이면 1, 2트랙이면 2
-      trackId: trackId, // 트랙 테이블 아이디
-      trackname: trackName // 트랙명
-    };
-
-    Axios.post(`${url}/profile/list/`, request)
-    .then((res) => {
-      console.log(res);
-      console.log("변경됨");
-    })
-    .catch((error) => {
-      console.log(error);
-      console.log(request);
-    })
-    Alert.alert("변경되었습니다", "", [
-      { text: "OK", onPress: toProfile }
-    ]);
-    console.log("trackId : " + trackId);
-    console.log("trackName : " + trackName);
-    console.log(request);
-  } 
-
   const tracks = [
     {
       id: 't01',
@@ -107,6 +68,39 @@ function Creative({ navigation, aTrack, bTrack }: Creative) {
     }
   ]
 
+  const toProfile = useCallback(() => {
+    navigation.reset({ routes: [{ name: "Profile" }] });
+  }, [navigation]);
+
+  async function changeTrack(trackNum: number, trackId: number, trackName: string) {
+    setTrackNum(trackNum);
+    setTrackId(trackId);
+    setTrackName(trackName);
+    
+    const request = {
+      userId: userId, // 유저 아이디
+      trackNumber: trackNum,  // 1트랙이면 1, 2트랙이면 2
+      trackId: trackId, // 트랙 테이블 아이디
+      trackname: trackName // 트랙명
+    };
+
+    Axios.post(`${url}/profile/list/`, request)
+    .then((res) => {
+      console.log(res);
+      console.log("변경됨");
+    })
+    .catch((error) => {
+      console.log(error);
+      console.log(request);
+    })
+    Alert.alert("변경되었습니다", "", [
+      { text: "OK", onPress: toProfile }
+    ]);
+    console.log("trackId : " + trackId);
+    console.log("trackName : " + trackName);
+    console.log(request);
+  } 
+
   const trackList = tracks.map((track) => 
     <Pressable key={track.id}
       style={styles.menuButton}
@@ -114,7 +108,6 @@ function Creative({ navigation, aTrack, bTrack }: Creative) {
       <Text>{track.name}</Text>
     </Pressable>
   );
-
 
   function TrackModal() {
     return(
@@ -165,8 +158,6 @@ function Creative({ navigation, aTrack, bTrack }: Creative) {
   return(
     <View style={styles.safeAreaView}>
       <TrackModal/>
-      {/* <Text>name : {userId}</Text> */}
-      <Text>trackId : {aTrack} {bTrack}</Text>
       {trackList}                 
     </View>
   );

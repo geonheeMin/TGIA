@@ -113,8 +113,10 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
             source={require("../../assets/design/backIcon.png")}
             style={styles.backButton}
           />
-          {/* <Image source={require("../../assets/logo.png")} style={styles.backButtonImg} /> */}
         </TouchableOpacity>
+        <Text style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}>
+          프로필 변경
+        </Text>
         <TouchableOpacity
           style={styles.compliteButton}
           onPress={confirm}

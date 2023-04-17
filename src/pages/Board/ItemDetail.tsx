@@ -25,6 +25,9 @@ import chatlist from "../../assets/dummy/chatlist.json";
 import bugi from "../../assets/bugi.png";
 import fav from "../../assets/design/favorite.png";
 import unfav from "../../assets/design/unfavorite.png";
+import { useIsFocused } from "@react-navigation/native";
+import Carousel, { Pagination } from 'react-native-snap-carousel';
+import { stackScrollInterpolator } from '../../utils/animations';
 
 type RootStackParamList = {
   Detail: undefined;
@@ -41,8 +44,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   //   (item) => board.writer === item.username
   // )[0].firsttrack;
   const myname = session.username;
-  //const [isFav, setIsFav] = useState("");
-  const [writer, setWriter] = useState("");
+
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
@@ -52,7 +54,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const date = new Date(timestamp);
   const [isFav, setIsFav] = useState(route.params.isFav);
   const [isFavOn, setIsFavOn] = useState(false);
-  const [favId, setFavId] = useState(0);
+  const isFocused = useIsFocused();
 
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
@@ -77,9 +79,11 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   const favControll = useEffect(() => {
-    if (isFav === 0) setIsFavOn(false);
-    else setIsFavOn(true);
-  }, []);
+    if (isFav === 0 )
+      setIsFavOn(false);
+    else
+      setIsFavOn(true);
+  }, [isFocused]);
 
   const doFav = () => {
     setIsFavOn(!isFavOn);
@@ -89,15 +93,28 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       { params: { postId: board.post_id, userId: session.member_id } }
     ).then((res) => {
       console.log("좋아요 Id : " + res.data);
-      setFavId(res.data);
-      //console.log(`${board.post_id} 와 ${session.member_id} 전송 성공`);
     });
   };
 
   const unFav = () => {
     setIsFavOn(!isFavOn);
-    Axios.delete(`${url}/profile/delete_favorite`, {
-      params: { favoriteId: favId }
+    Axios.delete(`${url}/profile/delete_favorite3`, { params: { postId: board.post_id, userId: session.member_id } })
+    .then((res) => {
+      console.log("좋아요 취소");
+    })
+    .catch((error) => {
+      console.log(error);
+      console.log("취소 실패")
+    });
+  }
+
+  const toMyChat = useCallback(() => {
+    const chatStartRequestDTO = {
+      post_id: board.post_id,
+      member_id: 6
+    };
+    Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
+      headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
         console.log("좋아요 취소 : " + favId);
@@ -139,20 +156,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     // });
   }, [board, chatroom, navigation]);
 
-  const favorite = () => {
-    // isFav === '관심 등록'
-    //   ? Axios.post(
-    //       'http://localhost:8080/api/favorite',
-    //       {},
-    //       {params: {board_id: board.id, user_id: id}},
-    //     ).then(() => setIsFav('관심 해제'))
-    //   : Axios.post(
-    //       'http://localhost:8080/api/unfavorite',
-    //       {},
-    //       {params: {board_id: board.id, user_id: id}},
-    //     ).then(() => setIsFav('관심 등록'));
-  };
-
   const changeImageState = () => {
     setPressed(!pressed);
   };
@@ -186,18 +189,65 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     console.log(board);
   }, [isFav]);
 
+  const DATA = [
+    { id: '1', image: require("../../assets/rnbook.png") },
+    { id: '2', image: require("../../assets/bugi.png")},
+    { id: '3', image: require("../../assets/diptyque.jpg") },
+    { id: '4', uri: `${url}/images/${board?.images}`}
+  ];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const renderCarouselItem = useCallback(({ item }) => {
+    return (
+      <View style={styles.carouselItemContainer}>
+        <Image
+          source={item.image}
+          style={styles.carouselImage}
+          resizeMode="contain"
+        />
+      </View>
+    );
+  }, []);
+
+  const renderPagination = useCallback(() => {
+    return (
+      <Pagination
+        dotsLength={DATA.length}
+        activeDotIndex={activeIndex}
+        containerStyle={styles.paginationContainer}
+        dotStyle={styles.paginationDot}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.6}
+      />
+    );
+  }, [activeIndex]);
+
   return (
     <View style={pressed ? { backgroundColor: "black" } : styles.container}>
       <StatusBar barStyle={pressed ? "light-content" : "dark-content"} />
       <ScrollView>
-        <Pressable onPress={changeImageState}>
+        <View style={styles.carouselContainer}>
+          <Carousel
+            layout="default"
+            data={DATA}
+            renderItem={renderCarouselItem}
+            sliderWidth={vw}
+            itemWidth={vw}
+            inactiveSlideOpacity={1}
+            onSnapToItem={index => setActiveIndex(index)}
+            scrollInterpolator={stackScrollInterpolator}
+          />
+          {renderPagination()}
+        </View>
+        {/* <Pressable onPress={changeImageState}>
           <Image
             source={{
               uri: `${url}/images/${board?.images}`
             }}
             style={pressed ? styles.pressedImage : styles.postImage}
           />
-        </Pressable>
+        </Pressable> */}
         <View style={styles.content}>
           <View style={styles.postWriterBar}>
             <Image source={bugi} style={styles.writerImage} />
@@ -334,7 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white"
   },
   content: {
-    marginTop: vh / 2.2
+    //marginTop: vh / 2.2
   },
   postWriterBar: {
     flexDirection: "row",
@@ -466,7 +516,33 @@ const styles = StyleSheet.create({
     backgroundColor: "#0b60fe",
     justifyContent: "center",
     alignItems: "center"
-  }
+  },
+  carouselContainer: {
+    height: vh * 0.48,
+    marginTop: vh / 20,
+  },
+  carouselItemContainer: {
+    width: vw,
+    height: vh / 1.9,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  carouselImage: {
+    width: vw,
+    height: vh / 2.05,
+  },
+  paginationContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 10
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.92)'
+  },
 });
 
 export default ItemDetail;

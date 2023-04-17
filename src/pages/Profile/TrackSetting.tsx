@@ -64,9 +64,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
             style={styles.backButton}
           />
         </TouchableOpacity>
-        <Text
-          style={{ fontSize: 18, fontWeight: "500", paddingLeft: vw / 3.1 }}
-        >
+        <Text style={{ fontSize: 18, fontWeight: "600",  paddingLeft: vw / 40 }}>
           트랙 설정
         </Text>
       </View>
@@ -98,7 +96,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               예술학부
             </Text>
           </TouchableOpacity>
-          {visible2 && <Art navigation={navigation}/>}
+          {visible2 && <Art navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
         </View>
         <View style={styles.menuZone}>
           <View style={styles.collegeZone}>
@@ -115,7 +113,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               사회과학부
             </Text>
           </TouchableOpacity>
-          {visible3 && <SocialScience />}
+          {visible3 && <SocialScience navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
         </View>
         <View style={styles.menuZone}>
           <View style={styles.collegeZone}>
@@ -132,7 +130,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               글로벌패션산업학부
             </Text>
           </TouchableOpacity>
-          {visible4 && <GlobalFashion />}
+          {visible4 && <GlobalFashion navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
           <TouchableOpacity
             style={visible5 === true? styles.menuButtonOn : styles.menuButtonOff}
             activeOpacity={0.7}
@@ -144,7 +142,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               ICT디자인학부
             </Text>
           </TouchableOpacity>
-          {visible5 && <ICTDesign />}
+          {visible5 && <ICTDesign navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
           <TouchableOpacity
             style={visible6 === true? styles.menuButtonOn : styles.menuButtonOff}
             activeOpacity={0.7}
@@ -156,7 +154,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               뷰티디자인매니지먼트학과
             </Text>
           </TouchableOpacity>
-          {visible6 && <BeautyDesign />}
+          {visible6 && <BeautyDesign navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
         </View>
         <View style={styles.menuZone}>
           <View style={styles.collegeZone}>
@@ -173,7 +171,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               컴퓨터공학부
             </Text>
           </TouchableOpacity>
-          {visible7 && <ComputerEngineering />}
+          {visible7 && <ComputerEngineering navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
           <TouchableOpacity
             style={visible8 === true? styles.menuButtonOn : styles.menuButtonOff}
             activeOpacity={0.7}
@@ -185,7 +183,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               기계전자공학부
             </Text>
           </TouchableOpacity>
-          {visible8 && <Mechanical />}
+          {visible8 && <Mechanical navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
           <TouchableOpacity
             style={visible9 === true? styles.menuButtonOn : styles.menuButtonOff}
             activeOpacity={0.7}
@@ -197,7 +195,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               IT융합공학부
             </Text>
           </TouchableOpacity>
-          {visible9 && <ITConvergence />}
+          {visible9 && <ITConvergence navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
           <TouchableOpacity
             style={visible10 === true? styles.menuButtonOn : styles.menuButtonOff}
             activeOpacity={0.7}
@@ -209,7 +207,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               스마트경영공학부
             </Text>
           </TouchableOpacity>
-          {visible10 && <SmartManagement />}
+          {visible10 && <SmartManagement navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
           <TouchableOpacity
             style={visible11 === true? styles.menuButtonOn : styles.menuButtonOff}
             activeOpacity={0.7}
@@ -221,7 +219,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
               스마트팩토리컨설팅학과
             </Text>
           </TouchableOpacity>
-          {visible11 && <SmartFactory />}
+          {visible11 && <SmartFactory navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
         </View>
       </ScrollView>
     </SafeAreaView>

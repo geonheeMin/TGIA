@@ -82,9 +82,9 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const toPurchaseHistory = useCallback(() => {
     navigation.navigate("PurchaseHistory");
   }, [navigation]);
-  // const toFav = useCallback(() => {
-  //   navigation.navigate("Fav", {id: id});
-  // }, [navigation, id]);
+  const toFav = useCallback(() => {
+    navigation.navigate("Fav");
+  }, [navigation]);
   const toChangeProfile = () => {
     navigation.navigate("ChangeProfile", {
       member_id: session.member_id,
@@ -196,7 +196,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           <TouchableHighlight
             style={styles.menuButton}
             underlayColor="#F6F6F6"
-            //onPress={toFav}
+            onPress={toFav}
           >
             <View style={styles.menuButtonContent}>
               <Entypo name="heart-outlined" size={28} color={"black"} />
