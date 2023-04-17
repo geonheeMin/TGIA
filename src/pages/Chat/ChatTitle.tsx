@@ -32,6 +32,7 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
   const [otherName, setOtherName] = useState("");
   const [latestMsg, setLatestMsg] = useState("");
   const [post, setPost] = useState();
+  const [otherImg, setOtherImg] = useState();
   const count = chat.count;
 
   const toChatDetail = () => {
@@ -53,12 +54,15 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
     Axios.get(`${url}/post/get_info?post_id=${chat.post_id}`)
       .then((res) => setPost(res.data))
       .catch((error) => console.log(error));
+    Axios.get(`${url}/member/get_image?member_id=${otherId}`)
+      .then((res) => {
+        setOtherImg(res.data);
+      })
+      .catch((err) => console.log(err));
+
+    console.log(chat.memberA);
     console.log(chat.count);
   }, []);
-
-  useEffect(() => {
-    console.log(chat.memberA);
-  });
 
   return (
     <Pressable
@@ -72,10 +76,16 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
       }}
       onPress={toChatDetail}
     >
-      {/* <Image
-        source={{ uri: other.profile_img }}
-        style={{ borderRadius: 45, width: 45, height: 45, borderWidth: 0.1 }}
-      /> */}
+      <Image
+        source={{ uri: `${url}/images/${otherImg}` }}
+        style={{
+          borderRadius: 45,
+          width: 45,
+          height: 45,
+          borderWidth: 0.1,
+          overflow: "hidden"
+        }}
+      />
       <View
         style={{
           marginLeft: 10,
@@ -83,8 +93,7 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
           alignItems: "flex-start",
           height: vh / 10,
           paddingTop: 10,
-          borderWidth: 1,
-          width: vw - (2 * vw) / 33 - 55
+          width: vw - ((2 * vw) / 33 + 100)
         }}
       >
         <Text
@@ -108,6 +117,7 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
           width: vw / 9.5,
           height: vw / 9.5,
           borderRadius: vw / 9.5,
+          marginLeft: 5,
           justifyContent: "center",
           alignItems: "center",
           opacity: count > 0 ? 1 : 0

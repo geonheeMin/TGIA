@@ -37,13 +37,14 @@ interface Board {
   post_id: number;
   title: string;
   category: string;
-  content: string;
-  writer: string;
+  text: string;
+  member_id: string;
   date: string;
   price: number;
   place: string;
   track: string;
   img: string;
+  department: string;
 }
 
 const vw = Dimensions.get("window").width;
@@ -55,10 +56,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const board = params?.board ? params.board : "new"; //새 글 작성 or 기존 글 수정 판단
   const [title, setTitle] = useState(""); //게시글 제목
   const [category, setCategory] = useState(""); //게시글 카테고리
-  const [content, setContent] = useState(""); //게시글 내용
+  const [text, setText] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
   const [img, setImg] = useState({}); //게시글 이미지
-  const [filename, setFilename] = useState("");
+  const [filename, setFilename] = useState();
   const [price, setPrice] = useState<number | null>(); //게시글 가격
   const [free, setFree] = useState(false); //게시글 나눔 확인(true or false)
   const [place, setPlace] = useState(""); //게시글 거래 장소
@@ -71,6 +72,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   const [isCategoryRecommended, setIsCategoryRecommended] = useState(false);
   const [testResult, setTestResult] = useState("");
+
+  const images = [];
   const formData = new FormData(); //서버로 전송할 데이터 공간
 
   var date = new Date();
@@ -83,12 +86,13 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     if (board !== "new") {
       setTitle(board.title);
       setCategory(board.category);
-      setContent(board.content);
+      setText(board.text);
       setPrice(board.price);
       setFree(board.free);
       setPlace(board.place);
       setTrack(board.track);
       setTime(board.date);
+      setIsCategoryRecommended(!isCategoryRecommended);
     } else {
       setTime(postTime);
     }
@@ -121,13 +125,13 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       title: title,
       user_id: session.member_id,
       category: category,
-      content: content,
+      content: text,
       price: price,
       images: filename
     };
 
     Axios.post(`${url}/post/insert`, request, {
-      headers: { "Content-Type": "application/json" }
+      headers: { "text-Type": "application/json" }
     })
       .then((res) => {
         console.log("전송");
@@ -137,14 +141,14 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         console.log(error);
         console.log(title);
         console.log(category);
-        console.log(content);
+        console.log(text);
         console.log(isNaN(price));
         console.log(isNaN(session.member_id));
       });
     // const post: Board = {
     //   title: title,
     //   category: category,
-    //   content: content,
+    //   text: text,
     //   user: id,
     //   date: time,
     //   price: parseInt(price),
@@ -158,7 +162,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     //   type: img.type, //이미지 타입(image/jpeg)
     //   name: img.fileName //이미지 파일 이름
     // })
-    // Axios.post('api', formData, {headers: {'Content-Type': 'multipart/form-data',},});
+    // Axios.post('api', formData, {headers: {'text-Type': 'multipart/form-data',},});
     // console.log(JSON.stringify(formData));
 
     //toList();
@@ -171,15 +175,30 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     //     title: title,
     //     user: id,
     //     category: category,
-    //     content: content,
+    //     text: text,
     //     date: time,
     //   },
     // });
     // board.title = title;
     // board.id = id;
     // board.category = category;
-    // board.content = content;
+    // board.text = text;
     // board.date = time;
+    const request = {
+      id: board.post_id,
+      price: price,
+      title: title,
+      content: text,
+      departmentType: board.department,
+      image_id: 1,
+      locationType: board.locationType,
+      location_text: board.location_text,
+      item_name: board.item_name
+    };
+    console.log(request);
+    Axios.put(`${url}/post/edit`, request, {
+      headers: { "text-Type": "application/json" }
+    }).then((res) => navigation.replace("List"));
     afterUpdate();
   }
 
@@ -198,7 +217,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       .then((res) => {
         if (res.data !== "null") {
           console.log(res.data);
-          setTestResult(res.data);
+          setCategory(res.data);
           setIsCategoryRecommended(!isCategoryRecommended);
         } else {
           setTimeout(() => getCategoryRecommend(), 1000);
@@ -209,7 +228,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   /** 갤러리에서 이미지 선택하는 함수 */
   const pickImage = () => {
-    launchImageLibrary({ mediaType: "photo" }, (res) => {
+    launchImageLibrary({ mediaType: "photo", selectionLimit: 10 }, (res) => {
       if (res.didCancel) {
         console.log("Canceled");
       } else if (res.errorCode) {
@@ -217,18 +236,33 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       } else {
         console.log(res);
         const formData = new FormData();
-        formData.append("images", {
-          uri: res.assets[0].uri,
-          type: "image/jpg",
-          name: res.assets[0].fileName
+        res.assets.forEach((asset) => {
+          images.push({
+            uri: asset.uri,
+            type: asset.type,
+            name: asset.fileName
+          });
+          console.log(images);
         });
+        images.forEach((image, index) => {
+          formData.append(`images`, {
+            index: index,
+            uri: image.uri,
+            type: image.type,
+            name: image.name
+          });
+        });
+        // formData.append("images", {
+        //   uri: res.assets[0].uri,
+        //   type: res.assets[0].type,
+        //   name: res.assets[0].fileName
+        // });
         Axios.post(`${url}/image/send_images`, formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
+            "Text-Type": "multipart/form-data"
           }
         })
           .then((res) => {
-            console.log(res.data + "성공");
             setFilename(res.data);
             setTimeout(() => getCategoryRecommend(), 3000);
           })
@@ -295,10 +329,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   };
 
   /** 거래 장소 모달 관리 함수 */
-  const showPlace = (selected: string) => {
-    const selection = places.filter((item) => item.value === selected);
-    return selection[0].label;
-  };
+  // const showPlace = (selected: string) => {
+  //   const selection = places.filter((item) => item.value === selected);
+  //   return selection[0].label;
+  // };
   const placeModalControl = () => {
     setModalOpen(!modalOpen);
     setPlaceVisible(!placeVisible);
@@ -343,10 +377,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   };
 
   /** 거래 장소 모달 관리 함수 */
-  const showTrack = (selected: string) => {
-    const selection = tracks.filter((item) => item.value === selected);
-    return selection[0].label;
-  };
+  // const showTrack = (selected: string) => {
+  //   const selection = tracks.filter((item) => item.value === selected);
+  //   return selection[0].label;
+  // };
   const trackModalControl = () => {
     setModalOpen(!modalOpen);
     setTrackVisible(!trackVisible);
@@ -420,9 +454,12 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             글쓰기
           </Text>
         </Pressable>
-        <Pressable style={styles.postButton} onPress={postAdd}>
+        <Pressable
+          style={styles.postButton}
+          onPress={board === "new" ? postAdd : postUpdate}
+        >
           <Text style={{ color: "#0d44fe", fontSize: 18, fontWeight: "600" }}>
-            등록
+            {board === "new" ? "등록" : "수정"}
           </Text>
         </Pressable>
       </View>
@@ -461,7 +498,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               color: isCategoryRecommended ? "black" : "grey"
             }}
           >
-            {!isCategoryRecommended ? "카테고리 선택" : testResult}
+            {board !== "new"
+              ? category
+              : !isCategoryRecommended
+              ? "카테고리 선택"
+              : category}
           </Text>
           <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
@@ -496,13 +537,13 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         />
         <Text style={{ marginLeft: 10 }}>나눔</Text>
       </View>
-      <View style={styles.contentBar}>
+      <View style={styles.textBar}>
         <TextInput
           multiline={true}
-          style={styles.contentInput}
+          style={styles.textInput}
           placeholder={"내용을 입력해주세요"}
-          value={content}
-          onChangeText={setContent}
+          value={text}
+          onChangeText={setText}
         />
       </View>
       <View style={styles.placeBar}>
@@ -519,7 +560,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               color: "grey"
             }}
           >
-            {place === "" ? "장소 선택" : showPlace(place)}
+            {/* {place === "" ? "장소 선택" : showPlace(place)} */}
+            {place === "" ? "장소 선택" : board.locationType}
           </Text>
           <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
@@ -539,7 +581,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               color: "grey"
             }}
           >
-            {track === "" ? "" : showTrack(track)}
+            {/* {track === "" ? "" : showTrack(track)} */}
+            {track === "" ? "" : board.department}
           </Text>
           <Image source={nextIcon} style={styles.nextIcon} />
         </Pressable>
@@ -581,7 +624,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 0.2,
     alignItems: "center",
-    justifyContent: "center",
+    justifytext: "center",
     paddingRight: 3,
     height: vh / 17.5
   },
@@ -596,9 +639,9 @@ const styles = StyleSheet.create({
   galleryButton: {
     backgroundColor: "#eeeeee",
     flexDirection: "row",
-    justifyContent: "center",
+    justifytext: "center",
     alignItems: "center",
-    marginLeft: 17.5,
+    paddingLeft: vw / 25,
     borderWidth: 1,
     borderRadius: 7,
     width: vw / 4.5,
@@ -610,7 +653,7 @@ const styles = StyleSheet.create({
   },
   selectImgIcon: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifytext: "center",
     alignItems: "center",
     marginLeft: 20,
     borderWidth: 1,
@@ -673,7 +716,7 @@ const styles = StyleSheet.create({
     height: vh / 32.5,
     marginLeft: 5
   },
-  contentBar: {
+  textBar: {
     height: vh / 3.8,
     borderBottomWidth: 8.5,
     borderBottomColor: "#e9e9e9",
@@ -682,8 +725,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  contentInput: {
-    justifyContent: "center",
+  textInput: {
+    justifytext: "center",
     alignSelf: "flex-start",
     width: vw - vw / 12.5,
     height: vh / 4.5
@@ -699,7 +742,7 @@ const styles = StyleSheet.create({
   placeButton: {
     height: vh / 22,
     flexDirection: "row",
-    justifyContent: "center",
+    justifytext: "center",
     alignItems: "center",
     flex: 3
   },
@@ -712,7 +755,7 @@ const styles = StyleSheet.create({
   trackButton: {
     height: vh / 22,
     flexDirection: "row",
-    justifyContent: "center",
+    justifytext: "center",
     alignItems: "center",
     flex: 3
   },
@@ -745,7 +788,7 @@ const styles = StyleSheet.create({
   categoryItem: {
     width: vw - vw / 10,
     height: (vh * 0.6) / 7,
-    justifyContent: "center",
+    justifytext: "center",
     paddingLeft: vw / 20
   },
   /** 거래 장소 모달 style
@@ -772,7 +815,7 @@ const styles = StyleSheet.create({
   placeItem: {
     width: vw - vw / 10,
     height: (vh * 0.75) / 14,
-    justifyContent: "center",
+    justifytext: "center",
     paddingLeft: vw / 20
   },
   /** 트랙 표시 모달 style
@@ -799,7 +842,7 @@ const styles = StyleSheet.create({
   trackItem: {
     width: vw - vw / 10,
     height: (vh * 0.75) / 14,
-    justifyContent: "center",
+    justifytext: "center",
     paddingLeft: vw / 20
   }
 });

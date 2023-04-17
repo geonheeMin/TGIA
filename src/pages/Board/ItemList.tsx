@@ -19,8 +19,8 @@ import unfav from "../../assets/design/unfavorite.png";
 import useStore from "../../../store";
 import Axios from "axios";
 
-const vw = Dimensions.get('window').width;
-const vh = Dimensions.get('window').height;
+const vw = Dimensions.get("window").width;
+const vh = Dimensions.get("window").height;
 
 type RootStackParamList = {
   item: undefined;
@@ -35,20 +35,20 @@ function ItemList({ board, navigation }: itemListProps) {
   const [favId, setFavId] = useState(0);
   const isFocused = useIsFocused();
 
-  const toDetail = useCallback(() => {    
+  const toDetail = useCallback(() => {
     navigation.navigate("Detail", { board: board, isFav: isFav });
   }, [board, navigation]);
 
   const favorite = () => {
-    Axios.get(`${url}/profile/is_favorite`, {params: {postId: board.post_id, userId: session.member_id}})
-    .then((res) => {
-    console.log(res.data)
-    console.log("좋아함");
-    setIsFav(res.data);
+    Axios.get(`${url}/profile/is_favorite`, {
+      params: { postId: board.post_id, userId: session.member_id }
     })
-    .catch((error) => {
-      console.log(error);
-    })
+      .then((res) => {
+        setIsFav(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -68,6 +68,9 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
         <Text style={styles.itemPrice}>{board.price}원</Text>
+        <Text>{board.category}</Text>
+        <Text>{board.locationType}</Text>
+        <Text>{board.department}</Text>
       </View>
       <View style={styles.likesInfo}>
         <Pressable style={styles.likeButton}>
@@ -92,51 +95,51 @@ function ItemList({ board, navigation }: itemListProps) {
 export const styles = StyleSheet.create({
   items: {
     paddingBottom: 5,
-    backgroundColor: 'white',
-    flexDirection: 'row',
+    backgroundColor: "white",
+    flexDirection: "row"
   },
   itemImageZone: {
     flex: 1.2,
-    paddingVertical: 15,
+    paddingVertical: 15
   },
   itemInfo: {
-    flex: 2.1,
+    flex: 2.1
   },
   likesInfo: {
-    flex: 0.45,
+    flex: 0.45
   },
   itemImage: {
     flex: 1,
-    width: '85%',
-    height: '85%',
-    paddingVertical: '39%',
+    width: "85%",
+    height: "85%",
+    paddingVertical: "39%",
     marginLeft: 18,
     marginTop: 5,
     borderRadius: 8,
     borderWidth: 0.3,
-    overflow: 'hidden'
+    overflow: "hidden"
   },
   itemTitle: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: "800",
     marginTop: 20,
-    marginLeft: 16,
+    marginLeft: 16
   },
   itemPrice: {
     fontSize: 15,
-    fontWeight: '400',
+    fontWeight: "400",
     marginTop: 10,
-    marginLeft: 16,
+    marginLeft: 16
   },
   likeButton: {
-    marginTop: vh / 40,
+    marginTop: vh / 40
   },
   itemFavCount: {
     fontSize: 18,
     marginTop: vh / 23,
-    fontWeight: '300',
-    color: "gray",
-  },
-})
+    fontWeight: "300",
+    color: "gray"
+  }
+});
 
 export default ItemList;

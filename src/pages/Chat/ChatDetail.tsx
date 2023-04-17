@@ -11,7 +11,8 @@ import {
   Dimensions,
   Pressable,
   StyleSheet,
-  Image
+  Image,
+  PixelRatio
 } from "react-native";
 import { useState, useCallback, useEffect, useRef } from "react";
 import Axios from "axios";
@@ -20,9 +21,12 @@ import myBubble from "../../assets/design/myBubble.png";
 import otherBubble from "../../assets/design/otherBubble.png";
 import sendIcon from "../../assets/design/sendIcon2.png";
 import chatPlus from "../../assets/design/chatPlus.png";
-import backArrow from "../../assets/design/backIcon.png";
+import backArrow from "../../assets/design/backArrow.png";
 import ChatBubble from "./ChatBubble";
 import test from "../../assets/dummy/chat.json";
+import FeatherIcon from "react-native-vector-icons/Feather";
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
+import EntypoIcon from "react-native-vector-icons/Entypo";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
@@ -44,40 +48,20 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const params = route.params;
   const chatroom = params.chatroom;
   const post = params.post;
-  const other =
-    session.member_id === chatroom.member_a
-      ? chatroom.member_b
-      : chatroom.member_a;
+  const other = session.member_id === post.member_id;
   const [chats, setChats] = useState([]);
-  const [msg, setMsg] = useState("hi");
+  const [msg, setMsg] = useState("");
   const [otherName, setOtherName] = useState("");
   /** isChatLoaded: Axios 통신으로 받아온 데이터 처리 완료 여부, true면 Axios 함수 처리가 완전히 끝난 것으로 Axios 통신해도 되는 상태
    * false면 아직 Axios로 받아온 데이터를 처리하는 과정으로 Axios 통신하면 안된다는 것을 의미
    */
   const [isChatLoaded, setIsChatLoaded] = useState(true);
-
+  const [isMenuOpened, setIsMenuOpened] = useState(false);
   var date = new Date();
   var sendingTime = new Intl.DateTimeFormat("locale", {
     dateStyle: "long",
     timeStyle: "medium"
   }).format(date);
-
-  // const renderItem = ({ item }) => {
-  //   console.log(user === item.sender);
-  //   return (
-  //     <View style={user === item.sender ? style.Mine : style.Others}>
-  //       <Text>{item.message}</Text>
-  //     </View>
-  //   );
-  // };
-
-  // function otherBubbles(sender: string, message: string) {
-  //   return (
-  //     <View style={styles.otherBubbleBox}>
-  //       <Text>{message}</Text>
-  //     </View>
-  //   );
-  // }
 
   const backward = useCallback(() => {
     navigation.goBack();
@@ -144,49 +128,12 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       .catch((error) => console.log(error));
   };
 
-  useEffect(() => {
-    getChats();
-    Axios.get(`${url}/chat/get_username?id=${other}`)
-      .then((res) => setOtherName(res.data))
-      .catch((error) => console.log(error));
-    const refreshChat = setInterval(() => {
-      getChats();
-    }, 500);
-
-    return () => clearInterval(refreshChat);
-  }, []);
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <View
-        style={{
-          borderBottomWidth: 0.34,
-          borderBottomColor: "#d7d7d7",
-          height: vh / 20,
-          flexDirection: "row",
-          alignItems: "center"
-        }}
-      >
-        <Pressable onPress={backward} style={{ marginLeft: 10 }}>
-          <Image
-            source={backArrow}
-            style={{ width: vw / 15, height: vw / 15 }}
-          />
-        </Pressable>
-        <Text style={{ marginLeft: 10 }}>{otherName}</Text>
-      </View>
-      <View style={{ paddingTop: 5, height: vh - vh / 3.9 }}>
-        <FlatList
-          data={chats}
-          renderItem={renderChat}
-          showsVerticalScrollIndicator={false}
-          ref={chatRef}
-        />
-      </View>
+  const menuClosed = () => {
+    return (
       <View
         style={{
           position: "absolute",
-          bottom: vh / 10.5,
+          bottom: vh / 25,
           flexDirection: "row",
           width: vw,
           height: vh / 17.5,
@@ -203,11 +150,9 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             justifyContent: "center",
             alignItems: "center"
           }}
+          onPress={() => setIsMenuOpened(!isMenuOpened)}
         >
-          <Image
-            source={chatPlus}
-            style={{ width: vh / 25, height: vh / 25 }}
-          />
+          <FeatherIcon name="plus-square" size={vw / 12.5} />
         </Pressable>
         <TextInput
           style={{
@@ -237,7 +182,188 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
           />
         </Pressable>
       </View>
-    </SafeAreaView>
+    );
+  };
+
+  const menuOpened = () => {
+    return (
+      <View
+        style={{
+          position: "absolute",
+          bottom: vh / 25,
+          flexDirection: "row",
+          width: vw,
+          height: vh / 7.5,
+          alignItems: "center",
+          justifyContent: "center",
+          borderTopWidth: 0.34,
+          borderTopColor: "#d3d3d3",
+          zIndex: 10,
+          backgroundColor: "white"
+        }}
+      >
+        <Pressable
+          style={{
+            left: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            position: "absolute"
+          }}
+          onPress={() => {
+            setIsMenuOpened(!isMenuOpened);
+          }}
+        >
+          <FeatherIcon name="x-square" size={vw / 12.5} />
+        </Pressable>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            marginLeft: vw / 10,
+            width: vw - (vw * 2) / 10,
+            height: vh / 8.5
+          }}
+        >
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "space-around",
+              height: vh / 10,
+              width: vw / 5
+            }}
+          >
+            <Pressable
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: vw / 7,
+                height: vw / 7,
+                borderRadius: vw / 7,
+                backgroundColor: "#fee10c"
+              }}
+            >
+              <FontAwesomeIcon name="won" color="#6b6b6b" size={25} />
+            </Pressable>
+            <Text style={{ fontWeight: "600", fontSize: 15 }}>송금하기</Text>
+          </View>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "space-around",
+              height: vh / 10,
+              width: vw / 5
+            }}
+          >
+            <Pressable
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: vw / 7,
+                height: vw / 7,
+                borderRadius: vw / 7,
+                backgroundColor: "#3775ff"
+              }}
+            >
+              <EntypoIcon name="location" color="white" size={25} />
+            </Pressable>
+            <Text style={{ fontWeight: "600", fontSize: 15 }}>내 위치</Text>
+          </View>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "space-around",
+              height: vh / 10,
+              width: vw / 5
+            }}
+          >
+            <Pressable
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: vw / 7,
+                height: vw / 7,
+                borderRadius: vw / 7,
+                backgroundColor: "#00bb40"
+              }}
+            >
+              <FontAwesomeIcon
+                name="calendar-check-o"
+                color="white"
+                size={25}
+              />
+            </Pressable>
+            <Text style={{ fontWeight: "600", fontSize: 15 }}>가격 협의</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  useEffect(() => {
+    getChats();
+    console.log(session);
+    console.log(chatroom);
+    Axios.get(`${url}/chat/get_username?id=${other}`)
+      .then((res) => setOtherName(res.data))
+      .catch((error) => console.log(error));
+    const refreshChat = setInterval(() => {
+      getChats();
+    }, 500);
+
+    return () => clearInterval(refreshChat);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <View
+        style={{
+          paddingTop: vh / 25,
+          borderBottomWidth: 1,
+          borderBottomColor: "#d7d7d7",
+          height: vh / 10,
+          width: vw,
+          flexDirection: "row",
+          alignItems: "center"
+        }}
+      >
+        <View
+          style={{
+            height: vh / 20,
+            position: "absolute",
+            left: 0,
+            top: vh / 25,
+            flexDirection: "row",
+            alignItems: "center"
+          }}
+        >
+          <Pressable onPress={backward} style={{ marginLeft: 10 }}>
+            <Image
+              source={backArrow}
+              style={{ width: vw / 15, height: vw / 15, overflow: "visible" }}
+            />
+          </Pressable>
+          <Text style={{ marginLeft: vw / 40 }}>a</Text>
+        </View>
+        <View
+          style={{
+            marginLeft: "auto",
+            marginRight: "auto"
+          }}
+        >
+          <Text style={{ fontSize: 20 }}>{post.title}</Text>
+        </View>
+      </View>
+      <View style={{ paddingTop: 5, height: vh - vh / 3.9 }}>
+        <FlatList
+          data={chats}
+          renderItem={renderChat}
+          showsVerticalScrollIndicator={false}
+          ref={chatRef}
+        />
+      </View>
+      {isMenuOpened ? menuOpened() : menuClosed()}
+    </View>
   );
 }
 
