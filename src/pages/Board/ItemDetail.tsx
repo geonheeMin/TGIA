@@ -40,18 +40,18 @@ const vh = Dimensions.get("window").height;
 function ItemDetail({ route, navigation }: ItemDetailProps) {
   const { session, url } = useStore();
   const board = route.params.board;
-  const writer = board.writer;
   // const track = memberlist.memberlist.filter(
   //   (item) => board.writer === item.username
   // )[0].firsttrack;
   const myname = session.username;
+
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
+  const [chatrooms, setChatrooms] = useState();
+  const [diff, setDiff] = useState("");
   const timestamp = board.createdDate;
   const date = new Date(timestamp);
-  const now = new Date();
-  const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
   const [isFav, setIsFav] = useState(route.params.isFav);
   const [isFavOn, setIsFavOn] = useState(false);
   const isFocused = useIsFocused();
@@ -59,6 +59,24 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
+
+  const timeCalc = () => {
+    const now = new Date();
+    const gapTime = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
+    const gapHour = Math.floor(gapTime / 60);
+    const gapDay = Math.floor(gapHour / 24);
+    if (gapTime < 1) {
+      return "방금 전";
+    } else if (gapTime < 60) {
+      return `${gapTime}분 전}`;
+    } else if (gapHour < 24) {
+      return `${gapHour}시간 전`;
+    } else if (gapDay < 7) {
+      return `${gapDay}일 전`;
+    } else {
+      return `${timestamp}`;
+    }
+  };
 
   const favControll = useEffect(() => {
     if (isFav === 0 )
@@ -99,16 +117,19 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
-        console.log(res.data);
-        navigation.navigate("ChatDetail", {
-          chatroom: res.data.chatroom_id,
-          post: board
-        });
+        console.log("좋아요 취소 : " + favId);
       })
       .catch((error) => {
         console.log(error);
+        console.log("취소 실패 : " + favId);
       });
-  }, [navigation]);
+  };
+
+  const toMyChat = () => {
+    navigation.navigate("ChatListFromPost", {
+      post: board
+    });
+  };
   const toQuest = useCallback(() => {
     /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
      * 유무 판단해서 있으면 기존 채팅방을 리턴, 없으면 새로 채팅방 만들고 리턴 후 ChatDetail 로 이동
@@ -163,14 +184,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    // Axios.get('http://localhost:8080/api/favorite', {
-    //   params: {board_id: board.id, user_id: id},
-    // }).then(res => {
-    //   console.log(res.data);
-    //   res.data === 1 ? setIsFav('관심 해제') : setIsFav('관심 등록');
-    // });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //Axios.get(`${url}`);
     matchingCategories();
+    console.log(board);
   }, [isFav]);
 
   const DATA = [
@@ -301,56 +317,50 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             </Pressable>
             <Text style={{ color: "#a6a6a6", fontSize: 14 }}>
               {" "}
-              · {diff}분 전
+              · {` ${timeCalc()}`}
             </Text>
           </View>
           <Text style={styles.postContent}>{board.text}</Text>
-          <View style={styles.hr} />
-          <View style={styles.buttonBar}>
-            <View style={styles.favButton}>
-              <Pressable onPress={isFavOn ? unFav : doFav}>
-                <Image
-                  source={isFavOn ? fav : unfav}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    overflow: "visible"
-                  }}
-                />
-              </Pressable>
-            </View>
-            <View style={styles.vr} />
-            <View style={styles.priceBar}>
-              <View style={styles.priceText}>
-                <Text style={{ fontSize: 20 }}>
-                  {board.price.toLocaleString()}원
-                </Text>
-              </View>
-              <View style={styles.nego}>
-                <Text style={{ fontSize: 12, color: "#7b7b7c" }}>
-                  가격 협상 불가
-                </Text>
-              </View>
-            </View>
-            <View style={styles.functionalSpace}>
-              <Pressable
-                style={styles.functionalButton}
-                onPress={
-                  board.member_id === session.member_id ? toMyChat : toQuest
-                }
-              >
-                <Text
-                  style={{ color: "white", fontSize: 16, fontWeight: "600" }}
-                >
-                  {board.member_id === session.member_id
-                    ? "채팅목록"
-                    : "문의하기"}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
         </View>
       </ScrollView>
+      <View style={styles.hr} />
+      <View style={styles.buttonBar}>
+        <View style={styles.favButton}>
+          <Pressable onPress={isFavOn ? unFav : doFav}>
+            <Image
+              source={isFavOn ? fav : unfav}
+              style={{
+                width: 30,
+                height: 30,
+                overflow: "visible"
+              }}
+            />
+          </Pressable>
+        </View>
+        <View style={styles.vr} />
+        <View style={styles.priceBar}>
+          <View style={styles.priceText}>
+            <Text style={{ fontSize: 20 }}>
+              {board.price.toLocaleString()}원
+            </Text>
+          </View>
+          <View style={styles.nego}>
+            <Text style={{ fontSize: 12, color: "#7b7b7c" }}>
+              가격 협상 불가
+            </Text>
+          </View>
+        </View>
+        <View style={styles.functionalSpace}>
+          <Pressable
+            style={styles.functionalButton}
+            onPress={board.member_id === session.member_id ? toMyChat : toQuest}
+          >
+            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+              {board.member_id === session.member_id ? "채팅목록" : "문의하기"}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 }
@@ -455,19 +465,19 @@ const styles = StyleSheet.create({
     marginLeft: 15
   },
   postContent: {
-    fontSize: 12,
+    fontSize: 15,
     marginHorizontal: 12.5,
     marginTop: 15,
     fontWeight: "400",
     color: "black",
     // height: vh / 4.75,
-    height: vh / 5.75,
-    borderWidth: 0
+    height: vh / 4.5
   },
   buttonBar: {
     height: vh / 12,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: vh / 75
   },
   favButton: {
     width: 65,

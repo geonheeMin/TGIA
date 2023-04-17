@@ -60,11 +60,19 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
 
   return (
     <SafeAreaView style={{ height: vh, backgroundColor: "white" }}>
-      <View>
-        <Text>채팅 리스트</Text>
+      <View
+        style={{
+          height: vh / 15,
+          borderBottomWidth: 1.25,
+          borderColor: "#b6bcd3",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <Text style={{ fontSize: 17, fontWeight: "bold" }}>채팅</Text>
       </View>
       <FlatList
-        style={{ height: vh / 1.5 }}
         data={chats.sort((a, b) => b.last_chatMessage - a.last_chatMessage)}
         renderItem={renderItem}
       />

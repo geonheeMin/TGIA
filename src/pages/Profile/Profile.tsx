@@ -42,7 +42,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const [bTrackId, setBTrackId] = useState(9);
   const [profileImg, setProfileImg] = useState();
   const [img, setImg] = useState({});
-  
+
   useEffect(() => {
     Axios.get(`${url}/profile?userId=` + session.member_id)
       .then((res) => {
@@ -66,7 +66,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
       })
       .catch((error) => {
         console.log(error);
-      })
+      });
   }, [isFocused]);
 
   const onSubmit = useCallback(() => {
@@ -74,7 +74,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   }, []);
 
   const toTrackSetting = () => {
-    navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId ]});
+    navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId] });
   };
   const toSalesHistory = useCallback(() => {
     navigation.navigate("SalesHistory");
@@ -86,7 +86,10 @@ function Profile({ navigation, route }: ProfileScreenProps) {
     navigation.navigate("Fav");
   }, [navigation]);
   const toChangeProfile = () => {
-    navigation.navigate("ChangeProfile", { member_id: session.member_id, profile_img:profileImg});
+    navigation.navigate("ChangeProfile", {
+      member_id: session.member_id,
+      profile_img: profileImg
+    });
   };
   const toSettings = useCallback(() => {
     navigation.navigate("Settings");
@@ -103,8 +106,6 @@ function Profile({ navigation, route }: ProfileScreenProps) {
     ]);
   };
 
-
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View
@@ -119,17 +120,16 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <Image
-          source={{
-            uri: `${url}/images/${profileImg}`
-          }}
-          style={styles.profile}
+            source={{
+              uri: `${url}/images/${profileImg}`
+            }}
+            style={styles.profile}
           />
         </View>
         <View
           style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
         >
           <Text style={{ fontSize: 16 }}>{session.username}</Text>
-          <Text>{profileImg}</Text>
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>

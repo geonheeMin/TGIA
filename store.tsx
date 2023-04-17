@@ -19,6 +19,8 @@ const useStore = create<preset>((set) => ({
     set((state) => ({ hasSession: result }));
   },
   url: "http://3.37.128.34:8080"
+
+  //url: "http://3.36.75.115:8080" geonhee
 }));
 
 export default useStore;

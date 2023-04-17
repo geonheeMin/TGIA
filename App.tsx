@@ -18,7 +18,8 @@ import ListScreen from "./src/pages/Board/ListScreen";
 import ItemList from "./src/pages/Board/ItemList";
 import ItemDetail from "./src/pages/Board/ItemDetail";
 import AddScreen from "./src/pages/Board/AddScreen";
-import SearchScreen from "./src/pages/Board/SearchScreen";
+import SearchScreen from "./src/pages/Search/SearchScreen";
+import SearchResultScreen from "./src/pages/Search/SearchResultScreen";
 import FavScreen from "./src/pages/Profile/FavScreen";
 import ChatDetail from "./src/pages/Chat/ChatDetail";
 import ChatListScreen from "./src/pages/Chat/ChatListScreen";
@@ -299,6 +300,9 @@ function App() {
           options={{ headerShown: false, animation: "none" }}
         >
           {(props) => <SearchScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="SearchResult" options={{ headerShown: false }}>
+          {(props) => <SearchResultScreen {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Creative" options={{ headerShown: false }}>
           {(props) => <Creative {...props} />}
