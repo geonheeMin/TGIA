@@ -14,7 +14,7 @@ import {
   Image,
   Pressable,
   PixelRatio,
-  Modal
+  LayoutAnimation
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
@@ -54,18 +54,8 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const [filter, setFilter] = useState(filterList[0]);
   const [newPosts, setNewPosts] = useState([]);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [modalBackOpacity, setModalBackOpacity] = useState(0.0);
-  const [emptyArray, setEmptyArray] = useState([]);
-  /** */
-  const [categoryAll, setCategoryAll] = useState(true);
-  const [categoryBooks, setCategoryBooks] = useState(true);
-  const [categoryPencil, setCategoryPencil] = useState(true);
-  const [categoryLife, setCategoryLife] = useState(true);
-  const [categoryClothes, setCategoryClothes] = useState(true);
-  const [categoryBeauty, setCategoryBeauty] = useState(true);
-  const [categoryDigital, setCategoryDigital] = useState(true);
-  const [categoryGoods, setCategoryGoods] = useState(true);
 
+  /** */
   const [isNewChecked, setIsNewChecked] = useState(true);
   const [isOldChecked, setIsOldChecked] = useState(false);
   const [isMuchChecked, setIsMuchChecked] = useState(false);
@@ -76,194 +66,105 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const [previousChecked, setPreviousChecked] = useState("new");
   const [currentChecked, setCurrentChecked] = useState("new");
 
-  /** */
-  const onClick = useCallback(() => {
-    navigation.navigate("Add");
-  }, [navigation]);
+  const [modalTop, setModalTop] = useState(-vh / 2.3);
+  const [modalBackOpacity, setModalBackOpacity] = useState(0.0);
+  const [modalBackZIndex, setModalBackZIndex] = useState(-50);
 
-  const renderItem = ({ item }) => {
-    const renderBoard = {
-      post_id: item.post_id,
-      title: item.title,
-      price: item.price,
-      locationType: item.locationType,
-      location_text: item.location_text,
-      writer: item.writer,
-      category: item.category,
-      text: item.text,
-      date: item.date,
-      track: item.track,
-      images: item.images,
-      member_id: item.member_id,
-      likes: item.likes,
-      views: item.views,
-      department: item.department,
-      createdDate: item.createdDate
-    };
-    return <ItemList board={renderBoard} navigation={navigation} />;
+  const modalOpenAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setModalTop(0);
+  };
+
+  const filterModalOpen = () => {
+    setModalBackOpacity(0.2);
+    setModalBackZIndex(50);
+    modalOpenAnimation();
+  };
+
+  const modalCloseAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setModalTop(-vh / 2.3);
+  };
+
+  const filterModalClose = () => {
+    setModalBackOpacity(0);
+    setModalBackZIndex(-50);
+    modalCloseAnimation();
   };
 
   const newHandle = () => {
-    if (isNewChecked) {
-      setPreviousChecked("new");
-    } else if (isOldChecked) {
-      setPreviousChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousChecked("little");
-    } else if (isHighChecked) {
-      setPreviousChecked("high");
-    } else if (isLowChecked) {
-      setPreviousChecked("low");
-    }
-    setIsNewChecked(true);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentChecked("new");
   };
 
   const oldHandle = () => {
-    if (isNewChecked) {
-      setPreviousChecked("new");
-    } else if (isOldChecked) {
-      setPreviousChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousChecked("little");
-    } else if (isHighChecked) {
-      setPreviousChecked("high");
-    } else if (isLowChecked) {
-      setPreviousChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(true);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentChecked("old");
   };
 
   const muchHandle = () => {
-    if (isNewChecked) {
-      setPreviousChecked("new");
-    } else if (isOldChecked) {
-      setPreviousChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousChecked("little");
-    } else if (isHighChecked) {
-      setPreviousChecked("high");
-    } else if (isLowChecked) {
-      setPreviousChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(true);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentChecked("much");
   };
 
   const littleHandle = () => {
-    if (isNewChecked) {
-      setPreviousChecked("new");
-    } else if (isOldChecked) {
-      setPreviousChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousChecked("little");
-    } else if (isHighChecked) {
-      setPreviousChecked("high");
-    } else if (isLowChecked) {
-      setPreviousChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(true);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentChecked("little");
   };
 
   const highHandle = () => {
-    if (isNewChecked) {
-      setPreviousChecked("new");
-    } else if (isOldChecked) {
-      setPreviousChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousChecked("little");
-    } else if (isHighChecked) {
-      setPreviousChecked("high");
-    } else if (isLowChecked) {
-      setPreviousChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(true);
-    setIsLowChecked(false);
     setCurrentChecked("high");
   };
 
   const lowHandle = () => {
-    if (isNewChecked) {
-      setPreviousChecked("new");
-    } else if (isOldChecked) {
-      setPreviousChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousChecked("little");
-    } else if (isHighChecked) {
-      setPreviousChecked("high");
-    } else if (isLowChecked) {
-      setPreviousChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(true);
     setCurrentChecked("low");
   };
+
   const adjustFilter = (checked) => {
     switch (checked) {
       case "new":
         newPosts.sort((a, b) => b.post_id - a.post_id);
+
+        setPreviousChecked("new");
         break;
       case "old":
         newPosts.sort((a, b) => a.post_id - b.post_id);
+
+        setPreviousChecked("old");
         break;
       case "much":
         newPosts.sort((a, b) => b.likes - a.likes);
+
+        setPreviousChecked("much");
         break;
       case "little":
         newPosts.sort((a, b) => a.likes - b.likes);
+
+        setPreviousChecked("little");
         break;
       case "high":
         newPosts.sort((a, b) => b.views - a.views);
+
+        setPreviousChecked("high");
         break;
       case "little":
         newPosts.sort((a, b) => a.views - b.views);
+        setPreviousChecked("little");
         break;
       default:
         cancelFilter(previousChecked);
+
         break;
     }
+    filterModalClose();
   };
 
   const cancelFilter = (checked) => {
@@ -297,34 +198,94 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         newHandle();
         break;
     }
+    filterModalClose();
+  };
+
+  useEffect(() => {
+    switch (currentChecked) {
+      case "new":
+        setIsNewChecked(true);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "old":
+        setIsNewChecked(false);
+        setIsOldChecked(true);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "much":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(true);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "little":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(true);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "high":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(true);
+        setIsLowChecked(false);
+        break;
+      case "low":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(true);
+        break;
+    }
+  }, [currentChecked]);
+
+  /** */
+  const writePost = useCallback(() => {
+    navigation.navigate("Add");
+  }, [navigation]);
+
+  const renderItem = ({ item }) => {
+    const renderBoard = {
+      post_id: item.post_id,
+      title: item.title,
+      price: item.price,
+      locationType: item.locationType,
+      location_text: item.location_text,
+      writer: item.writer,
+      category: item.category,
+      text: item.text,
+      date: item.date,
+      track: item.track,
+      images: item.images,
+      member_id: item.member_id,
+      likes: item.likes,
+      views: item.views,
+      department: item.department,
+      createdDate: item.createdDate
+    };
+    return <ItemList board={renderBoard} navigation={navigation} />;
   };
 
   const listRefresh = () => {
-    // setIsRefreshing(true);
-    // Axios.get('http://localhost:8080/api/list')
-    //   .then(res => {
-    //     setPosts(res.data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error.response.data);
-    //   });
-    // setIsRefreshing(false);
     setIsRefreshing(true);
     adjustFilter(currentChecked);
     setIsRefreshing(false);
   };
-
-  const addItem = useCallback(() => {
-    navigation.navigate("Add");
-  }, [navigation]);
-
-  const toFav = useCallback(() => {
-    navigation.navigate("Fav");
-  }, [navigation]);
-
-  const toChatList = useCallback(() => {
-    navigation.navigate("ChatList");
-  }, [navigation]);
 
   useEffect(() => {
     Axios.get(`${url}/post/all`)
@@ -336,187 +297,204 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       .catch((error) => {
         console.log(error);
       });
-  }, [isFocused, filter, categoryAll]);
+  }, [isFocused, filter]);
+
+  useEffect(() => {
+    console.log(vh);
+  }, []);
 
   const FilterModal = () => {
     return (
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={filterModalVisible}
-        onRequestClose={() => setFilterModalVisible(!filterModalVisible)}
-      >
-        <Pressable
-          onPress={() => {
-            cancelFilter(previousChecked);
-            setFilterModalVisible(!filterModalVisible);
-          }}
-          style={filterModalStyles.background}
-        />
-        <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 1 }}>
-            <View
-              style={{
-                alignItems: "center",
-                flex: 1,
-                borderBottomWidth: 0.25,
-                borderColor: "lightgrey"
-              }}
-            >
-              <Text style={{ fontSize: 20 }}>게시글 정렬</Text>
-            </View>
-            <View style={filterModalStyles.filterContainer}>
-              <View style={filterModalStyles.sectionContainerTop}>
-                <Text style={{ flex: 2 }}>작성 일자</Text>
-                <View style={{ flex: 8, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isNewChecked}
-                      onPress={newHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>최신순</Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isOldChecked}
-                      onPress={oldHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>오래된순</Text>
-                  </View>
+      <View style={filterModalStyles.modalContainer}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+              borderBottomWidth: 0.25,
+              borderColor: "lightgrey"
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>게시글 정렬</Text>
+          </View>
+          <View style={filterModalStyles.filterContainer}>
+            <View style={filterModalStyles.sectionContainerTop}>
+              <Text style={{ flex: 2 }}>작성 일자</Text>
+              <View style={{ flex: 8, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isNewChecked}
+                    onPress={newHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>최신순</Text>
                 </View>
-              </View>
-              <View style={filterModalStyles.sectionContainerMiddle}>
-                <Text style={{ flex: 2 }}>관심 등록</Text>
-                <View style={{ flex: 8, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isMuchChecked}
-                      onPress={muchHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>많은순</Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isLittleChecked}
-                      onPress={littleHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>적은순</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={filterModalStyles.sectionContainerBottom}>
-                <Text style={{ flex: 2 }}>조회수</Text>
-                <View style={{ flex: 8, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isHighChecked}
-                      onPress={highHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>높은순</Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isLowChecked}
-                      onPress={lowHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>낮은순</Text>
-                  </View>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isOldChecked}
+                    onPress={oldHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>오래된순</Text>
                 </View>
               </View>
             </View>
-            <View style={filterModalStyles.buttonBar}>
-              <Pressable
-                onPress={() => {
-                  setFilterModalVisible(!filterModalVisible);
-                  cancelFilter(previousChecked);
-                }}
-              >
-                <View style={filterModalStyles.cancelButton}>
-                  <IonIcon name="close" size={25} color="white" />
-                  <Text style={filterModalStyles.cancelText}>취소</Text>
+            <View style={filterModalStyles.sectionContainerMiddle}>
+              <Text style={{ flex: 2 }}>관심 등록</Text>
+              <View style={{ flex: 8, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isMuchChecked}
+                    onPress={muchHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>많은순</Text>
                 </View>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setFilterModalVisible(!filterModalVisible);
-                  adjustFilter(currentChecked);
-                }}
-              >
-                <View style={filterModalStyles.applyButton}>
-                  <IonIcon name="checkmark" size={25} color="white" />
-                  <Text style={filterModalStyles.applyText}>적용</Text>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isLittleChecked}
+                    onPress={littleHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>적은순</Text>
                 </View>
-              </Pressable>
+              </View>
+            </View>
+            <View style={filterModalStyles.sectionContainerBottom}>
+              <Text style={{ flex: 2 }}>조회수</Text>
+              <View style={{ flex: 8, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isHighChecked}
+                    onPress={highHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>높은순</Text>
+                </View>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isLowChecked}
+                    onPress={lowHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>낮은순</Text>
+                </View>
+              </View>
             </View>
           </View>
+          <View style={filterModalStyles.buttonBar}>
+            <Pressable
+              onPress={() => {
+                cancelFilter(previousChecked);
+              }}
+            >
+              <View style={filterModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={filterModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                listRefresh();
+              }}
+            >
+              <View style={filterModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={filterModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
-      </Modal>
+      </View>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <FilterModal />
+      <View
+        style={{
+          position: "absolute",
+          bottom: modalTop,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0.34,
+          borderLeftWidth: 0.34,
+          borderRightWidth: 0.34,
+          width: vw,
+          height: vh / 2.3,
+          zIndex: 55,
+          backgroundColor: "white"
+        }}
+      >
+        <FilterModal />
+      </View>
+      <Pressable
+        style={{
+          width: vw,
+          height: vh,
+          position: "absolute",
+          bottom: 0,
+          opacity: modalBackOpacity,
+          backgroundColor: "black",
+          zIndex: modalBackZIndex
+        }}
+        onPress={filterModalClose}
+      >
+        <View />
+      </Pressable>
       <View style={styles.topBar}>
         <View style={styles.filterButton}>
           <Pressable
             onPress={() => {
-              console.log(filterModalVisible);
-              setFilterModalVisible(!filterModalVisible);
+              filterModalOpen();
             }}
           >
             <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
@@ -535,7 +513,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
         }
       />
-      <Pressable style={styles.writeButton} onPress={onClick}>
+      <Pressable style={styles.writeButton} onPress={writePost}>
         <Image source={writeIcon} style={{ width: 60, height: 60 }} />
       </Pressable>
       <BottomTabs navigation={navigation} screen="List" />
@@ -670,7 +648,7 @@ const styles = StyleSheet.create({
   writeButton: {
     backgroundColor: "#0c61fe",
     position: "absolute",
-    zIndex: 999,
+    zIndex: 30,
     width: 60,
     height: 60,
     borderRadius: 30,

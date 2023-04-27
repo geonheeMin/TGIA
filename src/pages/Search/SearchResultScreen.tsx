@@ -40,8 +40,6 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
   const { session, url } = useStore();
   const params = route.params;
   const [searchWord, setSearchWord] = useState(params.word);
-  const [searchCategory, setSearchCategory] = useState("");
-  const [searchTrack, setSearchTrack] = useState("");
   const [inputWidth, setInputWidth] = useState(vw - vw / 2.5);
   const [backWidth, setBackWidth] = useState(vw - vw / 4);
   const [isEditing, setIsEditing] = useState(false);
@@ -56,6 +54,12 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
   const [isLowChecked, setIsLowChecked] = useState(false);
   const [previousSortChecked, setPreviousSortChecked] = useState("new");
   const [currentSortChecked, setCurrentSortChecked] = useState("new");
+
+  const [whichModal, setWhichModal] = useState("");
+
+  const [modalTop, setModalTop] = useState(-vh / 2.3);
+  const [modalBackOpacity, setModalBackOpacity] = useState(0.0);
+  const [modalBackZIndex, setModalBackZIndex] = useState(-50);
 
   const [placeFilterChecked, setPlaceFilterChecked] = useState(false);
   const [categoryFilterChecked, setCategoryFilterChecked] = useState(false);
@@ -76,10 +80,48 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       })
       .catch((err) => console.log(err));
   };
+
+  const sortModalOpenAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setModalTop(0);
+  };
+
+  const sortModalOpen = () => {
+    setModalBackOpacity(0.2);
+    setModalBackZIndex(50);
+    setWhichModal("sort");
+    sortModalOpenAnimation();
+  };
+
+  const sortModalCloseAnimaion = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setModalTop(-vh / 2.3);
+  };
+
+  const sortModalClose = () => {
+    setModalBackOpacity(0);
+    setModalBackZIndex(-50);
+    setWhichModal("");
+    sortModalCloseAnimaion();
+  };
+
   /** 게시글 거래 장소 필터
    * placeFilterChecked = 다른 요소가 전부 false면 false, 하나라도 true면 true. 필터 체크된 게 있는지 없는지 체크하는 용도
    * placeFilterList[0]부터 상상관, 공학관, 미래관, 인성관, 창의관, 낙산관, 풋살장
    */
+  const [placeModalTop, setPlaceModalTop] = useState(-vh / 1.65);
   const [placeModalVisible, setPlaceModalVisible] = useState(false);
   const [placeFilterList, setPlaceFilterList] = useState([
     false,
@@ -91,10 +133,42 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     false
   ]);
   const [tempPlaceList, setTempPlaceList] = useState([...placeFilterList]);
+  const placeModalOpenAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setPlaceModalTop(0);
+  };
 
   const placeModalOpen = () => {
     setPlaceModalVisible(!placeModalVisible);
     setTempPlaceList([...placeFilterList]);
+    setModalBackOpacity(0.2);
+    setModalBackZIndex(50);
+    setWhichModal("place");
+    placeModalOpenAnimation();
+  };
+
+  const placeModalCloseAnimaion = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setPlaceModalTop(-vh / 1.65);
+  };
+
+  const placeModalClose = () => {
+    setModalBackOpacity(0);
+    setModalBackZIndex(-50);
+    setWhichModal("");
+    placeModalCloseAnimaion();
   };
 
   const handlePlaceFilterList = (index) => {
@@ -129,25 +203,26 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     return convertPlaceList;
   };
   const adjustPlaceFilter = () => {
-    setPlaceModalVisible(!placeModalVisible);
     tempPlaceList.map((item, index) => {
       placeFilterList[index] = item;
     });
     searchByWord();
+    closeModal(whichModal);
   };
   const resetPlaceFilter = () => {
-    setPlaceModalVisible(!placeModalVisible);
     placeFilterList.map((item, index) => {
       placeFilterList[index] = false;
     });
     setPlaceFilterChecked(false);
     searchByWord();
+    closeModal(whichModal);
   };
 
   /** 게시글 카테고리 필터
    * categoryFilterChecked = 다른 요소가 전부 false면 false, 하나라도 true면 true. 필터 체크된 게 있는지 없는지 체크하는 용도
    * categoryFilterList[1]부터 전공도서, 필기구, 생활가전, 의류, 전자기기, 부기굿즈
    */
+  const [categoryModalTop, setCategoryModalTop] = useState(-vh / 1.65);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [categoryFilterList, setCategoryFilterList] = useState([
     false,
@@ -160,10 +235,43 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
   const [tempCategoryList, setTempCategoryList] = useState([
     ...categoryFilterList
   ]);
-  const categoryModalOpen = () => {
-    setCategoryModalVisible(!categoryModalVisible);
-    setTempCategoryList([...categoryFilterList]);
+  const categoryModalOpenAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setCategoryModalTop(0);
   };
+
+  const categoryModalOpen = () => {
+    setTempCategoryList([...categoryFilterList]);
+    setModalBackOpacity(0.2);
+    setModalBackZIndex(50);
+    setWhichModal("category");
+    categoryModalOpenAnimation();
+  };
+
+  const categoryModalCloseAnimaion = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setCategoryModalTop(-vh / 1.65);
+  };
+
+  const categoryModalClose = () => {
+    setModalBackOpacity(0);
+    setModalBackZIndex(-50);
+    setWhichModal("");
+    categoryModalCloseAnimaion();
+  };
+
   const handleCategoryFilterList = (index) => {
     tempCategoryList[index] = !tempCategoryList[index];
   };
@@ -200,6 +308,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       categoryFilterList[index] = item;
     });
     searchByWord();
+    closeModal(whichModal);
   };
   const resetCategoryFilter = () => {
     setCategoryModalVisible(!categoryModalVisible);
@@ -208,6 +317,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     });
     setCategoryFilterChecked(false);
     searchByWord();
+    closeModal(whichModal);
   };
 
   /** 게시글 학부별 필터 
@@ -216,6 +326,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     ICT디자인학부, 뷰티디자매니지먼학부, 컴퓨터공학부, 기계전자공학부,
     IT융합공학부, 스마트경영공학부, 스마팩토리컨설팅학부
    */
+  const [departmentModalTop, setDepartmentModalTop] = useState(-vh / 1.65);
   const [departmentModalVisible, setDepartmentModalVisible] = useState(false);
   const [departmentFilterList, setDepartmentFilterList] = useState([
     false,
@@ -230,13 +341,44 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     false,
     false
   ]);
-
   const [tempDepartmentList, setTempDepartmentList] = useState([
     ...departmentFilterList
   ]);
+  const departmentModalOpenAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setDepartmentModalTop(0);
+  };
+
   const departmentModalOpen = () => {
-    setDepartmentModalVisible(!departmentModalVisible);
     setTempDepartmentList([...departmentFilterList]);
+    setModalBackOpacity(0.2);
+    setModalBackZIndex(50);
+    setWhichModal("department");
+    departmentModalOpenAnimation();
+  };
+
+  const departmentModalCloseAnimaion = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setDepartmentModalTop(-vh / 1.65);
+  };
+
+  const departmentModalClose = () => {
+    setModalBackOpacity(0);
+    setModalBackZIndex(-50);
+    setWhichModal("");
+    departmentModalCloseAnimaion();
   };
   const handleDepartmentFilterList = (index) => {
     tempDepartmentList[index] = !tempDepartmentList[index];
@@ -284,6 +426,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       departmentFilterList[index] = item;
     });
     searchByWord();
+    closeModal(whichModal);
   };
   const resetDepartmentFilter = () => {
     setDepartmentModalVisible(!departmentModalVisible);
@@ -292,6 +435,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     });
     setDepartmentFilterChecked(false);
     searchByWord();
+    closeModal(whichModal);
   };
 
   const isFocused = useIsFocused();
@@ -351,166 +495,66 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
   };
 
   const newHandle = () => {
-    if (isNewChecked) {
-      setPreviousSortChecked("new");
-    } else if (isOldChecked) {
-      setPreviousSortChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousSortChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousSortChecked("little");
-    } else if (isHighChecked) {
-      setPreviousSortChecked("high");
-    } else if (isLowChecked) {
-      setPreviousSortChecked("low");
-    }
-    setIsNewChecked(true);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentSortChecked("new");
   };
 
   const oldHandle = () => {
-    if (isNewChecked) {
-      setPreviousSortChecked("new");
-    } else if (isOldChecked) {
-      setPreviousSortChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousSortChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousSortChecked("little");
-    } else if (isHighChecked) {
-      setPreviousSortChecked("high");
-    } else if (isLowChecked) {
-      setPreviousSortChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(true);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentSortChecked("old");
   };
 
   const muchHandle = () => {
-    if (isNewChecked) {
-      setPreviousSortChecked("new");
-    } else if (isOldChecked) {
-      setPreviousSortChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousSortChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousSortChecked("little");
-    } else if (isHighChecked) {
-      setPreviousSortChecked("high");
-    } else if (isLowChecked) {
-      setPreviousSortChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(true);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentSortChecked("much");
   };
 
   const littleHandle = () => {
-    if (isNewChecked) {
-      setPreviousSortChecked("new");
-    } else if (isOldChecked) {
-      setPreviousSortChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousSortChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousSortChecked("little");
-    } else if (isHighChecked) {
-      setPreviousSortChecked("high");
-    } else if (isLowChecked) {
-      setPreviousSortChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(true);
-    setIsHighChecked(false);
-    setIsLowChecked(false);
     setCurrentSortChecked("little");
   };
 
   const highHandle = () => {
-    if (isNewChecked) {
-      setPreviousSortChecked("new");
-    } else if (isOldChecked) {
-      setPreviousSortChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousSortChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousSortChecked("little");
-    } else if (isHighChecked) {
-      setPreviousSortChecked("high");
-    } else if (isLowChecked) {
-      setPreviousSortChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(true);
-    setIsLowChecked(false);
     setCurrentSortChecked("high");
   };
 
   const lowHandle = () => {
-    if (isNewChecked) {
-      setPreviousSortChecked("new");
-    } else if (isOldChecked) {
-      setPreviousSortChecked("old");
-    } else if (isMuchChecked) {
-      setPreviousSortChecked("much");
-    } else if (isLittleChecked) {
-      setPreviousSortChecked("little");
-    } else if (isHighChecked) {
-      setPreviousSortChecked("high");
-    } else if (isLowChecked) {
-      setPreviousSortChecked("low");
-    }
-    setIsNewChecked(false);
-    setIsOldChecked(false);
-    setIsMuchChecked(false);
-    setIsLittleChecked(false);
-    setIsHighChecked(false);
-    setIsLowChecked(true);
     setCurrentSortChecked("low");
   };
+
   const adjustSort = (checked) => {
     switch (checked) {
       case "new":
         results.sort((a, b) => b.post_id - a.post_id);
+
+        setPreviousSortChecked("new");
         break;
       case "old":
         results.sort((a, b) => a.post_id - b.post_id);
+
+        setPreviousSortChecked("old");
         break;
       case "much":
         results.sort((a, b) => b.likes - a.likes);
+
+        setPreviousSortChecked("much");
         break;
       case "little":
         results.sort((a, b) => a.likes - b.likes);
+
+        setPreviousSortChecked("little");
         break;
       case "high":
         results.sort((a, b) => b.views - a.views);
+
+        setPreviousSortChecked("high");
         break;
       case "little":
         results.sort((a, b) => a.views - b.views);
+        setPreviousSortChecked("little");
         break;
       default:
         cancelSort(previousSortChecked);
+
         break;
     }
+    closeModal(whichModal);
   };
 
   const cancelSort = (checked) => {
@@ -544,175 +588,213 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         newHandle();
         break;
     }
+    closeModal(whichModal);
   };
+
+  useEffect(() => {
+    switch (currentSortChecked) {
+      case "new":
+        setIsNewChecked(true);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "old":
+        setIsNewChecked(false);
+        setIsOldChecked(true);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "much":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(true);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "little":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(true);
+        setIsHighChecked(false);
+        setIsLowChecked(false);
+        break;
+      case "high":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(true);
+        setIsLowChecked(false);
+        break;
+      case "low":
+        setIsNewChecked(false);
+        setIsOldChecked(false);
+        setIsMuchChecked(false);
+        setIsLittleChecked(false);
+        setIsHighChecked(false);
+        setIsLowChecked(true);
+        break;
+    }
+  }, [currentSortChecked]);
 
   const FilterModal = () => {
     return (
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={filterModalVisible}
-        onRequestClose={() => setFilterModalVisible(!filterModalVisible)}
-      >
-        <Pressable
-          onPress={() => {
-            cancelSort(previousSortChecked);
-            setFilterModalVisible(!filterModalVisible);
-          }}
-          style={sortModalStyles.background}
-        />
-        <View style={sortModalStyles.modalContainer}>
-          <View style={{ flex: 1 }}>
-            <View
-              style={{
-                alignItems: "center",
-                flex: 1,
-                borderBottomWidth: 0.25,
-                borderColor: "lightgrey"
-              }}
-            >
-              <Text style={{ fontSize: 20 }}>게시글 정렬</Text>
-            </View>
-            <View style={sortModalStyles.filterContainer}>
-              <View style={sortModalStyles.sectionContainerTop}>
-                <Text style={{ flex: 2 }}>작성 일자</Text>
-                <View style={{ flex: 8, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isNewChecked}
-                      onPress={newHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>최신순</Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isOldChecked}
-                      onPress={oldHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>오래된순</Text>
-                  </View>
+      <View style={sortModalStyles.modalContainer}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+              borderBottomWidth: 0.25,
+              borderColor: "lightgrey"
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>게시글 정렬</Text>
+          </View>
+          <View style={sortModalStyles.filterContainer}>
+            <View style={sortModalStyles.sectionContainerTop}>
+              <Text style={{ flex: 2 }}>작성 일자</Text>
+              <View style={{ flex: 8, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isNewChecked}
+                    onPress={newHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>최신순</Text>
                 </View>
-              </View>
-              <View style={sortModalStyles.sectionContainerMiddle}>
-                <Text style={{ flex: 2 }}>관심 등록</Text>
-                <View style={{ flex: 8, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isMuchChecked}
-                      onPress={muchHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>많은순</Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isLittleChecked}
-                      onPress={littleHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>적은순</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={sortModalStyles.sectionContainerBottom}>
-                <Text style={{ flex: 2 }}>조회수</Text>
-                <View style={{ flex: 8, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isHighChecked}
-                      onPress={highHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>높은순</Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 5,
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <BouncyCheckbox
-                      iconStyle={{ borderRadius: 0 }}
-                      innerIconStyle={{ borderRadius: 0 }}
-                      fillColor="#3099fc"
-                      isChecked={isLowChecked}
-                      onPress={lowHandle}
-                    />
-                    <Text style={{ fontSize: 15 }}>낮은순</Text>
-                  </View>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isOldChecked}
+                    onPress={oldHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>오래된순</Text>
                 </View>
               </View>
             </View>
-            <View style={sortModalStyles.buttonBar}>
-              <Pressable
-                onPress={() => {
-                  setFilterModalVisible(!filterModalVisible);
-                  cancelSort(previousSortChecked);
-                }}
-              >
-                <View style={sortModalStyles.cancelButton}>
-                  <IonIcon name="close" size={25} color="white" />
-                  <Text style={sortModalStyles.cancelText}>취소</Text>
+            <View style={sortModalStyles.sectionContainerMiddle}>
+              <Text style={{ flex: 2 }}>관심 등록</Text>
+              <View style={{ flex: 8, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isMuchChecked}
+                    onPress={muchHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>많은순</Text>
                 </View>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setFilterModalVisible(!filterModalVisible);
-                  adjustSort(currentSortChecked);
-                }}
-              >
-                <View style={sortModalStyles.applyButton}>
-                  <IonIcon name="checkmark" size={25} color="white" />
-                  <Text style={sortModalStyles.applyText}>적용</Text>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isLittleChecked}
+                    onPress={littleHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>적은순</Text>
                 </View>
-              </Pressable>
+              </View>
+            </View>
+            <View style={sortModalStyles.sectionContainerBottom}>
+              <Text style={{ flex: 2 }}>조회수</Text>
+              <View style={{ flex: 8, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isHighChecked}
+                    onPress={highHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>높은순</Text>
+                </View>
+                <View
+                  style={{
+                    flex: 5,
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <BouncyCheckbox
+                    iconStyle={{ borderRadius: 0 }}
+                    innerIconStyle={{ borderRadius: 0 }}
+                    fillColor="#3099fc"
+                    isChecked={isLowChecked}
+                    onPress={lowHandle}
+                  />
+                  <Text style={{ fontSize: 15 }}>낮은순</Text>
+                </View>
+              </View>
             </View>
           </View>
+          <View style={sortModalStyles.buttonBar}>
+            <Pressable
+              onPress={() => {
+                cancelSort(previousSortChecked);
+              }}
+            >
+              <View style={sortModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={sortModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                adjustSort(currentSortChecked);
+              }}
+            >
+              <View style={sortModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={sortModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
-      </Modal>
+      </View>
     );
   };
 
@@ -734,60 +816,47 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
 
   const PlaceModal = () => {
     return (
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={placeModalVisible}
-        onRequestClose={() => setPlaceModalVisible(!placeModalVisible)}
-      >
-        <Pressable
-          onPress={() => {
-            setPlaceModalVisible(!placeModalVisible);
-          }}
-          style={filterModalStyles.background}
-        />
-        <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 1 }}>
-            <View
+      <View style={placeFilterModalStyles.modalContainer}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+              borderBottomWidth: 0.25,
+              borderColor: "lightgrey"
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>거래 장소</Text>
+          </View>
+          <View style={{ flex: 7.5 }}>
+            <FlatList
               style={{
-                alignItems: "center",
-                flex: 1,
-                borderBottomWidth: 0.25,
-                borderColor: "lightgrey"
+                paddingHorizontal: vh / 50,
+                paddingVertical: vw / 40
               }}
-            >
-              <Text style={{ fontSize: 20 }}>거래 장소</Text>
-            </View>
-            <View style={{ flex: 7.5 }}>
-              <FlatList
-                style={{
-                  paddingHorizontal: vh / 50,
-                  paddingVertical: vw / 40
-                }}
-                data={tempPlaceList}
-                ItemSeparatorComponent={() => (
-                  <View style={{ height: vh / 50, width: vw }} />
-                )}
-                renderItem={(item, index) => renderPlaceFilter(item, index)}
-              />
-            </View>
-            <View style={filterModalStyles.buttonBar}>
-              <Pressable onPress={resetPlaceFilter}>
-                <View style={filterModalStyles.cancelButton}>
-                  <IonIcon name="close" size={25} color="white" />
-                  <Text style={filterModalStyles.cancelText}>취소</Text>
-                </View>
-              </Pressable>
-              <Pressable onPress={adjustPlaceFilter}>
-                <View style={filterModalStyles.applyButton}>
-                  <IonIcon name="checkmark" size={25} color="white" />
-                  <Text style={filterModalStyles.applyText}>적용</Text>
-                </View>
-              </Pressable>
-            </View>
+              data={tempPlaceList}
+              ItemSeparatorComponent={() => (
+                <View style={{ height: vh / 50, width: vw }} />
+              )}
+              renderItem={(item, index) => renderPlaceFilter(item, index)}
+            />
+          </View>
+          <View style={placeFilterModalStyles.buttonBar}>
+            <Pressable onPress={resetPlaceFilter}>
+              <View style={placeFilterModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={placeFilterModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={adjustPlaceFilter}>
+              <View style={placeFilterModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={placeFilterModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
           </View>
         </View>
-      </Modal>
+      </View>
     );
   };
 
@@ -809,60 +878,47 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
 
   const CategoryModal = () => {
     return (
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={categoryModalVisible}
-        onRequestClose={() => setCategoryModalVisible(!categoryModalVisible)}
-      >
-        <Pressable
-          onPress={() => {
-            setCategoryModalVisible(!categoryModalVisible);
-          }}
-          style={filterModalStyles.background}
-        />
-        <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 1 }}>
-            <View
+      <View style={categoryFilterModalStyles.modalContainer}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+              borderBottomWidth: 0.25,
+              borderColor: "lightgrey"
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>카테고리</Text>
+          </View>
+          <View style={{ flex: 7.5 }}>
+            <FlatList
               style={{
-                alignItems: "center",
-                flex: 1,
-                borderBottomWidth: 0.25,
-                borderColor: "lightgrey"
+                paddingHorizontal: vh / 50,
+                paddingVertical: vw / 40
               }}
-            >
-              <Text style={{ fontSize: 20 }}>카테고리</Text>
-            </View>
-            <View style={{ flex: 7.5 }}>
-              <FlatList
-                style={{
-                  paddingHorizontal: vh / 50,
-                  paddingVertical: vw / 40
-                }}
-                data={categoryFilterList}
-                ItemSeparatorComponent={() => (
-                  <View style={{ height: vh / 50, width: vw }} />
-                )}
-                renderItem={(item, index) => renderCategoryFilter(item, index)}
-              />
-            </View>
-            <View style={filterModalStyles.buttonBar}>
-              <Pressable onPress={resetCategoryFilter}>
-                <View style={filterModalStyles.cancelButton}>
-                  <IonIcon name="close" size={25} color="white" />
-                  <Text style={filterModalStyles.cancelText}>취소</Text>
-                </View>
-              </Pressable>
-              <Pressable onPress={adjustCategoryFilter}>
-                <View style={filterModalStyles.applyButton}>
-                  <IonIcon name="checkmark" size={25} color="white" />
-                  <Text style={filterModalStyles.applyText}>적용</Text>
-                </View>
-              </Pressable>
-            </View>
+              data={categoryFilterList}
+              ItemSeparatorComponent={() => (
+                <View style={{ height: vh / 50, width: vw }} />
+              )}
+              renderItem={(item, index) => renderCategoryFilter(item, index)}
+            />
+          </View>
+          <View style={categoryFilterModalStyles.buttonBar}>
+            <Pressable onPress={resetCategoryFilter}>
+              <View style={categoryFilterModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={categoryFilterModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={adjustCategoryFilter}>
+              <View style={categoryFilterModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={categoryFilterModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
           </View>
         </View>
-      </Modal>
+      </View>
     );
   };
 
@@ -884,70 +940,54 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
 
   const DepartmentModal = () => {
     return (
-      <Modal
-        transparent={true}
-        animationType="none"
-        visible={departmentModalVisible}
-        onRequestClose={() =>
-          setDepartmentModalVisible(!departmentModalVisible)
-        }
-      >
-        <Pressable
-          onPress={() => {
-            setDepartmentModalVisible(!departmentModalVisible);
-          }}
-          style={filterModalStyles.background}
-        />
-        <View style={filterModalStyles.modalContainer}>
-          <View style={{ flex: 1 }}>
-            <View
+      <View style={departmentFilterModalStyles.modalContainer}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+              borderBottomWidth: 0.25,
+              borderColor: "lightgrey"
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>학부별</Text>
+          </View>
+          <View style={{ flex: 7.5 }}>
+            <FlatList
               style={{
-                alignItems: "center",
-                flex: 1,
-                borderBottomWidth: 0.25,
-                borderColor: "lightgrey"
+                paddingHorizontal: vh / 50,
+                paddingVertical: vw / 40
               }}
-            >
-              <Text style={{ fontSize: 20 }}>학부별</Text>
-            </View>
-            <View style={{ flex: 7.5 }}>
-              <FlatList
-                style={{
-                  paddingHorizontal: vh / 50,
-                  paddingVertical: vw / 40
-                }}
-                data={departmentFilterList}
-                ItemSeparatorComponent={() => (
-                  <View style={{ height: vh / 50, width: vw }} />
-                )}
-                renderItem={(item, index) =>
-                  renderDepartmentFilter(item, index)
-                }
-              />
-            </View>
-            <View style={filterModalStyles.buttonBar}>
-              <Pressable onPress={resetDepartmentFilter}>
-                <View style={filterModalStyles.cancelButton}>
-                  <IonIcon name="close" size={25} color="white" />
-                  <Text style={filterModalStyles.cancelText}>취소</Text>
-                </View>
-              </Pressable>
-              <Pressable onPress={adjustDepartmentFilter}>
-                <View style={filterModalStyles.applyButton}>
-                  <IonIcon name="checkmark" size={25} color="white" />
-                  <Text style={filterModalStyles.applyText}>적용</Text>
-                </View>
-              </Pressable>
-            </View>
+              data={departmentFilterList}
+              ItemSeparatorComponent={() => (
+                <View style={{ height: vh / 50, width: vw }} />
+              )}
+              renderItem={(item, index) => renderDepartmentFilter(item, index)}
+            />
+          </View>
+          <View style={departmentFilterModalStyles.buttonBar}>
+            <Pressable onPress={resetDepartmentFilter}>
+              <View style={departmentFilterModalStyles.cancelButton}>
+                <IonIcon name="close" size={25} color="white" />
+                <Text style={departmentFilterModalStyles.cancelText}>취소</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={adjustDepartmentFilter}>
+              <View style={departmentFilterModalStyles.applyButton}>
+                <IonIcon name="checkmark" size={25} color="white" />
+                <Text style={departmentFilterModalStyles.applyText}>적용</Text>
+              </View>
+            </Pressable>
           </View>
         </View>
-      </Modal>
+      </View>
     );
   };
 
   useEffect(() => {
     searchByWord();
     adjustSort(currentSortChecked);
+    console.log(vh);
   }, []);
 
   useEffect(() => {
@@ -1015,12 +1055,107 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     tempDepartmentList[10]
   ]);
 
+  const closeModal = (modal) => {
+    switch (modal) {
+      case "sort":
+        sortModalClose();
+        break;
+      case "place":
+        placeModalClose();
+        break;
+      case "category":
+        categoryModalClose();
+        break;
+      case "department":
+        departmentModalClose();
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <FilterModal />
-      <PlaceModal />
-      <CategoryModal />
-      <DepartmentModal />
+      <View
+        style={{
+          position: "absolute",
+          bottom: modalTop,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0.34,
+          borderLeftWidth: 0.34,
+          borderRightWidth: 0.34,
+          width: vw,
+          height: vh / 2.3,
+          zIndex: 55,
+          backgroundColor: "white"
+        }}
+      >
+        <FilterModal />
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          bottom: placeModalTop,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0.34,
+          borderLeftWidth: 0.34,
+          borderRightWidth: 0.34,
+          width: vw,
+          height: vh / 1.65,
+          zIndex: 55,
+          backgroundColor: "white"
+        }}
+      >
+        <PlaceModal />
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          bottom: categoryModalTop,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0.34,
+          borderLeftWidth: 0.34,
+          borderRightWidth: 0.34,
+          width: vw,
+          height: vh / 1.65,
+          zIndex: 55,
+          backgroundColor: "white"
+        }}
+      >
+        <CategoryModal />
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          bottom: departmentModalTop,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0.34,
+          borderLeftWidth: 0.34,
+          borderRightWidth: 0.34,
+          width: vw,
+          height: vh / 1.65,
+          zIndex: 55,
+          backgroundColor: "white"
+        }}
+      >
+        <DepartmentModal />
+      </View>
+      <Pressable
+        style={{
+          width: vw,
+          height: vh,
+          position: "absolute",
+          bottom: 0,
+          opacity: modalBackOpacity,
+          backgroundColor: "black",
+          zIndex: modalBackZIndex
+        }}
+        onPress={() => closeModal(whichModal)}
+      >
+        <View />
+      </Pressable>
       <View
         style={{
           flexDirection: "row",
@@ -1088,8 +1223,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
               justifyContent: "center"
             }}
             onPress={() => {
-              console.log(filterModalVisible);
-              setFilterModalVisible(!filterModalVisible);
+              sortModalOpen();
             }}
           >
             <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
@@ -1278,7 +1412,181 @@ const sortModalStyles = StyleSheet.create({
   }
 });
 
-const filterModalStyles = StyleSheet.create({
+const placeFilterModalStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+    top: -vh / 4,
+    height: vh,
+    backgroundColor: "#000",
+    opacity: 0.5
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderWidth: 0.34,
+    width: vw,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: vh / 1.65,
+    position: "absolute",
+    paddingTop: 15,
+    paddingBottom: vh / 20,
+    bottom: 0
+  },
+  filterContainer: {
+    flex: 7,
+    paddingHorizontal: vw / 25,
+    paddingVertical: vh / 75
+  },
+  sectionContainerTop: {
+    flex: 3,
+    borderBottomWidth: 0.5,
+    borderColor: "#a7a7a7",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  sectionContainerMiddle: {
+    borderBottomWidth: 0.5,
+    borderColor: "#a7a7a7",
+    flex: 4,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  sectionContainerBottom: {
+    flex: 3,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  buttonBar: {
+    flex: 1.5,
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    flexDirection: "row",
+    paddingHorizontal: vw / 10,
+    borderTopWidth: 0.25,
+    borderColor: "lightgrey"
+  },
+  cancelButton: {
+    flexDirection: "row",
+    height: vh / 20,
+    width: vw / 3.2,
+    borderRadius: 40 / PixelRatio.get(),
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#ababab",
+    marginLeft: vw / 70
+  },
+  cancelText: {
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18,
+    color: "white"
+  },
+  applyButton: {
+    width: vw / 3.2,
+    height: vh / 20,
+    borderRadius: 40 / PixelRatio.get(),
+    marginRight: vw / 70,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#1e4eff"
+  },
+  applyText: {
+    color: "white",
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18
+  }
+});
+
+const categoryFilterModalStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+    top: -vh / 4,
+    height: vh,
+    backgroundColor: "#000",
+    opacity: 0.5
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderWidth: 0.34,
+    width: vw,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: vh / 1.65,
+    position: "absolute",
+    paddingTop: 15,
+    paddingBottom: vh / 20,
+    bottom: 0
+  },
+  filterContainer: {
+    flex: 7,
+    paddingHorizontal: vw / 25,
+    paddingVertical: vh / 75
+  },
+  sectionContainerTop: {
+    flex: 3,
+    borderBottomWidth: 0.5,
+    borderColor: "#a7a7a7",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  sectionContainerMiddle: {
+    borderBottomWidth: 0.5,
+    borderColor: "#a7a7a7",
+    flex: 4,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  sectionContainerBottom: {
+    flex: 3,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  buttonBar: {
+    flex: 1.5,
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    flexDirection: "row",
+    paddingHorizontal: vw / 10,
+    borderTopWidth: 0.25,
+    borderColor: "lightgrey"
+  },
+  cancelButton: {
+    flexDirection: "row",
+    height: vh / 20,
+    width: vw / 3.2,
+    borderRadius: 40 / PixelRatio.get(),
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#ababab",
+    marginLeft: vw / 70
+  },
+  cancelText: {
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18,
+    color: "white"
+  },
+  applyButton: {
+    width: vw / 3.2,
+    height: vh / 20,
+    borderRadius: 40 / PixelRatio.get(),
+    marginRight: vw / 70,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#1e4eff"
+  },
+  applyText: {
+    color: "white",
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18
+  }
+});
+
+const departmentFilterModalStyles = StyleSheet.create({
   background: {
     flex: 1,
     top: -vh / 4,
