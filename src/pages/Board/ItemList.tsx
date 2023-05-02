@@ -46,9 +46,7 @@ function ItemList({ board, navigation }: itemListProps) {
       .then((res) => {
         setIsFav(res.data);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
 
   useEffect(() => {
@@ -127,10 +125,9 @@ export const styles = StyleSheet.create({
   itemFavCount: {
     fontSize: 18,
     marginTop: vh / 8.7,
-    fontWeight: '300',
-    color: "gray",
-  },
-})
-
+    fontWeight: "300",
+    color: "gray"
+  }
+});
 
 export default ItemList;

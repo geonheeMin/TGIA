@@ -26,8 +26,8 @@ import bugi from "../../assets/bugi.png";
 import fav from "../../assets/design/favorite.png";
 import unfav from "../../assets/design/unfavorite.png";
 import { useIsFocused } from "@react-navigation/native";
-import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { stackScrollInterpolator } from '../../utils/animations';
+import Carousel, { Pagination } from "react-native-snap-carousel";
+import { stackScrollInterpolator } from "../../utils/animations";
 
 type RootStackParamList = {
   Detail: undefined;
@@ -79,10 +79,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   const favControll = useEffect(() => {
-    if (isFav === 0 )
-      setIsFavOn(false);
-    else
-      setIsFavOn(true);
+    if (isFav === 0) setIsFavOn(false);
+    else setIsFavOn(true);
   }, [isFocused]);
 
   const doFav = () => {
@@ -98,17 +96,19 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
 
   const unFav = () => {
     setIsFavOn(!isFavOn);
-    Axios.delete(`${url}/profile/delete_favorite3`, { params: { postId: board.post_id, userId: session.member_id } })
-    .then((res) => {
-      console.log("좋아요 취소");
+    Axios.delete(`${url}/profile/delete_favorite3`, {
+      params: { postId: board.post_id, userId: session.member_id }
     })
-    .catch((error) => {
-      console.log(error);
-      console.log("취소 실패")
-    });
-  }
+      .then((res) => {
+        console.log("좋아요 취소");
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("취소 실패");
+      });
+  };
 
-  const toMyChat = useCallback(() => {
+  const toMyChat = () => {
     const chatStartRequestDTO = {
       post_id: board.post_id,
       member_id: 6
@@ -125,11 +125,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       });
   };
 
-  const toMyChat = () => {
-    navigation.navigate("ChatListFromPost", {
-      post: board
-    });
-  };
   const toQuest = useCallback(() => {
     /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
      * 유무 판단해서 있으면 기존 채팅방을 리턴, 없으면 새로 채팅방 만들고 리턴 후 ChatDetail 로 이동
@@ -190,10 +185,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   }, [isFav]);
 
   const DATA = [
-    { id: '1', image: require("../../assets/rnbook.png") },
-    { id: '2', image: require("../../assets/bugi.png")},
-    { id: '3', image: require("../../assets/diptyque.jpg") },
-    { id: '4', uri: `${url}/images/${board?.images}`}
+    { id: "1", image: require("../../assets/rnbook.png") },
+    { id: "2", image: require("../../assets/bugi.png") },
+    { id: "3", image: require("../../assets/diptyque.jpg") },
+    { id: "4", uri: `${url}/images/${board?.images}` }
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -235,7 +230,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             sliderWidth={vw}
             itemWidth={vw}
             inactiveSlideOpacity={1}
-            onSnapToItem={index => setActiveIndex(index)}
+            onSnapToItem={(index) => setActiveIndex(index)}
             scrollInterpolator={stackScrollInterpolator}
           />
           {renderPagination()}
@@ -253,7 +248,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             <Image source={bugi} style={styles.writerImage} />
             <View style={styles.writerProps}>
               <View style={styles.propsTop}>
-                <Text style={{ fontSize: 20 }}>{writer}</Text>
+                <Text style={{ fontSize: 20 }}>{board.writer}</Text>
               </View>
               <View style={styles.propsBottom}>
                 <Text>{session.firsttrack}</Text>
@@ -519,21 +514,21 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     height: vh * 0.48,
-    marginTop: vh / 20,
+    marginTop: vh / 20
   },
   carouselItemContainer: {
     width: vw,
     height: vh / 1.9,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center"
   },
   carouselImage: {
     width: vw,
-    height: vh / 2.05,
+    height: vh / 2.05
   },
   paginationContainer: {
-    position: 'absolute',
-    alignSelf: 'center',
+    position: "absolute",
+    alignSelf: "center",
     bottom: 10
   },
   paginationDot: {
@@ -541,8 +536,8 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginHorizontal: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.92)'
-  },
+    backgroundColor: "rgba(0, 0, 0, 0.92)"
+  }
 });
 
 export default ItemDetail;

@@ -12,7 +12,8 @@ import {
   Pressable,
   StyleSheet,
   Image,
-  PixelRatio
+  PixelRatio,
+  ActivityIndicator
 } from "react-native";
 import { useState, useCallback, useEffect, useRef } from "react";
 import Axios from "axios";
@@ -27,6 +28,7 @@ import test from "../../assets/dummy/chat.json";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import EntypoIcon from "react-native-vector-icons/Entypo";
+import { WebView } from "react-native-webview";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
@@ -52,11 +54,61 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const [chats, setChats] = useState([]);
   const [msg, setMsg] = useState("");
   const [otherName, setOtherName] = useState("");
+  const [paymentUrl, setPaymentUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   /** isChatLoaded: Axios 통신으로 받아온 데이터 처리 완료 여부, true면 Axios 함수 처리가 완전히 끝난 것으로 Axios 통신해도 되는 상태
    * false면 아직 Axios로 받아온 데이터를 처리하는 과정으로 Axios 통신하면 안된다는 것을 의미
    */
   const [isChatLoaded, setIsChatLoaded] = useState(true);
   const [isMenuOpened, setIsMenuOpened] = useState(false);
+
+  const request = {
+    post_id: 18,
+    user_id: 8,
+    buyer_id: 9,
+    price: 10000,
+    item_name: "아이폰 14 프로 맥스 실버 256GB"
+  };
+
+  const tryPayment = () => {
+    console.log(1);
+    Axios.post(`${url}/payment/ready`, request)
+      .then((res) => {
+        console.log(res.data);
+        //Linking.openURL(res.data.next_redir ect_mobile_url)
+        setPaymentUrl(res.data.next_redirect_app_url);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleNavigationStateChange = (navState) => {
+    const { url } = navState;
+    // 결제 완료 페이지 url이면
+    if (url.includes("payment/success")) {
+      // 내 앱 페이지로 이동시키기
+      setIsLoading(true);
+      setPaymentUrl("");
+      //WebView && WebView.unmount && WebView.unmount();
+      // 이동할 페이지 url을 자유롭게 변경해 주세요.
+      navigation.navigate("Detail", { board: board });
+    }
+    // //취소 시
+    // else if (url.includes('payment/cancel')){
+    //   setIsLoading(true);
+    //   setPaymentUrl('');
+    //   navigation.navigate("Detail", { board: board });
+    // }
+    // // 실패시
+    // else {
+    //   setIsLoading(true);
+    //   setPaymentUrl('');
+    //   navigation.navigate("Detail", { board: board });
+    // }
+  };
+
   var date = new Date();
   var sendingTime = new Intl.DateTimeFormat("locale", {
     dateStyle: "long",
@@ -242,6 +294,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
                 borderRadius: vw / 7,
                 backgroundColor: "#fee10c"
               }}
+              onPress={tryPayment}
             >
               <FontAwesomeIcon name="won" color="#6b6b6b" size={25} />
             </Pressable>
@@ -316,6 +369,16 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.kakao}>
+        {isLoading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <WebView
+            source={{ uri: paymentUrl }}
+            onNavigationStateChange={handleNavigationStateChange}
+          />
+        )}
+      </View>
       <View
         style={{
           paddingTop: vh / 25,
@@ -411,7 +474,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     maxWidth: vw / 1.75,
     minHeight: vh / 22
-  }
+  },
+  kakao: {}
 });
 
 export default ChatDetail;
