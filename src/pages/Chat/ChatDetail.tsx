@@ -71,7 +71,8 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   const tryPayment = () => {
-    Axios.post(`http://223.194.135.152:8080/payment/ready`, request)
+    console.log(1);
+    Axios.post(`${url}/payment/ready`, request)
       .then((res) => {
         console.log(res.data);
         //Linking.openURL(res.data.next_redir ect_mobile_url)
