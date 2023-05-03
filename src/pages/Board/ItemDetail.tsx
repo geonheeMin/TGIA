@@ -111,17 +111,19 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const toMyChat = () => {
     const chatStartRequestDTO = {
       post_id: board.post_id,
-      member_id: 6
+      member_id: session.member_id
     };
     Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
       headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
-        console.log("좋아요 취소 : " + favId);
+        console.log(res.data);
+        navigation.navigate("ChatListFromPost", {
+          post: board
+        });
       })
       .catch((error) => {
         console.log(error);
-        console.log("취소 실패 : " + favId);
       });
   };
 
@@ -179,17 +181,18 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
+    console.log(board?.images);
+  }, []);
+
+  useEffect(() => {
     //Axios.get(`${url}`);
     matchingCategories();
     console.log(board);
   }, [isFav]);
 
-  const DATA = [
-    { id: "1", image: require("../../assets/rnbook.png") },
-    { id: "2", image: require("../../assets/bugi.png") },
-    { id: "3", image: require("../../assets/diptyque.jpg") },
-    { id: "4", uri: `${url}/images/${board?.images}` }
-  ];
+  const DATA = board?.images.map((item, index) => {
+    return { id: index, image: { uri: `${url}/images/${item}` } };
+  });
 
   const [activeIndex, setActiveIndex] = useState(0);
 

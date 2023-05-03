@@ -58,7 +58,7 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemImageZone}>
         <Image
           source={{
-            uri: `${url}/images/${board?.images}`
+            uri: `${url}/images/${board?.images[0]}`
           }}
           style={styles.itemImage}
         />

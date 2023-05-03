@@ -20,7 +20,7 @@ const useStore = create<preset>((set) => ({
   },
   // url: "http://3.37.128.34:8080" //yongki
 
-  url: "http://43.201.77.124:8080" //geonhee
+  url: "http://43.200.253.74:8080" //geonhee
 }));
 
 export default useStore;
