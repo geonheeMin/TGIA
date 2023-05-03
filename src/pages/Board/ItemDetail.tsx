@@ -112,23 +112,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       });
   };
 
-  // const toMyChat = () => {
-  //   const chatStartRequestDTO = {
-  //     post_id: board.post_id,
-  //     member_id: session.member_id
-  //   };
-  //   Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
-  //     headers: { "Content-Type": "application/json" }
-  //   })
-  //     .then((res) => {
-  //       console.log("then");
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
-
   const toMyChat = useCallback(() => {
     navigation.navigate("ChatListFromPost", { post: board });
   }, [navigation]);
@@ -185,6 +168,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         break;
     }
   };
+
+  useEffect(() => {
+    console.log(board?.images);
+  }, []);
 
   useEffect(() => {
     //Axios.get(`${url}`);
