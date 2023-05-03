@@ -220,7 +220,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           setCategory(res.data);
           setIsCategoryRecommended(!isCategoryRecommended);
         } else {
-          setTimeout(() => getCategoryRecommend(), 1000);
+          setTimeout(() => getCategoryRecommend(), 2000);
         }
       })
       .catch((error) => console.log(error));

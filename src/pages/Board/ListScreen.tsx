@@ -283,6 +283,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
 
   const listRefresh = () => {
     setIsRefreshing(true);
+    Axios.get(`${url}/post/all`)
+      .then((res) => {
+        res.data.sort((a, b) => b.post_id - a.post_id);
+        setPosts(res.data);
+        setNewPosts(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     adjustFilter(currentChecked);
     setIsRefreshing(false);
   };

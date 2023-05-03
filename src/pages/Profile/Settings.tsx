@@ -17,6 +17,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import LocationCalc from "../../components/LocationCalc";
 import useStore from "../../../store";
+import PaymentCompleted from "../Chat/PaymentCompleted";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -34,6 +35,10 @@ function Settings({ navigation }: SettingsScreenProps) {
     navigation.navigate("Profile");
   }, [navigation]);
 
+  const toPayment = useCallback(() => {
+    navigation.navigate("Payment");
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
@@ -49,6 +54,11 @@ function Settings({ navigation }: SettingsScreenProps) {
         </TouchableOpacity>
       </View>
       <LocationCalc />
+      <View style={{marginTop: 20}}>
+        <Pressable onPress={toPayment}>
+            <Text>결제 완료 테스트</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }

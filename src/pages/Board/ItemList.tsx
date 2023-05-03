@@ -58,7 +58,7 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemImageZone}>
         <Image
           source={{
-            uri: `${url}/images/${board?.images}`
+            uri: `${url}/images/${board?.images[0]}`
           }}
           style={styles.itemImage}
         />
@@ -66,9 +66,9 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
         <Text style={styles.itemPrice}>{board.price}원</Text>
-        <Text>{board.category}</Text>
+        {/* <Text>{board.category}</Text>
         <Text>{board.locationType}</Text>
-        <Text>{board.department}</Text>
+        <Text>{board.department}</Text> */}
       </View>
       <View style={styles.likesInfo}>
         <Text style={styles.itemFavCount}>

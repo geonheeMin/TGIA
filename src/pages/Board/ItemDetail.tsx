@@ -15,7 +15,8 @@ import {
   Image,
   Pressable,
   StatusBar,
-  PixelRatio
+  PixelRatio,
+  Modal
 } from "react-native";
 import Axios from "axios";
 import ItemList from "./ItemList";
@@ -28,6 +29,7 @@ import unfav from "../../assets/design/unfavorite.png";
 import { useIsFocused } from "@react-navigation/native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { stackScrollInterpolator } from "../../utils/animations";
+import { transparent } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 type RootStackParamList = {
   Detail: undefined;
@@ -55,6 +57,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const [isFav, setIsFav] = useState(route.params.isFav);
   const [isFavOn, setIsFavOn] = useState(false);
   const isFocused = useIsFocused();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
@@ -108,22 +112,26 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       });
   };
 
-  const toMyChat = () => {
-    const chatStartRequestDTO = {
-      post_id: board.post_id,
-      member_id: 6
-    };
-    Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
-      headers: { "Content-Type": "application/json" }
-    })
-      .then((res) => {
-        console.log("좋아요 취소 : " + favId);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log("취소 실패 : " + favId);
-      });
-  };
+  // const toMyChat = () => {
+  //   const chatStartRequestDTO = {
+  //     post_id: board.post_id,
+  //     member_id: session.member_id
+  //   };
+  //   Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
+  //     headers: { "Content-Type": "application/json" }
+  //   })
+  //     .then((res) => {
+  //       console.log("then");
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+
+  const toMyChat = useCallback(() => {
+    navigation.navigate("ChatListFromPost", { post: board });
+  }, [navigation]);
 
   const toQuest = useCallback(() => {
     /** Axios.get() 으로 api 접속해서 post_id, memberA, memberB 를 게시글의 post_id, writer, zustand에 저장된 id 로 검색해서
@@ -184,26 +192,30 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     console.log(board);
   }, [isFav]);
 
-  const DATA = [
-    { id: "1", image: require("../../assets/rnbook.png") },
-    { id: "2", image: require("../../assets/bugi.png") },
-    { id: "3", image: require("../../assets/diptyque.jpg") },
-    { id: "4", uri: `${url}/images/${board?.images}` }
-  ];
+  const DATA = board?.images.map((item, index) => {
+    return { 
+      id: index,
+      image: { uri: `${url}/images/${item}` }
+    };
+  });
 
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const renderCarouselItem = useCallback(({ item }) => {
+  const renderCarouselItem = ({ item, index }) => {
     return (
-      <View style={styles.carouselItemContainer}>
-        <Image
-          source={item.image}
-          style={styles.carouselImage}
-          resizeMode="contain"
-        />
-      </View>
+      <Pressable onPress={() => setModalVisible(index)}>
+        <View style={styles.carouselItemContainer}>
+          <Image
+            source={item.image}
+            style={styles.carouselImage}
+            resizeMode="contain"
+          />
+        </View>
+      </Pressable>
     );
-  }, []);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const renderPagination = useCallback(() => {
     return (
@@ -212,8 +224,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         activeDotIndex={activeIndex}
         containerStyle={styles.paginationContainer}
         dotStyle={styles.paginationDot}
-        inactiveDotOpacity={0.4}
-        inactiveDotScale={0.6}
+        inactiveDotOpacity={0.6}
+        inactiveDotScale={0.7}
       />
     );
   }, [activeIndex]);
@@ -235,14 +247,25 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           />
           {renderPagination()}
         </View>
-        {/* <Pressable onPress={changeImageState}>
-          <Image
-            source={{
-              uri: `${url}/images/${board?.images}`
-            }}
-            style={pressed ? styles.pressedImage : styles.postImage}
-          />
-        </Pressable> */}
+        <Modal 
+          visible={modalVisible !== false}
+          onRequestClose={closeModal}
+          animationType="fade"
+          presentationStyle='overFullScreen'
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Pressable onPress={closeModal}>
+                <Text style={styles.modalCloseButton}>X</Text>
+              </Pressable>
+            </View>
+            <Image
+              source={DATA[activeIndex].image}
+              style={styles.modalImage}
+              resizeMode="contain"
+            />
+          </View>
+        </Modal>
         <View style={styles.content}>
           <View style={styles.postWriterBar}>
             <Image source={bugi} style={styles.writerImage} />
@@ -513,18 +536,18 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   carouselContainer: {
-    height: vh * 0.48,
-    marginTop: vh / 20
+    height: vh * 0.5,
   },
   carouselItemContainer: {
     width: vw,
     height: vh / 1.9,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   carouselImage: {
-    width: vw,
-    height: vh / 2.05
+    width: vw * 1.12,
+    height: vh * 0.8,
+    resizeMode: 'contain',
   },
   paginationContainer: {
     position: "absolute",
@@ -532,12 +555,32 @@ const styles = StyleSheet.create({
     bottom: 10
   },
   paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 8,
+    width: 6,
+    height: 6,
     backgroundColor: "rgba(0, 0, 0, 0.92)"
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: vh / 10,
+  },
+  modalHeader: {
+    top: vh / 9,
+    right: vw / 2.3,
+    zIndex: 2,
+    padding: 20
+  },
+  modalCloseButton: {
+    color: 'white',
+    fontSize: 26,
+    fontWeight: 'bold'
+  },
+  modalImage: {
+    width: vw,
+    height: vh,
+  },
 });
 
 export default ItemDetail;
