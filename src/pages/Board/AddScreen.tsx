@@ -3,7 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useCallback, useState, useEffect } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchImageLibrary, launchCamera } from "react-native-image-picker";
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import {
   SafeAreaView,
   Pressable,
@@ -16,13 +17,14 @@ import {
   Alert,
   Image,
   PixelRatio,
-  Modal
+  Modal,
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
 import cancel from "../../assets/design/backIcon.png";
 import nextIcon from "../../assets/design/nextIcon.png";
 import gallery from "../../assets/design/camera.png";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Axios from "axios";
 import { categories } from "../../assets/data/category";
 import { places } from "../../assets/data/place";
@@ -59,12 +61,14 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [text, setText] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
   const [img, setImg] = useState({}); //게시글 이미지
+  const [imageUri, setImageUri] = useState(null); // 게시글 촬영한 이미지
   const [filename, setFilename] = useState();
   const [price, setPrice] = useState<number | null>(); //게시글 가격
   const [free, setFree] = useState(false); //게시글 나눔 확인(true or false)
   const [place, setPlace] = useState(""); //게시글 거래 장소
   const [track, setTrack] = useState(""); //게시글 표시 트랙
   /** 모달 창 표시 true false 변수 */
+  const [imageVisible,setImageVisible] = useState(false);
   const [categoryVisible, setCategoryVisible] = useState(false);
   const [placeVisible, setPlaceVisible] = useState(false);
   const [trackVisible, setTrackVisible] = useState(false);
@@ -224,6 +228,90 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         }
       })
       .catch((error) => console.log(error));
+  };
+  
+  /** 이미지 모달 관리 함수 */
+  const imageModalControl = () => {
+    setModalOpen(!modalOpen);
+    setImageVisible(!imageVisible);
+  };
+  const ImageModal = () => {
+    return (
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={imageVisible}
+        onRequestClose={() => imageModalControl()}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            zIndex: placeVisible ? 52 : 0
+          }}
+          onPress={() => imageModalControl()}
+        />
+        <View style={imageVisible ? styles.imageModalO : styles.imageModalX}>
+          <Pressable
+            style={styles.imageButton}
+            onPress={() => {
+              shootImage();
+              imageModalControl();
+            }}
+          >
+            <MaterialCommunityIcons
+              name="camera"
+              size={23}
+              style={styles.imageButtonIcon}
+            />
+            <Text style={styles.imageButtonText}>카메라로 촬영하기</Text>
+          </Pressable>
+          <Pressable
+            style={styles.imageButton}
+            onPress={() => {
+              pickImage();
+              imageModalControl();
+            }}
+          >
+            <MaterialCommunityIcons
+              name="image"
+              size={23}
+              style={styles.imageButtonIcon}
+            />
+            <Text style={styles.imageButtonText}>사진 선택하기</Text>
+          </Pressable>
+          <Pressable
+            style={styles.imageButton}
+            onPress={imageModalControl}
+          >
+            <MaterialCommunityIcons
+              name="cancel"
+              size={23}
+              style={styles.imageButtonIcon}
+            />
+            <Text style={styles.imageButtonText}>취소</Text>
+          </Pressable>
+        </View>
+      </Modal>
+    );
+  };
+
+  const shootImage = () => {
+    launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
+      if (res.didCancel) {
+        console.log("Canceled");
+      } else if (res.errorCode) {
+        console.log("Errored");
+      } else {
+        const photo = res.assets[0].uri;
+        if (!photo || photo.length === 0) {
+          return;
+        }
+        CameraRoll.saveToCameraRoll(photo, "photo")
+        .then(() => {pickImage})
+        //setImageUri(res.assets);
+      }
+    });
   };
 
   /** 갤러리에서 이미지 선택하는 함수 */
@@ -434,6 +522,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   return (
     <SafeAreaView style={styles.background}>
+      <ImageModal />
       <CategoryModal />
       <PlaceModal />
       <TrackModal />
@@ -464,7 +553,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         </Pressable>
       </View>
       <View style={styles.galleryBar}>
-        <Pressable style={styles.galleryButton} onPress={pickImage}>
+        <Pressable style={styles.galleryButton} onPress={imageModalControl}>
           <Image source={gallery} style={styles.galleryIcon} />
         </Pressable>
         <Image
@@ -763,6 +852,49 @@ const styles = StyleSheet.create({
   separator: {
     backgroundColor: "#777777",
     height: 0.34
+  },
+    /** 이미지 모달 style
+   * imageModalO : 이미지 모달이 on 일 때
+   * imageModalX : 이미지 모달이 off 일 때
+   * imageItem : 이미지 버튼 style
+   * imageButtonText : 이미지 버튼 글자 style
+   */
+  imageModalO: {
+    position: "absolute",
+    borderWidth: 1,
+    left: vw * 0.025,
+    top: vh * 0.112,
+    backgroundColor: "#FFFFFF",
+    zIndex: 53,
+    borderRadius: 10,
+  },
+  imageModalX: {
+    position: "absolute",
+    borderWidth: 1,
+    left: 100,
+    top: 250,
+    backgroundColor: "#FFFFFF",
+    zIndex: 0
+  },
+  imageButton: {
+    width: vw * 0.5,
+    height: (vh * 0.75) / 14,
+    alignItems: "center",
+    //justifyContent: "center",
+    flexDirection: "row",
+    borderBottomWidth: 0.5,
+    borderColor: "gray",
+  },
+  imageButtonIcon: {
+    width: 782 / 30,
+    height: 608 / 30,
+    marginLeft: vw * 0.02,
+  },
+  imageButtonText: {
+    fontSize: 18,
+    fontWeight: "300",
+    color: "#333333",
+    marginLeft: vw * 0.02,
   },
   /** 카테고리 모달 style
    * categoryModalO : 카테고리 모달이 on 일 때
