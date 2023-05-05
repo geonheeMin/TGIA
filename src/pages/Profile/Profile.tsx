@@ -8,13 +8,13 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  TouchableHighlight,
   Animated,
   Dimensions
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import { ProgressBar } from "react-native-paper";
-import { TouchableHighlight } from "react-native-gesture-handler";
 import BottomTabs from "../../components/BottomTabs";
 import useStore from "../../../store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
