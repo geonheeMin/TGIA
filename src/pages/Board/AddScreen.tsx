@@ -18,6 +18,8 @@ import {
   Image,
   PixelRatio,
   Modal,
+  Platform,
+  PermissionsAndroid,
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
@@ -77,7 +79,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [isCategoryRecommended, setIsCategoryRecommended] = useState(false);
   const [testResult, setTestResult] = useState("");
 
-  const images = [];
+  let images = [];
   const formData = new FormData(); //서버로 전송할 데이터 공간
 
   var date = new Date();
@@ -296,22 +298,84 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     );
   };
 
-  const shootImage = () => {
-    launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
-      if (res.didCancel) {
-        console.log("Canceled");
-      } else if (res.errorCode) {
-        console.log("Errored");
-      } else {
-        const photo = res.assets[0].uri;
-        if (!photo || photo.length === 0) {
-          return;
+
+  const shootImage = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "App Camera Permission",
+            message:"App needs access to your camera ",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        const grantedGallery = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: "App Gallery Permission",
+            message:"App needs access to your photos",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED && grantedGallery === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("Camera permission given");
+          launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
+            if (res.didCancel) {
+              console.log("Canceled");
+            } else if (res.errorCode) {
+              console.log("Errored");
+              console.log(res.errorCode);
+            } else {
+              const photo = res.assets[0]?.uri;
+              if (!photo || photo.length === 0) {
+                Alert.alert("photo is empty");
+                return;
+              }
+              CameraRoll.save(photo, "photo")
+              .then(() => {
+                pickImage();
+                images = [];
+              })
+              .catch((e) => {
+                console.log(e);
+              })
+            }
+          });
+        } else {
+          console.log("Camera permission denied");
         }
-        CameraRoll.saveToCameraRoll(photo, "photo")
-        .then(() => {pickImage})
-        //setImageUri(res.assets);
+      } catch (e) {
+        console.warn(e);
       }
-    });
+    } else {  // ios일 경우
+      launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
+        if (res.didCancel) {
+          console.log("Canceled");
+        } else if (res.errorCode) {
+          console.log("Errored");
+          console.log(res.errorCode);
+        } else {
+          const photo = res.assets[0]?.uri;
+          if (!photo || photo.length === 0) {
+            Alert.alert("photo is empty");
+            return;
+          }
+          CameraRoll.save(photo, "photo")
+          .then(() => {
+            pickImage();
+            images = [];
+          })
+          .catch((e) => {
+            console.log(e);
+          })
+        }
+      });
+    }
   };
 
   /** 갤러리에서 이미지 선택하는 함수 */
@@ -324,6 +388,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       } else {
         console.log(res);
         const formData = new FormData();
+        images = [];
         res.assets.forEach((asset) => {
           images.push({
             uri: asset.uri,
@@ -345,17 +410,19 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         //   type: res.assets[0].type,
         //   name: res.assets[0].fileName
         // });
+
         Axios.post(`${url}/image/send_images`, formData, {
           headers: {
             "Text-Type": "multipart/form-data"
           }
         })
-          .then((res) => {
-            setFilename(res.data);
-            setTimeout(() => getCategoryRecommend(), 3000);
-          })
-          .catch((error) => console.log(error));
+        .then((res) => {
+          setFilename(res.data);
+          setTimeout(() => getCategoryRecommend(), 3000);
+        })
+        .catch((error) => console.log(error));
         setImg(res.assets[0]);
+        images = [];
       }
     });
   };
@@ -882,7 +949,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     //justifyContent: "center",
     flexDirection: "row",
-    borderBottomWidth: 0.5,
+    //borderBottomWidth: 0.5,
     borderColor: "gray",
   },
   imageButtonIcon: {
