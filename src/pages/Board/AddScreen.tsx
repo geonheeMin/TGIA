@@ -358,7 +358,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     } else {  // ios일 경우
       const cameraStatus = await request(PERMISSIONS.IOS.CAMERA);
       const photoStatus = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      if ( cameraStatus === RESULTS.GRANTED && photoStatus === RESULTS.GRANTED) {
+      if ( cameraStatus === RESULTS.GRANTED) {
         console.log('Camera permission given');
         launchFunction = launchCamera;
       } else {
