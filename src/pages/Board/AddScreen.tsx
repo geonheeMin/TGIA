@@ -5,6 +5,7 @@ import { useCallback, useState, useEffect } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { launchImageLibrary, launchCamera } from "react-native-image-picker";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import {
   SafeAreaView,
   Pressable,
@@ -300,6 +301,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
 
   const shootImage = async () => {
+    let launchFunction = null;
+
     if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
@@ -324,6 +327,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED && grantedGallery === PermissionsAndroid.RESULTS.GRANTED) {
           console.log("Camera permission given");
+
           launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
             if (res.didCancel) {
               console.log("Canceled");
@@ -339,7 +343,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               CameraRoll.save(photo, "photo")
               .then(() => {
                 pickImage();
-                images = [];
               })
               .catch((e) => {
                 console.log(e);
@@ -353,28 +356,39 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         console.warn(e);
       }
     } else {  // ios일 경우
-      launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
-        if (res.didCancel) {
-          console.log("Canceled");
-        } else if (res.errorCode) {
-          console.log("Errored");
-          console.log(res.errorCode);
-        } else {
-          const photo = res.assets[0]?.uri;
-          if (!photo || photo.length === 0) {
-            Alert.alert("photo is empty");
-            return;
+      const cameraStatus = await request(PERMISSIONS.IOS.CAMERA);
+      const photoStatus = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      if ( cameraStatus === RESULTS.GRANTED && photoStatus === RESULTS.GRANTED) {
+        console.log('Camera permission given');
+        launchFunction = launchCamera;
+      } else {
+        console.log('Camera permission denied');
+        return;
+      }
+
+      if (launchFunction) {
+        launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
+          if (res.didCancel) {
+            console.log("Canceled");
+          } else if (res.errorCode) {
+            console.log("Errored");
+            console.log("launchCamera" + res.errorCode);
+          } else {
+            const photo = res.assets[0]?.uri;
+            if (!photo || photo.length === 0) {
+              Alert.alert("photo is empty");
+              return;
+            }
+            CameraRoll.save(photo, "photo")
+            .then(() => {
+              pickImage();
+            })
+            .catch((e) => {
+              console.log(e);
+            })
           }
-          CameraRoll.save(photo, "photo")
-          .then(() => {
-            pickImage();
-            images = [];
-          })
-          .catch((e) => {
-            console.log(e);
-          })
-        }
-      });
+        });
+      }
     }
   };
 
@@ -405,11 +419,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             name: image.name
           });
         });
-        // formData.append("images", {
-        //   uri: res.assets[0].uri,
-        //   type: res.assets[0].type,
-        //   name: res.assets[0].fileName
-        // });
 
         Axios.post(`${url}/image/send_images`, formData, {
           headers: {
