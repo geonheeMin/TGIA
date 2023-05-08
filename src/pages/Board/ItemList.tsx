@@ -86,7 +86,7 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
         <Text style={styles.itemPrice}>{board.price}원</Text>
-        <Text>
+        <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
       </View>
@@ -130,14 +130,14 @@ export const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 18,
     fontWeight: "800",
-    marginTop: 20,
-    marginLeft: 16
+    marginTop: 30,
+    marginLeft: 15
   },
   itemPrice: {
     fontSize: 15,
     fontWeight: "400",
-    marginTop: 10,
-    marginLeft: 16
+    marginTop: 7.5,
+    marginLeft: 15
   },
   likeButton: {
     marginTop: vh / 40
@@ -147,6 +147,12 @@ export const styles = StyleSheet.create({
     marginTop: vh / 8.7,
     fontWeight: "300",
     color: "gray"
+  },
+  itemEtc: {
+    color: "grey",
+    fontSize: 12,
+    marginLeft: 15,
+    marginTop: 5
   }
 });
 
