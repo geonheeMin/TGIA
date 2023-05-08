@@ -19,7 +19,9 @@ import {
   PixelRatio,
   Modal,
   ImageBackground,
-  Keyboard
+  Keyboard,
+  Platform,
+  TouchableWithoutFeedback
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
@@ -30,7 +32,6 @@ import Axios from "axios";
 import { categories } from "../../assets/data/category";
 import { places } from "../../assets/data/place";
 import { tracks } from "../../assets/data/track";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 type RootStackParamList = {
   Add: undefined;
@@ -240,53 +241,60 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   /** 갤러리에서 이미지 선택하는 함수 */
   const pickImage = () => {
-    launchImageLibrary({ mediaType: "photo", selectionLimit: 10 }, (res) => {
-      if (res.didCancel) {
-        console.log("Canceled");
-      } else if (res.errorCode) {
-        console.log("Errored");
-      } else {
-        console.log(sendImages);
-        const formData = new FormData();
-        res.assets?.forEach((asset) => {
-          if (images.length > 0) {
-            setImages([...images, { image: asset.uri, boardImage: false }]);
-          } else {
-            images.push({ image: asset.uri, boardImage: false });
-          }
-          sendImages.push({
-            uri: asset.uri,
-            type: asset.type,
-            name: asset.fileName
-          });
-        });
-        sendImages.map((image, index) => {
-          formData.append(`images`, {
-            index: index,
-            uri: image.uri,
-            type: image.type,
-            name: image.name
-          });
-        });
-        Axios.post(`${url}/image/send_images`, formData, {
-          headers: {
-            "Text-Type": "multipart/form-data"
-          }
-        })
-          .then((res) => {
-            if (!isCategoryRecommended) {
-              console.log(res.data);
-              setFilename(res.data);
-              setTimeout(() => getCategoryRecommend(), 3000);
+    launchImageLibrary(
+      {
+        mediaType: "photo",
+        selectionLimit: 10,
+        includeBase64: Platform.OS === "android"
+      },
+      (res) => {
+        if (res.didCancel) {
+          console.log("Canceled");
+        } else if (res.errorCode) {
+          console.log("Errored");
+        } else {
+          console.log(sendImages);
+          const formData = new FormData();
+          res.assets?.forEach((asset) => {
+            if (images.length > 0) {
+              setImages([...images, { image: asset.uri, boardImage: false }]);
             } else {
-              console.log(res.data);
-              setFilename(res.data);
+              images.push({ image: asset.uri, boardImage: false });
+            }
+            sendImages.push({
+              uri: asset.uri,
+              type: asset.type,
+              name: asset.fileName
+            });
+          });
+          sendImages.map((image, index) => {
+            formData.append(`images`, {
+              index: index,
+              uri: image.uri,
+              type: image.type,
+              name: image.name
+            });
+          });
+          Axios.post(`${url}/image/send_images`, formData, {
+            headers: {
+              "Text-Type": "multipart/form-data"
             }
           })
-          .catch((error) => console.log(error));
-        console.log(sendImages);
+            .then((res) => {
+              if (!isCategoryRecommended) {
+                console.log(res.data);
+                setFilename(res.data);
+                setTimeout(() => getCategoryRecommend(), 3000);
+              } else {
+                console.log(res.data);
+                setFilename(res.data);
+              }
+            })
+            .catch((error) => console.log(error));
+          console.log(sendImages);
+        }
       }
-    });
+    );
   };
 
   const renderImages = (item) => {
@@ -480,11 +488,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   }, [free]);
 
   return (
-    <SafeAreaView style={styles.background}>
-      <CategoryModal />
-      <PlaceModal />
-      <TrackModal />
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={styles.background}>
+        <CategoryModal />
+        <PlaceModal />
+        <TrackModal />
         <View
           style={{
             position: "absolute",
@@ -616,6 +624,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           />
           <Text style={{ marginLeft: 10 }}>나눔</Text>
         </View>
+
         <View style={styles.textBar}>
           <TextInput
             multiline={true}
@@ -666,8 +675,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             <Image source={nextIcon} style={styles.nextIcon} />
           </Pressable>
         </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 

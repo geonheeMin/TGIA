@@ -26,6 +26,7 @@ import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import MatIcon from "react-native-vector-icons/MaterialIcons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type RootStackParamList = {
   List: undefined;
@@ -41,6 +42,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   //postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
   const filterList = [
     { label: "전체보기", value: "all" },
     { label: "도서", value: "book" },
@@ -513,15 +515,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           <Text>{session.username}</Text>
         </View>
       </View>
-      <FlatList
-        style={styles.itemList}
-        data={newPosts}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={styles.seperator} />}
-        refreshControl={
-          <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
-        }
-      />
+      <View
+        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - insets.top }}
+      >
+        <FlatList
+          data={newPosts}
+          renderItem={renderItem}
+          ItemSeparatorComponent={() => <View style={styles.seperator} />}
+          refreshControl={
+            <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
+          }
+        />
+      </View>
       <Pressable style={styles.writeButton} onPress={writePost}>
         <Image source={writeIcon} style={{ width: 60, height: 60 }} />
       </Pressable>
@@ -632,9 +637,6 @@ const styles = StyleSheet.create({
     height: vh / 17.5,
     flexDirection: "row",
     alignItems: "center"
-  },
-  itemList: {
-    marginTop: 0
   },
   filterButton: {
     marginLeft: 5,

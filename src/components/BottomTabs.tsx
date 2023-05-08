@@ -5,7 +5,8 @@ import {
   ImageBackground,
   StyleSheet,
   Dimensions,
-  Pressable
+  Pressable,
+  SafeAreaView
 } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -41,7 +42,7 @@ function BottomTabs({ navigation, screen }: BottomTab) {
   }, [navigation]);
 
   return (
-    <View style={styles.bottomBar}>
+    <SafeAreaView style={styles.bottomBar}>
       <Pressable onPress={toList} style={styles.bottomButton}>
         <OctIcon
           name="home"
@@ -96,7 +97,7 @@ function BottomTabs({ navigation, screen }: BottomTab) {
           프로필
         </Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }
 
