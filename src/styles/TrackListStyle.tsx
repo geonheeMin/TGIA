@@ -16,6 +16,9 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     borderColor: 'gray',
   },
+  trackNameText: {
+    color: "black",
+  },
   modalBase: {
     position: 'relative',
   },

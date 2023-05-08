@@ -193,7 +193,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           <Image
             source={item.image}
             style={styles.carouselImage}
-            resizeMode="contain"
           />
         </View>
       </Pressable>
@@ -523,6 +522,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   carouselContainer: {
+    width: vw,
     height: vh * 0.5,
   },
   carouselItemContainer: {
@@ -534,7 +534,6 @@ const styles = StyleSheet.create({
   carouselImage: {
     width: vw * 1.12,
     height: vh * 0.8,
-    resizeMode: 'contain',
   },
   paginationContainer: {
     position: "absolute",

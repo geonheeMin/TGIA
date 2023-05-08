@@ -394,7 +394,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   /** 갤러리에서 이미지 선택하는 함수 */
   const pickImage = () => {
-    launchImageLibrary({ mediaType: "photo", selectionLimit: 10 }, (res) => {
+    launchImageLibrary({ mediaType: "photo", selectionLimit: 10, includeBase64: Platform.OS === 'android' }, (res) => {
       if (res.didCancel) {
         console.log("Canceled");
       } else if (res.errorCode) {
