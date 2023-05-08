@@ -49,8 +49,28 @@ function ItemList({ board, navigation }: itemListProps) {
       .catch((error) => {});
   };
 
+  const timeCalc = () => {
+    const now = new Date();
+    const date = new Date(board.createdDate);
+    const gapTime = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
+    const gapHour = Math.floor(gapTime / 60);
+    const gapDay = Math.floor(gapHour / 24);
+    if (gapTime < 1) {
+      return "방금 전";
+    } else if (gapTime < 60) {
+      return `${gapTime}분 전}`;
+    } else if (gapHour < 24) {
+      return `${gapHour}시간 전`;
+    } else if (gapDay < 7) {
+      return `${gapDay}일 전`;
+    } else {
+      return `${date}`;
+    }
+  };
+
   useEffect(() => {
     favorite();
+    console.log(board);
   }, [isFocused]);
 
   return (
@@ -66,9 +86,9 @@ function ItemList({ board, navigation }: itemListProps) {
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>
         <Text style={styles.itemPrice}>{board.price}원</Text>
-        {/* <Text>{board.category}</Text>
-        <Text>{board.locationType}</Text>
-        <Text>{board.department}</Text> */}
+        <Text>
+          {board.locationType} · {timeCalc()}
+        </Text>
       </View>
       <View style={styles.likesInfo}>
         <Text style={styles.itemFavCount}>

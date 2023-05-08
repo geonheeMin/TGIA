@@ -170,7 +170,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    console.log(board?.images);
+    console.log(DATA);
   }, []);
 
   useEffect(() => {
@@ -179,8 +179,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     console.log(board);
   }, [isFav]);
 
-  const DATA = board?.images.map((item, index) => {
-    return { 
+  const DATA = board?.images?.map((item, index) => {
+    return {
       id: index,
       image: { uri: `${url}/images/${item}` }
     };
@@ -234,11 +234,11 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           />
           {renderPagination()}
         </View>
-        <Modal 
+        <Modal
           visible={modalVisible !== false}
           onRequestClose={closeModal}
           animationType="fade"
-          presentationStyle='overFullScreen'
+          presentationStyle="overFullScreen"
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
@@ -345,9 +345,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         <View style={styles.vr} />
         <View style={styles.priceBar}>
           <View style={styles.priceText}>
-            <Text style={{ fontSize: 20 }}>
-              {board.price.toLocaleString()}원
-            </Text>
+            <Text style={{ fontSize: 20 }}>{board.price}원</Text>
           </View>
           <View style={styles.nego}>
             <Text style={{ fontSize: 12, color: "#7b7b7c" }}>
@@ -523,18 +521,18 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   carouselContainer: {
-    height: vh * 0.5,
+    height: vh * 0.5
   },
   carouselItemContainer: {
     width: vw,
     height: vh / 1.9,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   carouselImage: {
     width: vw * 1.12,
     height: vh * 0.8,
-    resizeMode: 'contain',
+    resizeMode: "contain"
   },
   paginationContainer: {
     position: "absolute",
@@ -548,10 +546,10 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: vh / 10,
+    backgroundColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: vh / 10
   },
   modalHeader: {
     top: vh / 9,
@@ -560,14 +558,14 @@ const styles = StyleSheet.create({
     padding: 20
   },
   modalCloseButton: {
-    color: 'white',
+    color: "white",
     fontSize: 26,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   modalImage: {
     width: vw,
-    height: vh,
-  },
+    height: vh
+  }
 });
 
 export default ItemDetail;

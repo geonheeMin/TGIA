@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useCallback, useState, useEffect } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { launchImageLibrary } from "react-native-image-picker";
+import ImagePicker from "react-native-image-picker";
 import {
   SafeAreaView,
   Pressable,
@@ -16,7 +17,9 @@ import {
   Alert,
   Image,
   PixelRatio,
-  Modal
+  Modal,
+  ImageBackground,
+  Keyboard
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
@@ -27,6 +30,7 @@ import Axios from "axios";
 import { categories } from "../../assets/data/category";
 import { places } from "../../assets/data/place";
 import { tracks } from "../../assets/data/track";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 type RootStackParamList = {
   Add: undefined;
@@ -58,7 +62,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [category, setCategory] = useState(""); //게시글 카테고리
   const [text, setText] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
-  const [img, setImg] = useState({}); //게시글 이미지
+  const [images, setImages] = useState([]); //게시글 이미지
+  const [sendImages, setSendImages] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [filename, setFilename] = useState();
   const [price, setPrice] = useState<number | null>(); //게시글 가격
   const [free, setFree] = useState(false); //게시글 나눔 확인(true or false)
@@ -73,7 +79,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [isCategoryRecommended, setIsCategoryRecommended] = useState(false);
   const [testResult, setTestResult] = useState("");
 
-  const images = [];
   const formData = new FormData(); //서버로 전송할 데이터 공간
 
   var date = new Date();
@@ -90,8 +95,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       setPrice(board.price);
       setFree(board.free);
       setPlace(board.place);
-      setTrack(board.track);
-      setTime(board.date);
+      setTrack(board.department);
+      board.images.map((item) => {
+        images.push({ image: `${url}/images/${item}`, boardImage: true });
+      });
       setIsCategoryRecommended(!isCategoryRecommended);
     } else {
       setTime(postTime);
@@ -127,7 +134,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       category: category,
       content: text,
       price: price,
-      images: filename
+      images: filename,
+      department: track
     };
 
     Axios.post(`${url}/post/insert`, request, {
@@ -189,7 +197,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       price: price,
       title: title,
       content: text,
-      departmentType: board.department,
+      departmentType: track,
       image_id: 1,
       locationType: board.locationType,
       location_text: board.location_text,
@@ -198,7 +206,12 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     console.log(request);
     Axios.put(`${url}/post/edit`, request, {
       headers: { "text-Type": "application/json" }
-    }).then((res) => navigation.replace("List"));
+    }).then((res) =>
+      //navigation.replace("Detail", { board: res.data })
+      {
+        console.log(res.data);
+      }
+    );
     afterUpdate();
   }
 
@@ -216,7 +229,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     Axios.get(`${url}/send-data`)
       .then((res) => {
         if (res.data !== "null") {
-          console.log(res.data);
           setCategory(res.data);
           setIsCategoryRecommended(!isCategoryRecommended);
         } else {
@@ -234,17 +246,21 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       } else if (res.errorCode) {
         console.log("Errored");
       } else {
-        console.log(res);
+        console.log(sendImages);
         const formData = new FormData();
-        res.assets.forEach((asset) => {
-          images.push({
+        res.assets?.forEach((asset) => {
+          if (images.length > 0) {
+            setImages([...images, { image: asset.uri, boardImage: false }]);
+          } else {
+            images.push({ image: asset.uri, boardImage: false });
+          }
+          sendImages.push({
             uri: asset.uri,
             type: asset.type,
             name: asset.fileName
           });
-          console.log(images);
         });
-        images.forEach((image, index) => {
+        sendImages.map((image, index) => {
           formData.append(`images`, {
             index: index,
             uri: image.uri,
@@ -252,24 +268,59 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             name: image.name
           });
         });
-        // formData.append("images", {
-        //   uri: res.assets[0].uri,
-        //   type: res.assets[0].type,
-        //   name: res.assets[0].fileName
-        // });
         Axios.post(`${url}/image/send_images`, formData, {
           headers: {
             "Text-Type": "multipart/form-data"
           }
         })
           .then((res) => {
-            setFilename(res.data);
-            setTimeout(() => getCategoryRecommend(), 3000);
+            if (!isCategoryRecommended) {
+              console.log(res.data);
+              setFilename(res.data);
+              setTimeout(() => getCategoryRecommend(), 3000);
+            } else {
+              console.log(res.data);
+              setFilename(res.data);
+            }
           })
           .catch((error) => console.log(error));
-        setImg(res.assets[0]);
+        console.log(sendImages);
       }
     });
+  };
+
+  const renderImages = (item) => {
+    const deleteImage = () => {
+      const newImages = images.filter((image) => image !== item.item);
+      const newSendImages = sendImages.filter(
+        (image) => image.uri !== item.item.image
+      );
+      setImages(newImages);
+      setSendImages(newSendImages);
+    };
+    return (
+      <ImageBackground
+        source={{ uri: item.item.image }}
+        style={[
+          styles.selectedImgIcon,
+          { alignItems: "flex-start", justifyContent: "flex-end" }
+        ]}
+      >
+        <Pressable
+          style={{
+            width: 25,
+            height: 25,
+            borderRadius: 25,
+            backgroundColor: "lightgrey",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+          onPress={() => deleteImage()}
+        >
+          <Text style={{ color: "white", fontWeight: "bold" }}>X</Text>
+        </Pressable>
+      </ImageBackground>
+    );
   };
 
   /** 카테고리 모달 관리 함수
@@ -277,10 +328,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
    * categoryModalControl : 카테고리 모달 open/close 관리 함수
    * CategoryModal : 카테고리 모달 컴포넌트 함수
    */
-  const showCategory = (selected: string) => {
-    const selection = categories.filter((item) => item.value === selected);
-    return selection[0].label;
-  };
   const categoryModalControl = () => {
     setModalOpen(!modalOpen);
     setCategoryVisible(!categoryVisible);
@@ -314,11 +361,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 <Pressable
                   style={styles.categoryItem}
                   onPress={() => {
-                    setCategory(item.item.value);
+                    setCategory(item.item);
                     categoryModalControl();
                   }}
                 >
-                  <Text>{item.item.label}</Text>
+                  <Text>{item.item}</Text>
                 </Pressable>
               );
             }}
@@ -362,11 +409,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 <Pressable
                   style={styles.placeItem}
                   onPress={() => {
-                    setPlace(item.item.value);
+                    setPlace(item.item);
                     placeModalControl();
                   }}
                 >
-                  <Text>{item.item.label}</Text>
+                  <Text>{item.item}</Text>
                 </Pressable>
               );
             }}
@@ -410,11 +457,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 <Pressable
                   style={styles.trackItem}
                   onPress={() => {
-                    setTrack(item.item.value);
+                    setTrack(item.item);
                     trackModalControl();
                   }}
                 >
-                  <Text>{item.item.label}</Text>
+                  <Text>{item.item}</Text>
                 </Pressable>
               );
             }}
@@ -437,156 +484,189 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       <CategoryModal />
       <PlaceModal />
       <TrackModal />
-      <View
-        style={{
-          position: "absolute",
-          width: vw,
-          height: vh,
-          backgroundColor: "black",
-          zIndex: modalOpen ? 50 : -50,
-          opacity: modalOpen ? 0.5 : 0
-        }}
-      ></View>
-      <View style={styles.topBar}>
-        <Pressable style={styles.cancelButton} onPress={toList}>
-          <Image source={cancel} style={styles.cancelIcon} />
-          <Text style={{ marginLeft: 15, fontWeight: "bold", fontSize: 20 }}>
-            글쓰기
-          </Text>
-        </Pressable>
-        <Pressable
-          style={styles.postButton}
-          onPress={board === "new" ? postAdd : postUpdate}
-        >
-          <Text style={{ color: "#0d44fe", fontSize: 18, fontWeight: "600" }}>
-            {board === "new" ? "등록" : "수정"}
-          </Text>
-        </Pressable>
-      </View>
-      <View style={styles.galleryBar}>
-        <Pressable style={styles.galleryButton} onPress={pickImage}>
-          <Image source={gallery} style={styles.galleryIcon} />
-        </Pressable>
-        <Image
-          source={
-            Object.keys(img).length === 0
-              ? { uri: board.img }
-              : { uri: img?.uri }
-          }
-          style={styles.selectImgIcon}
-        />
-      </View>
-      <View style={styles.titleBar}>
-        <TextInput
-          placeholder={"제목"}
-          style={styles.titleInput}
-          value={title}
-          onChangeText={setTitle}
-        />
-      </View>
-      <View style={styles.categoryBar}>
-        <Pressable
-          style={styles.categoryButton}
-          disabled={!isCategoryRecommended}
-          onPress={() => {
-            categoryModalControl();
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: isCategoryRecommended ? "black" : "grey"
-            }}
-          >
-            {board !== "new"
-              ? category
-              : !isCategoryRecommended
-              ? "카테고리 선택"
-              : category}
-          </Text>
-          <Image source={nextIcon} style={styles.nextIcon} />
-        </Pressable>
-      </View>
-      <View style={styles.priceBar}>
-        <TextInput
-          value={price?.toString()}
-          placeholder={"₩ 가격"}
-          keyboardType="number-pad"
-          style={styles.priceInput}
-          onChange={(e) =>
-            e.nativeEvent.text === ""
-              ? setPrice(null)
-              : setPrice(parseInt(e.nativeEvent.text))
-          }
-        />
-        <Text
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
           style={{
-            marginLeft: 20,
-            marginRight: 5,
-            opacity: price === null ? 0 : 100
+            position: "absolute",
+            width: vw,
+            height: vh,
+            backgroundColor: "black",
+            zIndex: modalOpen ? 50 : -50,
+            opacity: modalOpen ? 0.5 : 0
           }}
-        >
-          원
-        </Text>
-        <BouncyCheckbox
-          style={styles.freeButton}
-          onPress={() => setFree(!free)}
-          fillColor={"#008bfd"}
-          iconStyle={styles.freeButton}
-          innerIconStyle={styles.freeButton}
-        />
-        <Text style={{ marginLeft: 10 }}>나눔</Text>
-      </View>
-      <View style={styles.textBar}>
-        <TextInput
-          multiline={true}
-          style={styles.textInput}
-          placeholder={"내용을 입력해주세요"}
-          value={text}
-          onChangeText={setText}
-        />
-      </View>
-      <View style={styles.placeBar}>
-        <Text style={{ flex: 2, marginLeft: 5 }}>거래 희망 장소</Text>
-        <Pressable
-          style={styles.placeButton}
-          onPress={() => placeModalControl()}
-        >
-          <Text
-            style={{
-              marginRight: 35,
-              textAlign: "right",
-              width: vw / 2.12,
-              color: "grey"
+        ></View>
+        <View style={styles.topBar}>
+          <Pressable style={styles.cancelButton} onPress={toList}>
+            <Image source={cancel} style={styles.cancelIcon} />
+            <Text style={{ marginLeft: 15, fontWeight: "bold", fontSize: 20 }}>
+              글쓰기
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.postButton}
+            onPress={board === "new" ? postAdd : postUpdate}
+          >
+            <Text style={{ color: "#0d44fe", fontSize: 18, fontWeight: "600" }}>
+              {board === "new" ? "등록" : "수정"}
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.galleryBar}>
+          <Pressable style={styles.galleryButton} onPress={pickImage}>
+            <View
+              style={{
+                flex: 3,
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <Image source={gallery} style={styles.galleryIcon} />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                flex: 1
+              }}
+            >
+              <Text
+                style={
+                  images.length === 0
+                    ? { color: "black" }
+                    : { color: "#c39c00" }
+                }
+              >
+                {images.length}
+              </Text>
+              <Text> / 10</Text>
+            </View>
+          </Pressable>
+          {images.length === 0 ? (
+            <View style={styles.selectImgIcon} />
+          ) : (
+            <FlatList
+              horizontal={true}
+              data={images}
+              renderItem={renderImages}
+              showsHorizontalScrollIndicator={false}
+              style={{ marginLeft: 20 }}
+              refreshing={refreshing}
+              keyExtractor={(item) => item.image}
+              extraData={images}
+            />
+          )}
+        </View>
+        <View style={styles.titleBar}>
+          <TextInput
+            placeholder={"제목"}
+            style={styles.titleInput}
+            value={title}
+            onChangeText={setTitle}
+          />
+        </View>
+        <View style={styles.categoryBar}>
+          <Pressable
+            style={styles.categoryButton}
+            disabled={!isCategoryRecommended}
+            onPress={() => {
+              categoryModalControl();
             }}
           >
-            {/* {place === "" ? "장소 선택" : showPlace(place)} */}
-            {place === "" ? "장소 선택" : board.locationType}
-          </Text>
-          <Image source={nextIcon} style={styles.nextIcon} />
-        </Pressable>
-      </View>
-      <View style={styles.trackBar}>
-        <Text style={{ flex: 2, marginLeft: 5 }}>보여줄 트랙 설정</Text>
-        <Pressable
-          style={styles.trackButton}
-          onPress={() => trackModalControl()}
-        >
+            <Text
+              style={{
+                fontSize: 15,
+                color: isCategoryRecommended ? "black" : "grey"
+              }}
+            >
+              {board !== "new"
+                ? category
+                : !isCategoryRecommended
+                ? "카테고리 선택"
+                : category}
+            </Text>
+            <Image source={nextIcon} style={styles.nextIcon} />
+          </Pressable>
+        </View>
+        <View style={styles.priceBar}>
+          <TextInput
+            value={price?.toString()}
+            placeholder={"₩ 가격"}
+            keyboardType="number-pad"
+            style={styles.priceInput}
+            onChange={(e) =>
+              e.nativeEvent.text === ""
+                ? setPrice(null)
+                : setPrice(parseInt(e.nativeEvent.text))
+            }
+          />
           <Text
             style={{
-              fontSize: 15,
-              marginRight: 35,
-              textAlign: "right",
-              width: vw / 2.12,
-              color: "grey"
+              marginLeft: 20,
+              marginRight: 5,
+              opacity: price === null ? 0 : 100
             }}
           >
-            {/* {track === "" ? "" : showTrack(track)} */}
-            {track === "" ? "" : board.department}
+            원
           </Text>
-          <Image source={nextIcon} style={styles.nextIcon} />
-        </Pressable>
-      </View>
+          <BouncyCheckbox
+            style={styles.freeButton}
+            onPress={() => setFree(!free)}
+            fillColor={"#008bfd"}
+            iconStyle={styles.freeButton}
+            innerIconStyle={styles.freeButton}
+          />
+          <Text style={{ marginLeft: 10 }}>나눔</Text>
+        </View>
+        <View style={styles.textBar}>
+          <TextInput
+            multiline={true}
+            style={styles.textInput}
+            placeholder={"내용을 입력해주세요"}
+            value={text}
+            onChangeText={setText}
+          />
+        </View>
+        <View style={styles.placeBar}>
+          <Text style={{ flex: 2, marginLeft: 5 }}>거래 희망 장소</Text>
+          <Pressable
+            style={styles.placeButton}
+            onPress={() => placeModalControl()}
+          >
+            <Text
+              style={{
+                marginRight: 35,
+                textAlign: "right",
+                width: vw / 2.12,
+                color: "grey"
+              }}
+            >
+              {/* {place === "" ? "장소 선택" : showPlace(place)} */}
+              {place === "" ? "장소 선택" : place}
+            </Text>
+            <Image source={nextIcon} style={styles.nextIcon} />
+          </Pressable>
+        </View>
+        <View style={styles.trackBar}>
+          <Text style={{ flex: 2, marginLeft: 5 }}>보여줄 트랙 설정</Text>
+          <Pressable
+            style={styles.trackButton}
+            onPress={() => trackModalControl()}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                marginRight: 35,
+                textAlign: "right",
+                width: vw / 2.12,
+                color: "grey"
+              }}
+            >
+              {/* {track === "" ? "" : showTrack(track)} */}
+              {track === "" ? "" : track}
+            </Text>
+            <Image source={nextIcon} style={styles.nextIcon} />
+          </Pressable>
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
@@ -612,8 +692,7 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     flexDirection: "row",
     alignItems: "center",
-    height: vh / 17.5,
-    flex: 1
+    height: vh / 17.5
   },
   cancelIcon: {
     width: 35 / 2.3,
@@ -621,11 +700,12 @@ const styles = StyleSheet.create({
     overflow: "visible"
   },
   postButton: {
+    position: "absolute",
+    right: vw / 25,
     flexDirection: "row",
     flex: 0.2,
     alignItems: "center",
-    justifytext: "center",
-    paddingRight: 3,
+    justifyContent: "center",
     height: vh / 17.5
   },
   galleryBar: {
@@ -638,18 +718,17 @@ const styles = StyleSheet.create({
   },
   galleryButton: {
     backgroundColor: "#eeeeee",
-    flexDirection: "row",
-    justifytext: "center",
+    flexDirection: "column",
+    justifyContent: "center",
     alignItems: "center",
-    paddingLeft: vw / 25,
     borderWidth: 1,
     borderRadius: 7,
-    width: vw / 4.5,
+    width: vh / 10,
     height: vh / 10
   },
   galleryIcon: {
-    width: 782 / 15,
-    height: 608 / 15
+    width: 782 / 20,
+    height: 608 / 20
   },
   selectImgIcon: {
     flexDirection: "row",
@@ -658,8 +737,19 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     borderWidth: 1,
     borderRadius: 7,
-    width: vw / 4.5,
+    width: vh / 10,
     height: vh / 10
+  },
+  selectedImgIcon: {
+    flexDirection: "row",
+    justifytext: "center",
+    alignItems: "center",
+    marginRight: 20,
+    borderWidth: 1,
+    borderRadius: 7,
+    width: vh / 10,
+    height: vh / 10,
+    overflow: "hidden"
   },
   titleBar: {
     height: vh / 14,
@@ -773,7 +863,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderWidth: 1,
     left: vw * 0.05,
-    top: vh * 0.13,
+    top: vh * 0.15,
     backgroundColor: "#FFFFFF",
     zIndex: 53
   },
@@ -787,9 +877,9 @@ const styles = StyleSheet.create({
   },
   categoryItem: {
     width: vw - vw / 10,
-    height: (vh * 0.6) / 7,
-    justifytext: "center",
-    paddingLeft: vw / 20
+    height: (vh * 0.5) / 7,
+    justifyContent: "center",
+    paddingLeft: vw / 50
   },
   /** 거래 장소 모달 style
    * placeModalO : 카테고리 모달이 on 일 때
@@ -800,7 +890,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderWidth: 1,
     left: vw * 0.05,
-    top: vh * 0.08,
+    top: vh * 0.15,
     backgroundColor: "#FFFFFF",
     zIndex: 53
   },
@@ -814,9 +904,9 @@ const styles = StyleSheet.create({
   },
   placeItem: {
     width: vw - vw / 10,
-    height: (vh * 0.75) / 14,
-    justifytext: "center",
-    paddingLeft: vw / 20
+    height: (vh * 0.6) / 8,
+    justifyContent: "center",
+    paddingLeft: vw / 50
   },
   /** 트랙 표시 모달 style
    * trackModalO : 카테고리 모달이 on 일 때
@@ -827,7 +917,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderWidth: 1,
     left: vw * 0.05,
-    top: vh * 0.1,
+    top: vh * 0.15,
     backgroundColor: "#FFFFFF",
     zIndex: 53
   },
@@ -842,8 +932,8 @@ const styles = StyleSheet.create({
   trackItem: {
     width: vw - vw / 10,
     height: (vh * 0.75) / 14,
-    justifytext: "center",
-    paddingLeft: vw / 20
+    justifyContent: "center",
+    paddingLeft: vw / 50
   }
 });
 

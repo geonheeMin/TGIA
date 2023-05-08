@@ -24,7 +24,6 @@ import sendIcon from "../../assets/design/sendIcon2.png";
 import chatPlus from "../../assets/design/chatPlus.png";
 import backArrow from "../../assets/design/backArrow.png";
 import ChatBubble from "./ChatBubble";
-import test from "../../assets/dummy/chat.json";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import EntypoIcon from "react-native-vector-icons/Entypo";
@@ -124,8 +123,9 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       (msg) =>
         msg.message_id < item.message_id && msg.chatroom_id === item.chatroom_id
     );
+    console.log(previousList);
     const previous =
-      previousList.length > 1
+      previousList.length > 0
         ? previousList[previousList.length - 1].sender
         : null;
     return (
@@ -355,15 +355,13 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
 
   useEffect(() => {
     getChats();
-    console.log(session);
-    console.log(chatroom);
+    console.log(chats);
     Axios.get(`${url}/chat/get_username?id=${other}`)
       .then((res) => setOtherName(res.data))
       .catch((error) => console.log(error));
     const refreshChat = setInterval(() => {
       getChats();
     }, 500);
-
     return () => clearInterval(refreshChat);
   }, []);
 

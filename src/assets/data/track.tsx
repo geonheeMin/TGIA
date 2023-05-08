@@ -1,10 +1,14 @@
 export const tracks = [
-    {label: '전체', value: 'whole'},
-    {label: '크리에이티브인문예술대학', value: 'inye'},
-    {label: '미래융합사회과학대학', value: 'sagwa'},
-    {label: '디자인대학', value: 'design'},
-    {label: 'IT공과대학', value: 'IT'},
-    {label: '창의융합대학', value: 'changyung'},
-    {label: '미래플러스대학', value: 'mipl'},
-    {label: '상상력교양대학', value: 'sanggyo'},
+  "전체",
+  "크리에이티브인문학부",
+  "예술학부",
+  "사회과학부",
+  "글로벌패션과학부",
+  "ICT디자인학부",
+  "뷰티디자인매니지먼트학부",
+  "컴퓨터공학부",
+  "기계전자공학부",
+  "IT융합공학부",
+  "스마트경영공학부",
+  "스마트팩토리컨설팅학부"
 ];

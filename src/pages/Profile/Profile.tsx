@@ -9,12 +9,12 @@ import {
   Alert,
   TouchableOpacity,
   Animated,
-  Dimensions
+  Dimensions,
+  TouchableHighlight
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import { ProgressBar } from "react-native-paper";
-import { TouchableHighlight } from "react-native-gesture-handler";
 import BottomTabs from "../../components/BottomTabs";
 import useStore from "../../../store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -165,11 +165,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           나의 거래
         </Text>
         <View style={{ paddingTop: vh / 100 }}>
-          <TouchableHighlight
-            style={styles.menuButton}
-            underlayColor="#F6F6F6"
-            onPress={toSalesHistory}
-          >
+          <Pressable style={styles.menuButton} onPress={toSalesHistory}>
             <View style={styles.menuButtonContent}>
               <MaterialCommunityIcons
                 name="clipboard-text-outline"
@@ -178,7 +174,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
               />
               <Text style={styles.menuButtonText}>판매내역</Text>
             </View>
-          </TouchableHighlight>
+          </Pressable>
           <TouchableHighlight
             style={styles.menuButton}
             underlayColor="#F6F6F6"

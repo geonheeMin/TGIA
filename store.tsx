@@ -19,8 +19,8 @@ const useStore = create<preset>((set) => ({
     set((state) => ({ hasSession: result }));
   },
   //url: "http://3.35.217.228:8080" //yongki
-  url: "http://223.194.135.151:8080" // 민규
-  url: "http://43.200.253.74:8080" //geonhee
+  //url: "http://223.194.135.151:8080" // 민규
+  url: "http://3.35.8.3:8080" //geonhee
 }));
 
 export default useStore;
