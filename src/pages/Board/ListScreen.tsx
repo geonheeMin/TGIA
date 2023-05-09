@@ -19,7 +19,6 @@ import {
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import ItemList from "./ItemList";
-// import postlist from "../../assets/dummy/postdata.json";
 import writeIcon from "../../assets/design/pen1.png";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";

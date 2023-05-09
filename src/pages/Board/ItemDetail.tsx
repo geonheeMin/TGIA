@@ -29,7 +29,6 @@ import unfav from "../../assets/design/unfavorite.png";
 import { useIsFocused } from "@react-navigation/native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { stackScrollInterpolator } from "../../utils/animations";
-import { transparent } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 type RootStackParamList = {
   Detail: undefined;
@@ -190,10 +189,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     return (
       <Pressable onPress={() => setModalVisible(index)}>
         <View style={styles.carouselItemContainer}>
-          <Image
-            source={item.image}
-            style={styles.carouselImage}
-          />
+          <Image source={item.image} style={styles.carouselImage} />
         </View>
       </Pressable>
     );
@@ -521,7 +517,7 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     width: vw,
-    height: vh * 0.5,
+    height: vh * 0.5
   },
   carouselItemContainer: {
     width: vw,
@@ -531,7 +527,7 @@ const styles = StyleSheet.create({
   },
   carouselImage: {
     width: vw * 1.12,
-    height: vh * 0.8,
+    height: vh * 0.8
   },
   paginationContainer: {
     position: "absolute",

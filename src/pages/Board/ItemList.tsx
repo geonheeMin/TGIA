@@ -14,8 +14,6 @@ import {
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
-import fav from "../../assets/design/favorite.png";
-import unfav from "../../assets/design/unfavorite.png";
 import useStore from "../../../store";
 import Axios from "axios";
 
