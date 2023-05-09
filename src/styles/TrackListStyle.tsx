@@ -16,6 +16,9 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     borderColor: 'gray',
   },
+  trackNameText: {
+    color: "black",
+  },
   modalBase: {
     position: 'relative',
   },
@@ -49,9 +52,7 @@ export const styles = StyleSheet.create({
   },
   buttonSelect: {
     marginHorizontal: 3,
-    //paddingVertical: 15,
     paddingVertical: vh / 54,
-    ///paddingHorizontal: 15,
     paddingHorizontal: vw / 26,
     borderRadius: 10,
     elevation: 2,
@@ -60,9 +61,7 @@ export const styles = StyleSheet.create({
   buttonClose: {
     borderRadius: 10,
     marginVertical: 6,
-    //paddingVertical: 10,
     paddingVertical: vh / 78,
-    //paddingHorizontal: 115,
     paddingHorizontal: vw / 3.4,
     elevation: 2,
     backgroundColor: 'white',

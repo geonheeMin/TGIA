@@ -95,7 +95,21 @@ function FavScreen({route, navigation}: FavScreenProps) {
           관심목록
         </Text>
       </View>
-      <FlatList renderItem={renderItem} data={posts} />
+
+      <View>
+        {posts.length >= 1 ? 
+          <FlatList
+            data={posts}
+            renderItem={renderItem}
+          />
+          :
+          <View style={styles.contentNone }>
+            <Text style={styles.contentNoneText}>
+              아직 관심 목록이 없어요.
+            </Text>
+          </View>     
+        }
+      </View>
     </SafeAreaView>
   );
 }
@@ -127,6 +141,16 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
+  },
+  contentNone: {
+    position: "absolute",
+    alignItems: "center",
+    marginVertical: vh / 2.6,
+    left: "30%"
+  },
+  contentNoneText: {
+    fontSize: 16,
+    color: "gray",
   },
 });
 

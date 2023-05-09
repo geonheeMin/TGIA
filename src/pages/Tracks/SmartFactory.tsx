@@ -30,7 +30,7 @@ function SmartFactory({navigation, aTrack, bTrack}: Factory) {
     navigation.reset({ routes: [{ name: "Profile" }] });
   }, [navigation]);
   
-  async function changeTrack(trackNum: number, trackId: number, trackName: string) {
+  function changeTrack(trackNum: number, trackId: number, trackName: string) {
     setTrackNum(trackNum);
     setTrackId(trackId);
     setTrackName(trackName);
@@ -63,7 +63,7 @@ function SmartFactory({navigation, aTrack, bTrack}: Factory) {
     <Pressable key={track.id}
       style={styles.menuButton}
       onPress={() => {setTrackNum(track.num); setModalVisible(true);}}>
-      <Text>{track.name}</Text>
+      <Text style={styles.trackNameText}>{track.name}</Text>
     </Pressable>
   );
 

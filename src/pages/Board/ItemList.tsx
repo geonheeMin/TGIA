@@ -76,12 +76,12 @@ function ItemList({ board, navigation }: itemListProps) {
   return (
     <Pressable style={styles.items} onPress={toDetail}>
       <View style={styles.itemImageZone}>
-        <Image
-          source={{
-            uri: `${url}/images/${board?.images[0]}`
-          }}
-          style={styles.itemImage}
-        />
+        {board && board.images && board.images[0] && (
+          <Image
+            source={{ uri: `${url}/images/${board.images[0]}` }}
+            style={styles.itemImage}
+          />
+        )}
       </View>
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle}>{board.title}</Text>

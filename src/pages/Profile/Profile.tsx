@@ -8,6 +8,7 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  TouchableHighlight,
   Animated,
   Dimensions,
   TouchableHighlight

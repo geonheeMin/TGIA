@@ -295,6 +295,7 @@ const styles = StyleSheet.create({
   },
   departOff: {
     fontSize: 15,
+    color: "black",
   },
 });
 
