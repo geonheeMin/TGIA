@@ -244,8 +244,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     launchImageLibrary(
       {
         mediaType: "photo",
-        selectionLimit: 10,
-        includeBase64: Platform.OS === "android"
+        selectionLimit: 10
       },
       (res) => {
         if (res.didCancel) {
@@ -253,7 +252,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         } else if (res.errorCode) {
           console.log("Errored");
         } else {
-          console.log(sendImages);
           const formData = new FormData();
           res.assets?.forEach((asset) => {
             if (images.length > 0) {
@@ -277,21 +275,18 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           });
           Axios.post(`${url}/image/send_images`, formData, {
             headers: {
-              "Text-Type": "multipart/form-data"
+              "Content-Type": "multipart/form-data"
             }
           })
             .then((res) => {
               if (!isCategoryRecommended) {
-                console.log(res.data);
                 setFilename(res.data);
                 setTimeout(() => getCategoryRecommend(), 3000);
               } else {
-                console.log(res.data);
                 setFilename(res.data);
               }
             })
-            .catch((error) => console.log(error));
-          console.log(sendImages);
+            .catch((error) => console.log("wf"));
         }
       }
     );

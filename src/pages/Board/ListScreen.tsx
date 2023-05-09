@@ -26,7 +26,6 @@ import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import MatIcon from "react-native-vector-icons/MaterialIcons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type RootStackParamList = {
   List: undefined;
@@ -35,6 +34,7 @@ type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
+const sh = Dimensions.get("screen").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
   const { session, url } = useStore();
@@ -42,7 +42,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   //postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
-  const insets = useSafeAreaInsets();
   const filterList = [
     { label: "전체보기", value: "all" },
     { label: "도서", value: "book" },
@@ -516,7 +515,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         </View>
       </View>
       <View
-        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - insets.top }}
+        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}
       >
         <FlatList
           data={newPosts}
