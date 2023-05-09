@@ -170,6 +170,9 @@ xcuserdata/
 **/build/
 !src/**/build/
 
+# Ignore index.android.bundle file in android/app/src/main/assets/
+android/app/src/main/assets/index.android.bundle
+
 # Ignore Gradle GUI config
 gradle-app.setting
 

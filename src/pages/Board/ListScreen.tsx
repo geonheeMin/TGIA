@@ -34,6 +34,7 @@ type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
+const sh = Dimensions.get("screen").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
   const { session, url } = useStore();
@@ -513,15 +514,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           <Text>{session.username}</Text>
         </View>
       </View>
-      <FlatList
-        style={styles.itemList}
-        data={newPosts}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={styles.seperator} />}
-        refreshControl={
-          <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
-        }
-      />
+      <View
+        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}
+      >
+        <FlatList
+          data={newPosts}
+          renderItem={renderItem}
+          ItemSeparatorComponent={() => <View style={styles.seperator} />}
+          refreshControl={
+            <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
+          }
+        />
+      </View>
       <Pressable style={styles.writeButton} onPress={writePost}>
         <Image source={writeIcon} style={{ width: 60, height: 60 }} />
       </Pressable>
@@ -632,9 +636,6 @@ const styles = StyleSheet.create({
     height: vh / 17.5,
     flexDirection: "row",
     alignItems: "center"
-  },
-  itemList: {
-    marginTop: 0
   },
   filterButton: {
     marginLeft: 5,

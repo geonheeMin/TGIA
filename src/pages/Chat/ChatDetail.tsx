@@ -24,7 +24,6 @@ import sendIcon from "../../assets/design/sendIcon2.png";
 import chatPlus from "../../assets/design/chatPlus.png";
 import backArrow from "../../assets/design/backArrow.png";
 import ChatBubble from "./ChatBubble";
-import test from "../../assets/dummy/chat.json";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import EntypoIcon from "react-native-vector-icons/Entypo";
@@ -56,6 +55,8 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const [otherName, setOtherName] = useState("");
   const [paymentUrl, setPaymentUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isPaying, setIsPaying] = useState(false);
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
   /** isChatLoaded: Axios 통신으로 받아온 데이터 처리 완료 여부, true면 Axios 함수 처리가 완전히 끝난 것으로 Axios 통신해도 되는 상태
    * false면 아직 Axios로 받아온 데이터를 처리하는 과정으로 Axios 통신하면 안된다는 것을 의미
    */
@@ -63,15 +64,16 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const [isMenuOpened, setIsMenuOpened] = useState(false);
 
   const request = {
-    post_id: 18,
-    user_id: 8,
-    buyer_id: 9,
-    price: 10000,
-    item_name: "아이폰 14 프로 맥스 실버 256GB"
+    post_id: post.post_id,
+    user_id: post.member_id,
+    buyer_id: session.member_id,
+    price: post.price,
+    item_name: post.title
   };
 
   const tryPayment = () => {
     console.log(1);
+    setIsPaying(true);
     Axios.post(`${url}/payment/ready`, request)
       .then((res) => {
         console.log(res.data);
@@ -82,6 +84,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       .catch((error) => {
         console.log(error);
       });
+    setIsPaying(false);
   };
 
   const handleNavigationStateChange = (navState) => {
@@ -115,17 +118,20 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     timeStyle: "medium"
   }).format(date);
 
-  const backward = useCallback(() => {
+  const backward = () => {
+    timerId && clearInterval(timerId);
+    setTimerId(null);
     navigation.goBack();
-  }, [navigation]);
+  };
 
   const renderChat = ({ item }) => {
     const previousList = chats.filter(
       (msg) =>
         msg.message_id < item.message_id && msg.chatroom_id === item.chatroom_id
     );
+    console.log(previousList);
     const previous =
-      previousList.length > 1
+      previousList.length > 0
         ? previousList[previousList.length - 1].sender
         : null;
     return (
@@ -354,18 +360,36 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   useEffect(() => {
+    console.log(post);
     getChats();
-    console.log(session);
-    console.log(chatroom);
     Axios.get(`${url}/chat/get_username?id=${other}`)
       .then((res) => setOtherName(res.data))
       .catch((error) => console.log(error));
-    const refreshChat = setInterval(() => {
+    const newTimerId = setInterval(() => {
       getChats();
-    }, 500);
-
-    return () => clearInterval(refreshChat);
+    }, 2000);
+    setTimerId(newTimerId);
+    return () => {
+      timerId && clearInterval(timerId);
+      setTimerId(null);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!isPaying) {
+      getChats();
+      const newTimerId = setInterval(() => {
+        getChats();
+      }, 2000);
+      setTimerId(newTimerId);
+      return () => {
+        timerId && clearInterval(timerId);
+      };
+    } else {
+      timerId && clearInterval(timerId);
+      setTimerId(null);
+    }
+  }, [isPaying]);
 
   return (
     <View style={styles.container}>

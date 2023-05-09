@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -24,6 +24,9 @@ function ChatBubble(chat: chat) {
   const sender = chat.sender_id;
   const my_id = session.member_id;
   const previous = chat.previousSender;
+  useEffect(() => {
+    console.log(chat);
+  }, []);
   if (my_id === sender) {
     return (
       <View style={styles.myBubbleBox}>
