@@ -12,7 +12,8 @@ import {
   TextInput,
   Dimensions,
   Alert,
-  FlatList
+  FlatList,
+  RefreshControl
 } from "react-native";
 import ChatTitle from "./ChatTitle";
 import Axios from "axios";
@@ -20,6 +21,7 @@ import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import chatlist from "../../assets/dummy/chatlist.json";
 import chats from "../../assets/dummy/chat.json";
+import { useIsFocused } from "@react-navigation/native";
 
 type RootStackParamList = {
   ChatList: undefined;
@@ -36,6 +38,8 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
   const post = route.params?.post_id;
   const [chats, setChats] = useState([]);
   const { session, url } = useStore();
+  const isFocused = useIsFocused();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const renderItem = ({ item }) => {
     return <ChatTitle chat={item} navigation={navigation} />;
   };
@@ -49,14 +53,17 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
     });
   };
 
-  useEffect(() => {
-    // const refreshMyChats = setInterval(() => {
-    //   getMyChats();
-    // }, 500);
-
-    // return () => clearInterval(refreshMyChats);
+  const refreshChats = () => {
+    setIsRefreshing(true);
     getMyChats();
-  }, []);
+    setIsRefreshing(false);
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      refreshChats();
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={{ height: vh, backgroundColor: "white" }}>
@@ -75,6 +82,9 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
       <FlatList
         data={chats.sort((a, b) => b.last_chatMessage - a.last_chatMessage)}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl onRefresh={refreshChats} refreshing={isRefreshing} />
+        }
       />
       <BottomTabs navigation={navigation} screen="ChatList" />
     </SafeAreaView>

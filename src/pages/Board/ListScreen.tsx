@@ -519,6 +519,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
           </Pressable>
         </View>
+        <View style={{ flex: 2, alignItems: "flex-end" }}>
+          <Text>{session.username}</Text>
+        </View>
       </View>
       <View
         style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}

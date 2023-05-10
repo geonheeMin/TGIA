@@ -8,7 +8,6 @@ import {
   Image
 } from "react-native";
 import useStore from "../../../store";
-import member from "../../assets/dummy/member.json";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -28,6 +27,13 @@ function ChatBubble(chat: chat) {
     console.log(chat);
   }, []);
   if (my_id === sender) {
+    if (chat.message === "송금요청") {
+      return (
+        <View style={styles.myBubbleBox}>
+          <Text style={{ color: "white" }}>송금요청입니다.</Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.myBubbleBox}>
         <Text style={{ color: "white" }}>{chat.message}</Text>
