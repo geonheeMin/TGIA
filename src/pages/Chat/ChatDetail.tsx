@@ -29,6 +29,7 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import { WebView } from "react-native-webview";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useNavigationState } from "@react-navigation/native";
 
 type RootStackParamList = {
   ChatDetail: undefined;
@@ -57,6 +58,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+  const [pressedBack, setPressedBack] = useState(false);
   /** isChatLoaded: Axios 통신으로 받아온 데이터 처리 완료 여부, true면 Axios 함수 처리가 완전히 끝난 것으로 Axios 통신해도 되는 상태
    * false면 아직 Axios로 받아온 데이터를 처리하는 과정으로 Axios 통신하면 안된다는 것을 의미
    */
@@ -69,6 +71,14 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     buyer_id: session.member_id,
     price: post.price,
     item_name: post.title
+  };
+
+  const requestPayment = () => {
+    sendApi("송금요청");
+  };
+
+  const sendPosition = () => {
+    sendApi("위치전송");
   };
 
   const tryPayment = () => {
@@ -153,6 +163,25 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
 
   const handleScrollToEnd = () => {
     chatRef.current?.scrollToEnd({ animated: true });
+  };
+
+  const sendApi = (api: string) => {
+    const SendMessageRequestDTO = {
+      chatroom_id: chatroom.chatroom_id,
+      sender_id: session.member_id,
+      message: api
+    };
+    Axios.post(`${url}/chat/send_V2`, SendMessageRequestDTO, {
+      headers: { "Content-Type": "application/json" }
+    })
+      .then((res) => {
+        setChats(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    handleScrollToEnd();
+    setMsg("");
   };
 
   const sendMessage = () => {
@@ -300,11 +329,17 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
                 borderRadius: vw / 7,
                 backgroundColor: "#fee10c"
               }}
-              onPress={tryPayment}
+              onPress={
+                post.member_id === session.member_id
+                  ? () => requestPayment()
+                  : tryPayment
+              }
             >
               <FontAwesomeIcon name="won" color="#6b6b6b" size={25} />
             </Pressable>
-            <Text style={{ fontWeight: "600", fontSize: 15 }}>송금하기</Text>
+            <Text style={{ fontWeight: "600", fontSize: 15 }}>
+              {post.member_id === session.member_id ? "송금요청" : "송금하기"}
+            </Text>
           </View>
           <View
             style={{
@@ -360,35 +395,20 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   useEffect(() => {
-    console.log(post);
-    getChats();
-    Axios.get(`${url}/chat/get_username?id=${other}`)
-      .then((res) => setOtherName(res.data))
-      .catch((error) => console.log(error));
-    const newTimerId = setInterval(() => {
-      getChats();
-    }, 2000);
-    setTimerId(newTimerId);
-    return () => {
-      timerId && clearInterval(timerId);
-      setTimerId(null);
-    };
-  }, []);
-
-  useEffect(() => {
     if (!isPaying) {
       getChats();
       const newTimerId = setInterval(() => {
         getChats();
-      }, 2000);
+      }, 1500);
       setTimerId(newTimerId);
-      return () => {
-        timerId && clearInterval(timerId);
-      };
     } else {
       timerId && clearInterval(timerId);
       setTimerId(null);
     }
+    return () => {
+      timerId && clearInterval(timerId);
+      setTimerId(null);
+    };
   }, [isPaying]);
 
   return (
@@ -424,7 +444,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             alignItems: "center"
           }}
         >
-          <Pressable onPress={backward} style={{ marginLeft: 10 }}>
+          <Pressable onPress={() => backward()} style={{ marginLeft: 10 }}>
             <Image
               source={backArrow}
               style={{ width: vw / 15, height: vw / 15, overflow: "visible" }}

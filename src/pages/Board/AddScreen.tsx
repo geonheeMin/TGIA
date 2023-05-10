@@ -5,7 +5,7 @@ import { useCallback, useState, useEffect } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { launchImageLibrary, launchCamera } from "react-native-image-picker";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
-import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
   SafeAreaView,
   Pressable,
@@ -74,8 +74,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [free, setFree] = useState(false); //게시글 나눔 확인(true or false)
   const [place, setPlace] = useState(""); //게시글 거래 장소
   const [track, setTrack] = useState(""); //게시글 표시 트랙
+  const [department, setDepartment] = useState("");
   /** 모달 창 표시 true false 변수 */
-  const [imageVisible,setImageVisible] = useState(false);
+  const [imageVisible, setImageVisible] = useState(false);
   const [categoryVisible, setCategoryVisible] = useState(false);
   const [placeVisible, setPlaceVisible] = useState(false);
   const [trackVisible, setTrackVisible] = useState(false);
@@ -100,7 +101,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       setPrice(board.price);
       setFree(board.free);
       setPlace(board.place);
-      setTrack(board.department);
+      setTrack(board.track);
+      setDepartment(board.department);
       board.images.map((item) => {
         images.push({ image: `${url}/images/${item}`, boardImage: true });
       });
@@ -140,7 +142,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       content: text,
       price: price,
       images: filename,
-      department: track
+      track: track,
+      department: department,
+      locationType: place,
+      item_name: board.item_name
     };
 
     Axios.post(`${url}/post/insert`, request, {
@@ -202,10 +207,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       price: price,
       title: title,
       content: text,
-      departmentType: track,
+      track: track,
+      department: department,
       image_id: 1,
       locationType: board.locationType,
-      location_text: board.location_text,
       item_name: board.item_name
     };
     console.log(request);
@@ -242,7 +247,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       })
       .catch((error) => console.log(error));
   };
-  
+
   /** 이미지 모달 관리 함수 */
   const imageModalControl = () => {
     setModalOpen(!modalOpen);
@@ -293,10 +298,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             />
             <Text style={styles.imageButtonText}>사진 선택하기</Text>
           </Pressable>
-          <Pressable
-            style={styles.imageButton}
-            onPress={imageModalControl}
-          >
+          <Pressable style={styles.imageButton} onPress={imageModalControl}>
             <MaterialCommunityIcons
               name="cancel"
               size={23}
@@ -309,17 +311,16 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     );
   };
 
-
   const shootImage = async () => {
     let launchFunction = null;
 
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
             title: "App Camera Permission",
-            message:"App needs access to your camera ",
+            message: "App needs access to your camera ",
             buttonNeutral: "Ask Me Later",
             buttonNegative: "Cancel",
             buttonPositive: "OK"
@@ -329,16 +330,19 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           {
             title: "App Gallery Permission",
-            message:"App needs access to your photos",
+            message: "App needs access to your photos",
             buttonNeutral: "Ask Me Later",
             buttonNegative: "Cancel",
             buttonPositive: "OK"
           }
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED && grantedGallery === PermissionsAndroid.RESULTS.GRANTED) {
+        if (
+          granted === PermissionsAndroid.RESULTS.GRANTED &&
+          grantedGallery === PermissionsAndroid.RESULTS.GRANTED
+        ) {
           console.log("Camera permission given");
 
-          launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
+          launchCamera({ mediaType: "photo", saveToPhotos: true }, (res) => {
             if (res.didCancel) {
               console.log("Canceled");
             } else if (res.errorCode) {
@@ -351,12 +355,12 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 return;
               }
               CameraRoll.save(photo, "photo")
-              .then(() => {
-                pickImage();
-              })
-              .catch((e) => {
-                console.log(e);
-              })
+                .then(() => {
+                  pickImage();
+                })
+                .catch((e) => {
+                  console.log(e);
+                });
             }
           });
         } else {
@@ -365,19 +369,20 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       } catch (e) {
         console.warn(e);
       }
-    } else {  // ios일 경우
+    } else {
+      // ios일 경우
       const cameraStatus = await request(PERMISSIONS.IOS.CAMERA);
       const photoStatus = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      if ( cameraStatus === RESULTS.GRANTED) {
-        console.log('Camera permission given');
+      if (cameraStatus === RESULTS.GRANTED) {
+        console.log("Camera permission given");
         launchFunction = launchCamera;
       } else {
-        console.log('Camera permission denied');
+        console.log("Camera permission denied");
         return;
       }
 
       if (launchFunction) {
-        launchCamera({mediaType: "photo", saveToPhotos: true}, (res) => {
+        launchCamera({ mediaType: "photo", saveToPhotos: true }, (res) => {
           if (res.didCancel) {
             console.log("Canceled");
           } else if (res.errorCode) {
@@ -390,12 +395,12 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               return;
             }
             CameraRoll.save(photo, "photo")
-            .then(() => {
-              pickImage();
-            })
-            .catch((e) => {
-              console.log(e);
-            })
+              .then(() => {
+                pickImage();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
           }
         });
       }
@@ -623,11 +628,12 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 <Pressable
                   style={styles.trackItem}
                   onPress={() => {
-                    setTrack(item.item);
+                    setTrack(item.item.track);
+                    setDepartment(item.item.department);
                     trackModalControl();
                   }}
                 >
-                  <Text>{item.item}</Text>
+                  <Text>{item.item.track}</Text>
                 </Pressable>
               );
             }}
@@ -733,7 +739,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         <View style={styles.categoryBar}>
           <Pressable
             style={styles.categoryButton}
-            disabled={!isCategoryRecommended}
+            //disabled={!isCategoryRecommended}
             onPress={() => {
               categoryModalControl();
             }}
@@ -1022,7 +1028,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#777777",
     height: 0.34
   },
-    /** 이미지 모달 style
+  /** 이미지 모달 style
    * imageModalO : 이미지 모달이 on 일 때
    * imageModalX : 이미지 모달이 off 일 때
    * imageItem : 이미지 버튼 style
@@ -1035,7 +1041,7 @@ const styles = StyleSheet.create({
     top: vh * 0.112,
     backgroundColor: "#FFFFFF",
     zIndex: 53,
-    borderRadius: 10,
+    borderRadius: 10
   },
   imageModalX: {
     position: "absolute",
@@ -1052,18 +1058,18 @@ const styles = StyleSheet.create({
     //justifyContent: "center",
     flexDirection: "row",
     //borderBottomWidth: 0.5,
-    borderColor: "gray",
+    borderColor: "gray"
   },
   imageButtonIcon: {
     width: 782 / 30,
     height: 608 / 30,
-    marginLeft: vw * 0.02,
+    marginLeft: vw * 0.02
   },
   imageButtonText: {
     fontSize: 18,
     fontWeight: "300",
     color: "#333333",
-    marginLeft: vw * 0.02,
+    marginLeft: vw * 0.02
   },
   /** 카테고리 모달 style
    * categoryModalO : 카테고리 모달이 on 일 때
@@ -1129,6 +1135,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     left: vw * 0.05,
     top: vh * 0.15,
+    height: vh * 0.75,
     backgroundColor: "#FFFFFF",
     zIndex: 53
   },

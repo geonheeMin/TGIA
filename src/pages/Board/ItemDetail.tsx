@@ -45,7 +45,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   //   (item) => board.writer === item.username
   // )[0].firsttrack;
   const myname = session.username;
-
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
@@ -169,8 +168,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    console.log(DATA);
-  }, []);
+    Axios.get(
+      `${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`
+    ).catch((error) => console.log(error));
+  }, [isFocused]);
 
   useEffect(() => {
     //Axios.get(`${url}`);

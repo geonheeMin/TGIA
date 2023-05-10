@@ -309,9 +309,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [isFocused, filter]);
 
   useEffect(() => {
-    Axios.get(
-      `${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`
-    ).catch((error) => console.log(error));
+    Axios.get(`${url}/post/all`)
+      .then((res) => {
+        res.data.sort((a, b) => b.post_id - a.post_id);
+        setPosts(res.data);
+        setNewPosts(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   const FilterModal = () => {
@@ -510,6 +516,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           >
             <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
           </Pressable>
+        </View>
+        <View style={{ flex: 2, alignItems: "flex-end" }}>
+          <Text>{session.username}</Text>
         </View>
       </View>
       <View
