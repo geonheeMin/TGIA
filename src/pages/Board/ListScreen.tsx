@@ -309,7 +309,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [isFocused, filter]);
 
   useEffect(() => {
-    console.log(vh);
+    Axios.get(
+      `${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`
+    ).catch((error) => console.log(error));
   }, []);
 
   const FilterModal = () => {
@@ -508,9 +510,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           >
             <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
           </Pressable>
-        </View>
-        <View style={{ flex: 2, alignItems: "flex-end" }}>
-          <Text>{session.username}</Text>
         </View>
       </View>
       <View
