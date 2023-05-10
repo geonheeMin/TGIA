@@ -276,7 +276,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       likes: item.likes,
       views: item.views,
       department: item.department,
-      createdDate: item.createdDate
+      createdDate: item.createdDate,
+      item_name: item.item_name,
+      purchased: item.purchased
     };
     return <ItemList board={renderBoard} navigation={navigation} />;
   };
