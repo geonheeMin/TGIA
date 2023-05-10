@@ -88,12 +88,12 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
-        <Text style={styles.itemPrice}>{board.price.toLocaleString()}원</Text>
+        <Text style={styles.itemPrice}>{board.price}원</Text>
       </View>
       <View style={styles.likesInfo}>
         <Text style={styles.itemViewCount}>
           <Ionicons name="eye-outline" size={18} color={"gray"} />
-          {board.likes}
+          {board.views}
         </Text> 
         <Text style={styles.itemFavCount}>
           <Entypo name="heart-outlined" size={18} color={"gray"} />
