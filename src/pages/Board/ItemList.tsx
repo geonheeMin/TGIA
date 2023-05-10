@@ -58,7 +58,7 @@ function ItemList({ board, navigation }: itemListProps) {
     if (gapTime < 1) {
       return "방금 전";
     } else if (gapTime < 60) {
-      return `${gapTime}분 전}`;
+      return `${gapTime}분 전`;
     } else if (gapHour < 24) {
       return `${gapHour}시간 전`;
     } else if (gapDay < 7) {

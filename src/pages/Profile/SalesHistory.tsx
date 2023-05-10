@@ -32,7 +32,7 @@ type ChangeProfileScreenProps = NativeStackScreenProps<
   "ChangeProfile"
 >;
 
-function SalesHistory({ navigation }: ChangeProfileScreenProps) {
+function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const { session,url } = useStore();
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
@@ -44,6 +44,8 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
   );
   const [isLoaded, setIsLoaded] = useState(false);
   const [complitedPosts, setComplitedPosts] = useState([]);
+  const [profileImg, setProfileImg] = useState(route.params.profile_img);
+  const [img, setImg] = useState({});
   // const [complitedPosts, setComplitedPosts] = useState(
   //   postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   // );
@@ -61,6 +63,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
+    console.log(profileImg);
   }, []);
 
   function OnSale() {
@@ -82,7 +85,9 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         member_id: item.member_id,
         likes: item.likes,
         views: item.views,
-        createdDate: item.createdDate
+        department: item.department,
+        createdDate: item.createdDate,
+        item_name: item.item_name
       };
       return <ItemList board={renderBoard} navigation={navigation} />;
     };
@@ -158,7 +163,6 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
           onPress={toProfile}
           activeOpacity={0.7}
         >
-          {/* <FontAwesome5 name="arrow-left" size={30} color="black" /> */}
           <Image
             source={require("../../assets/design/backIcon.png")}
             style={styles.backButton}
@@ -191,8 +195,16 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          <Image
+          {/* <Image
             source={require("../../assets/bugi.png")}
+            style={styles.profile}
+          /> */}
+          <Image
+            source={
+              Object.keys(img).length === 0
+                ? { uri: `${url}/images/${profileImg}`}
+                : { uri: img?.uri }
+            }
             style={styles.profile}
           />
         </View>
