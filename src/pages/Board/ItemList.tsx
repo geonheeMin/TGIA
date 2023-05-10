@@ -10,10 +10,12 @@ import {
   Image,
   View,
   Dimensions,
-  Linking
+  Linking,
+  BackHandler
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons"
 import useStore from "../../../store";
 import Axios from "axios";
 
@@ -86,9 +88,13 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
-        <Text style={styles.itemPrice}>{board.price.toLocaleString()}원</Text>
+        <Text style={styles.itemPrice}>{board.price}원</Text>
       </View>
       <View style={styles.likesInfo}>
+        <Text style={styles.itemViewCount}>
+          <Ionicons name="eye-outline" size={18} color={"gray"} />
+          {board.views}
+        </Text> 
         <Text style={styles.itemFavCount}>
           <Entypo name="heart-outlined" size={18} color={"gray"} />
           {board.likes}
@@ -112,7 +118,8 @@ export const styles = StyleSheet.create({
     flex: 2.1
   },
   likesInfo: {
-    flex: 0.45
+    flexDirection: "row",
+    flex: 1,
   },
   itemImage: {
     flex: 1,
@@ -139,9 +146,16 @@ export const styles = StyleSheet.create({
   likeButton: {
     marginTop: vh / 40
   },
+  itemViewCount: {
+    fontSize: 18,
+    marginTop: vh / 9.6,
+    marginRight: vw / 90,
+    fontWeight: "300",
+    color: "gray"
+  },
   itemFavCount: {
     fontSize: 18,
-    marginTop: vh / 8.7,
+    marginTop: vh / 9.6,
     fontWeight: "300",
     color: "gray"
   },
