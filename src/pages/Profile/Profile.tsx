@@ -76,9 +76,11 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const toTrackSetting = () => {
     navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId] });
   };
-  const toSalesHistory = useCallback(() => {
-    navigation.navigate("SalesHistory");
-  }, [navigation]);
+  const toSalesHistory = () => {
+    navigation.navigate("SalesHistory", {
+      profile_img: profileImg
+    });
+  };
   const toPurchaseHistory = useCallback(() => {
     navigation.navigate("PurchaseHistory");
   }, [navigation]);

@@ -17,7 +17,7 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import ItemList from "../Board/ItemList";
-import postlist from "../../assets/dummy/postdata.json"
+import postlist from "../../assets/dummy/postdata.json";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
@@ -32,8 +32,8 @@ type ChangeProfileScreenProps = NativeStackScreenProps<
   "ChangeProfile"
 >;
 
-function SalesHistory({ navigation }: ChangeProfileScreenProps) {
-  const { session,url } = useStore();
+function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
+  const { session, url } = useStore();
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -44,6 +44,8 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
   );
   const [isLoaded, setIsLoaded] = useState(false);
   const [complitedPosts, setComplitedPosts] = useState([]);
+  const [profileImg, setProfileImg] = useState(route.params.profile_img);
+  const [img, setImg] = useState({});
   // const [complitedPosts, setComplitedPosts] = useState(
   //   postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   // );
@@ -61,6 +63,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
+    console.log(profileImg);
   }, []);
 
   function OnSale() {
@@ -82,44 +85,46 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         member_id: item.member_id,
         likes: item.likes,
         views: item.views,
-        createdDate: item.createdDate
+        department: item.department,
+        createdDate: item.createdDate,
+        item_name: item.item_name
       };
       return <ItemList board={renderBoard} navigation={navigation} />;
     };
-    
+
     useEffect(() => {
       if (!isLoaded) {
         Axios.get(`${url}/post/my_list?userId=` + session.member_id)
-        .then((res) => {
-          setPosts(res.data);
-          posts.sort((a, b) => b.post_id - a.post_id);
-          setNewPosts(posts);
-          console.log("완료");
-          setIsLoaded(!isLoaded);
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(posts);
-        });
+          .then((res) => {
+            setPosts(res.data);
+            posts.sort((a, b) => b.post_id - a.post_id);
+            setNewPosts(posts);
+            console.log("완료");
+            setIsLoaded(!isLoaded);
+          })
+          .catch((error) => {
+            console.log(error);
+            console.log(posts);
+          });
       }
     }, []);
 
     return (
       <View>
-        {posts.length >= 1 ? 
+        {posts.length >= 1 ? (
           <FlatList
-          style={{marginTop: 0}}
-          data={posts}
-          renderItem={renderItem}
-          refreshing={isRefreshing}
-        />
-          :
-          <View style={styles.tabContentNone }>
+            style={{ marginTop: 0 }}
+            data={posts}
+            renderItem={renderItem}
+            refreshing={isRefreshing}
+          />
+        ) : (
+          <View style={styles.tabContentNone}>
             <Text style={styles.tabContentNoneText}>
               판매중인 게시물이 없어요.
             </Text>
-          </View>     
-        }
+          </View>
+        )}
       </View>
     );
   }
@@ -128,15 +133,17 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
     tabUnderline(1);
     return (
       <View>
-        {complitedPosts.length >=1 ? 
-        <View><Text>test</Text></View>
-        : 
-        <View style={styles.tabContentNone}>
-          <Text style={styles.tabContentNoneText}>
-            거래 완료된 게시글이 없어요.
-          </Text>
-        </View>
-        }
+        {complitedPosts.length >= 1 ? (
+          <View>
+            <Text>test</Text>
+          </View>
+        ) : (
+          <View style={styles.tabContentNone}>
+            <Text style={styles.tabContentNoneText}>
+              거래 완료된 게시글이 없어요.
+            </Text>
+          </View>
+        )}
       </View>
     );
   }
@@ -158,20 +165,21 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
           onPress={toProfile}
           activeOpacity={0.7}
         >
-          {/* <FontAwesome5 name="arrow-left" size={30} color="black" /> */}
           <Image
             source={require("../../assets/design/backIcon.png")}
             style={styles.backButton}
           />
         </TouchableOpacity>
-        <Text style={{fontSize: 18, fontWeight: "600", marginLeft: vw / 40}}>
+        <Text style={{ fontSize: 18, fontWeight: "600", marginLeft: vw / 40 }}>
           판매내역
         </Text>
       </View>
       <View style={styles.topzone}>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.titlezone}>
-            <Text style={{ fontSize: 20, fontWeight: "500", marginLeft: vw / 50 }}>
+            <Text
+              style={{ fontSize: 20, fontWeight: "500", marginLeft: vw / 50 }}
+            >
               나의 판매내역
             </Text>
           </View>
@@ -191,8 +199,16 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          <Image
+          {/* <Image
             source={require("../../assets/bugi.png")}
+            style={styles.profile}
+          /> */}
+          <Image
+            source={
+              Object.keys(img).length === 0
+                ? { uri: `${url}/images/${profileImg}` }
+                : { uri: img?.uri }
+            }
             style={styles.profile}
           />
         </View>
@@ -228,9 +244,7 @@ function SalesHistory({ navigation }: ChangeProfileScreenProps) {
           }
         ]}
       />
-      <View style={styles.listZone}>
-        {selectComponent(content)}
-      </View>
+      <View style={styles.listZone}>{selectComponent(content)}</View>
     </SafeAreaView>
   );
 }
@@ -262,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
-    height: vh / 17.5,
+    height: vh / 17.5
   },
   profile: {
     flex: 0.56,
@@ -331,7 +345,7 @@ const styles = StyleSheet.create({
   },
   tabContentNoneText: {
     fontSize: 16,
-    color: "gray",
+    color: "gray"
   },
   items: {
     paddingBottom: 5,

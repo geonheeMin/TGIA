@@ -70,7 +70,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     if (gapTime < 1) {
       return "방금 전";
     } else if (gapTime < 60) {
-      return `${gapTime}분 전}`;
+      return `${gapTime}분 전`;
     } else if (gapHour < 24) {
       return `${gapHour}시간 전`;
     } else if (gapDay < 7) {
@@ -168,7 +168,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    Axios.get(`${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`).catch((error) => console.log(error));
+    Axios.get(
+      `${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`
+    ).catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
