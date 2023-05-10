@@ -46,7 +46,7 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
-
+  
   const toReview = useCallback(() => {
     Alert.alert("리뷰입니다", "네");
   }, []);
@@ -75,15 +75,14 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
     return (
       <View>
         <ItemList board={renderBoard} navigation={navigation} />
-        {review === 1 ? (
-          <Pressable style={styles.reviewBtn} onPress={toReview}>
+        { review === 1
+        ? <Pressable style={styles.reviewBtn} onPress={toReview}> 
             <Text style={styles.reviewText}>거래 후기 남기기</Text>
           </Pressable>
-        ) : (
-          <View style={styles.reviewBtn}>
-            <Text style={styles.reviewCompliteText}>거래 후기 남기기</Text>
+        : <View style={styles.reviewBtn}>
+            <Text style={styles.reviewCompliteText}>거래 후기 남기기</Text> 
           </View>
-        )}
+        }
       </View>
     );
   };
@@ -129,14 +128,16 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
             renderItem={renderItem}
             refreshing={isRefreshing}
           />
-        ) : (
-          <View style={styles.contentNone}>
-            <Text style={styles.contentNoneText}>구매 내역이 없어요.</Text>
-            <Text style={styles.contentNoneText}>
-              학우들과 교류하며 거래를 해보세요.
-            </Text>
-          </View>
-        )}
+            :
+            <View style={styles.contentNone }>
+              <Text style={styles.contentNoneText}>
+                구매 내역이 없어요.
+              </Text>
+              <Text style={styles.contentNoneText}>
+                학우들과 교류하며 거래를 해보세요.
+              </Text>
+            </View>     
+          }
       </View>
     </SafeAreaView>
   );

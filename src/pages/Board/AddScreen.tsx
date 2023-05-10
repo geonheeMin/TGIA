@@ -63,6 +63,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const { session, url } = useStore(); //작성자 id
   const board = params?.board ? params.board : "new"; //새 글 작성 or 기존 글 수정 판단
   const [title, setTitle] = useState(""); //게시글 제목
+  const [itemName, setItemName] = useState("") // 게시글 물품명 (카카오페이 물품명)
   const [category, setCategory] = useState(""); //게시글 카테고리
   const [text, setText] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
@@ -103,6 +104,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       setPlace(board.place);
       setTrack(board.track);
       setDepartment(board.department);
+      setItemName(board.item_name);
       board.images.map((item) => {
         images.push({ image: `${url}/images/${item}`, boardImage: true });
       });
@@ -736,6 +738,14 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             onChangeText={setTitle}
           />
         </View>
+        <View style={styles.itemNameBar}>
+          <TextInput
+            placeholder={"물품명"}
+            style={styles.itemNameInput}
+            value={itemName}
+            onChangeText={setItemName}
+          />
+        </View>
         <View style={styles.categoryBar}>
           <Pressable
             style={styles.categoryButton}
@@ -935,6 +945,19 @@ const styles = StyleSheet.create({
   },
   titleInput: {
     fontSize: 17.5,
+    width: vw - vw / 20,
+    paddingLeft: 5
+  },
+  itemNameBar: {
+    height: vh / 20,
+    borderBottomWidth: 0.2,
+    borderBottomColor: "#e9e9e9",
+    marginHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  itemNameInput: {
+    fontSize: 14.5,
     width: vw - vw / 20,
     paddingLeft: 5
   },
