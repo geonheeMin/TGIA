@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
-import postlist from "../../assets/dummy/postdata.json"
+import postlist from "../../assets/dummy/postdata.json";
 import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
@@ -24,7 +24,6 @@ type PurchaseHistoryScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "PurchaseHistory"
 >;
-
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -87,19 +86,19 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       </View>
     );
   };
-  
+
   useEffect(() => {
     Axios.get(`${url}/post/buy_list?userId=` + session.member_id)
-    .then((res) => {
-      setPosts(res.data);
-      posts.sort((a, b) => b.post_id - a.post_id);
-      setNewPosts(posts);
-      console.log("완료11");
-    })
-    .catch((error) => {
-      console.log(error);
-      console.log(posts);
-    });
+      .then((res) => {
+        setPosts(res.data);
+        posts.sort((a, b) => b.post_id - a.post_id);
+        setNewPosts(posts);
+        console.log("완료11");
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(posts);
+      });
     console.log(posts);
   }, [isFocused]);
 
@@ -122,12 +121,12 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       </View>
 
       <View>
-        {posts.length >= 1 ? 
+        {posts.length >= 1 ? (
           <FlatList
-          style={{marginTop: 0}}
-          data={posts}
-          renderItem={renderItem}
-          refreshing={isRefreshing}
+            style={{ marginTop: 0 }}
+            data={posts}
+            renderItem={renderItem}
+            refreshing={isRefreshing}
           />
             :
             <View style={styles.contentNone }>
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
   },
   itemImageZone: {
     flex: 1,
-    paddingVertical: vh / 60,
+    paddingVertical: vh / 60
   },
   itemInfo: {
     flex: 2
@@ -207,13 +206,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
     marginTop: vh / 45,
-    marginLeft: vw / 25,
+    marginLeft: vw / 25
   },
   itemPrice: {
     fontSize: 15,
     fontWeight: "400",
     marginTop: vh / 90,
-    marginLeft: vw / 25,
+    marginLeft: vw / 25
   },
   reviewBtn: {
     backgroundColor: "white",
@@ -232,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "gray",
-    textAlign: "center",
+    textAlign: "center"
   },
   contentNone: {
     position: "absolute",
@@ -242,8 +241,8 @@ const styles = StyleSheet.create({
   },
   contentNoneText: {
     fontSize: 16,
-    color: "gray",
-  },
+    color: "gray"
+  }
 });
 
 export default PurchaseHistory;

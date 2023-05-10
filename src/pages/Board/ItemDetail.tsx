@@ -168,7 +168,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    Axios.get(`${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`).catch((error) => console.log(error));
+    Axios.get(
+      `${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`
+    ).catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {

@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
-import Ionicons from "react-native-vector-icons/Ionicons"
+import Ionicons from "react-native-vector-icons/Ionicons";
 import useStore from "../../../store";
 import Axios from "axios";
 
@@ -94,7 +94,7 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemViewCount}>
           <Ionicons name="eye-outline" size={18} color={"gray"} />
           {board.views}
-        </Text> 
+        </Text>
         <Text style={styles.itemFavCount}>
           <Entypo name="heart-outlined" size={18} color={"gray"} />
           {board.likes}
@@ -119,7 +119,7 @@ export const styles = StyleSheet.create({
   },
   likesInfo: {
     flexDirection: "row",
-    flex: 1,
+    flex: 1
   },
   itemImage: {
     flex: 1,
