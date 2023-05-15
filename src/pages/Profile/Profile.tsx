@@ -34,8 +34,8 @@ type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 function Profile({ navigation, route }: ProfileScreenProps) {
   const { session, url } = useStore(); // 사용자 아이디
-  const [trackFirst, setTrackFirst] = useState(""); // 제 1트랙
-  const [trackSecond, setTrackSecond] = useState(""); // 제 2트랙
+  const [trackFirst, setTrackFirst] = useState(session?.firstTrack); // 제 1트랙
+  const [trackSecond, setTrackSecond] = useState(session?.secondTrack); // 제 2트랙
   const [manner, setManner] = useState(36.5); // 매너온도
   const isFocused = useIsFocused();
   const [aTrackId, setATrackId] = useState(7);
@@ -60,7 +60,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   }, [isFocused]);
 
   useEffect(() => {
-    Axios.get(`${url}/profile/Img?userId=` + session.member_id)
+    Axios.get(`${url}/member/get_image?member_id=` + session.member_id)
       .then((res) => {
         setProfileImg(res.data);
       })

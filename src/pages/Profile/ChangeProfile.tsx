@@ -18,6 +18,7 @@ import { launchImageLibrary } from "react-native-image-picker";
 import useStore from "../../../store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Axios from "axios";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -30,7 +31,7 @@ type ChangeProfileScreenProps = NativeStackScreenProps<
 function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
   const { session, setSession, url } = useStore();
   const [nickname, setNickname] = useState(session.username);
-  const [profileImg, setProfileImg] = useState(route.params.profile_img)
+  const [profileImg, setProfileImg] = useState(route.params.profile_img);
   const [selectedImg, setSelectedImg] = useState(324);
   const [img, setImg] = useState({});
 
@@ -38,64 +39,68 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
     navigation.reset({ routes: [{ name: "Profile" }] });
   };
 
-    /** 갤러리에서 이미지 선택하는 함수 */
-    const pickImage = () => {
-      launchImageLibrary({ mediaType: "photo" }, (res) => {
-        if (res.didCancel) {
-          console.log("Canceled");
-        } else if (res.errorCode) {
-          console.log("Errored");
-        } else {
-          const formData = new FormData();
-          formData.append("image", {
-            uri: res.assets[0].uri,
-            type: "image/jpg",
-            name: res.assets[0].fileName
-          });
-          Axios.post(`${url}/image/send_image`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
+  /** 갤러리에서 이미지 선택하는 함수 */
+  const pickImage = () => {
+    launchImageLibrary({ mediaType: "photo" }, (res) => {
+      if (res.didCancel) {
+        console.log("Canceled");
+      } else if (res.errorCode) {
+        console.log("Errored");
+      } else {
+        const formData = new FormData();
+        formData.append("image", {
+          uri: res.assets[0].uri,
+          type: "image/jpg",
+          name: res.assets[0].fileName
+        });
+        Axios.post(`${url}/image/send_image`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+          .then((res) => {
+            console.log(res.data + "성공");
+            setSelectedImg(res.data);
+            //setFilename(res.data);
           })
-            .then((res) => {
-              console.log(res.data + "성공");
-              setSelectedImg(res.data);
-              //setFilename(res.data);
-            })
-            .catch((error) => console.log(error));
-          setImg(res.assets[0]);
-        }
-      });
-    };
-
+          .catch((error) => console.log(error));
+        setImg(res.assets[0]);
+      }
+    });
+  };
 
   const confirm = () => {
     const request = {
       member_id: route.params.member_id, // 유저 아이디
       username: nickname, // 변경할 유저 닉네임
-      image_filename: selectedImg, // 선택한 이미지
+      image_filename: selectedImg // 선택한 이미지
     };
 
     Axios.post(`${url}/profile/change`, request)
-    .then((res) => {
-      console.log(res.data);
-      console.log("변경됨");
-      AsyncStorage.removeItem("session").then(() => {
-        console.log("1");
-        AsyncStorage.setItem("session", JSON.stringify(res.data)).then(() => {
-          AsyncStorage.getItem("session").then((value) => {
-            console.log(value);
-            setSession(JSON.parse(value));
-            toProfile();
-          }).catch((error) => console.log("3 문제"));
-        }).catch((error) => console.log("2 문제"));
-      }).catch((error) => console.log("1 문제"));
-    })
-    .catch((error) => {
-      console.log(error);
-    })
+      .then((res) => {
+        console.log(res.data);
+        console.log("변경됨");
+        AsyncStorage.removeItem("session")
+          .then(() => {
+            console.log("1");
+            AsyncStorage.setItem("session", JSON.stringify(res.data))
+              .then(() => {
+                AsyncStorage.getItem("session")
+                  .then((value) => {
+                    console.log(value);
+                    setSession(JSON.parse(value));
+                    toProfile();
+                  })
+                  .catch((error) => console.log("3 문제"));
+              })
+              .catch((error) => console.log("2 문제"));
+          })
+          .catch((error) => console.log("1 문제"));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-
 
   useEffect(() => {
     console.log(route.params);
@@ -104,21 +109,21 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={toProfile}
-          activeOpacity={0.7}
-        >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
+        <Pressable style={styles.cancelButton} onPress={toProfile}>
+          <IonIcon
+            name={"chevron-back-sharp"}
+            size={25}
             style={styles.backButton}
           />
-        </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}>
-          프로필 변경
-        </Text>
+
+          <Text
+            style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}
+          >
+            프로필 변경
+          </Text>
+        </Pressable>
         <TouchableOpacity
-          style={styles.compliteButton}
+          style={styles.completeButton}
           onPress={confirm}
           activeOpacity={0.7}
         >
@@ -131,7 +136,7 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
             //source={require("../../assets/bugi.png")}
             source={
               Object.keys(img).length === 0
-                ? { uri: `${url}/images/${profileImg}`}
+                ? { uri: `${url}/images/${profileImg}` }
                 : { uri: img?.uri }
             }
             style={styles.buttonImg}
@@ -140,7 +145,7 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
       </View>
       <View style={styles.nameZone}>
         <View>
-          <Text style={{ fontSize: 18, marginLeft: 10 }}>닉네임</Text>
+          <Text style={{ fontSize: 18, marginLeft: vw / 20 }}>닉네임</Text>
         </View>
         <View style={styles.inputBox}>
           <TextInput
@@ -183,12 +188,13 @@ const styles = StyleSheet.create({
   cancelButton: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
     //backgroundColor: '#3064e7',
   },
-  compliteButton: {
+  completeButton: {
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",

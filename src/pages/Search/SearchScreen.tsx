@@ -9,6 +9,7 @@ import {
   Pressable,
   LayoutAnimation
 } from "react-native";
+import * as React from "react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
@@ -53,6 +54,7 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
   const searchInputFocusedOut = () => {
     setIsEditing(false);
     setSearchWord("");
+    inputRef.current?.blur();
     LayoutAnimation.configureNext({
       duration: 125,
       update: {
@@ -88,15 +90,16 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
               marginLeft: 10,
               height: vh / 22,
               width: inputWidth,
-              backgroundColor: "#f0f0f0"
+              backgroundColor: "#f0f0f0",
+              color: "black"
             }}
             ref={inputRef}
             onChangeText={setSearchWord}
             onSubmitEditing={searchByWord}
             returnKeyType="search"
             value={searchWord}
-            editable={isEditing}
             onPressIn={searchInputFocusedIn}
+            placeholderTextColor={"grey"}
           />
         </View>
         {isEditing ? (

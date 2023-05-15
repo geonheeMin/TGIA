@@ -44,7 +44,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   // const track = memberlist.memberlist.filter(
   //   (item) => board.writer === item.username
   // )[0].firsttrack;
-  const myname = session.username;
+  const [writer, setWriter] = useState("");
+  const [writerImage, setWriterImage] = useState("");
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
@@ -76,7 +77,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     } else if (gapDay < 7) {
       return `${gapDay}일 전`;
     } else {
-      return `${timestamp}`;
+      return `${date}`;
     }
   };
 
@@ -90,7 +91,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     Axios.post(
       `${url}/profile/add_favorite`,
       {},
-      { params: { postId: board.post_id, userId: session.member_id } }
+      { params: { postId: board.post_id, userId: session?.member_id } }
     ).then((res) => {
       console.log("좋아요 Id : " + res.data);
     });
@@ -99,7 +100,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const unFav = () => {
     setIsFavOn(!isFavOn);
     Axios.delete(`${url}/profile/delete_favorite3`, {
-      params: { postId: board.post_id, userId: session.member_id }
+      params: { postId: board.post_id, userId: session?.member_id }
     })
       .then((res) => {
         console.log("좋아요 취소");
@@ -120,7 +121,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
      */
     const chatStartRequestDTO = {
       post_id: board.post_id,
-      member_id: session.member_id
+      member_id: session?.member_id
     };
     console.log(chatStartRequestDTO);
     Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
@@ -168,15 +169,27 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
+    console.log(board.member_id);
     Axios.get(
-      `${url}/post/details?postId=${board.post_id}&userId=${session.member_id}`
+      `${url}/post/details?postId=${board.post_id}&userId=${session?.member_id}`
     ).catch((error) => console.log(error));
+    Axios.get(`${url}/member/get_username?id=${board.member_id}`)
+      .then((res) => {
+        setWriter(res.data);
+      })
+      .catch((err) => console.log(err));
+    Axios.get(`${url}/member/get_image?member_id=${board.member_id}`)
+      .then((res) => {
+        setWriterImage(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   useEffect(() => {
     //Axios.get(`${url}`);
     matchingCategories();
-    console.log(board);
   }, [isFav]);
 
   const DATA = board?.images?.map((item, index) => {
@@ -251,18 +264,21 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         </Modal>
         <View style={styles.content}>
           <View style={styles.postWriterBar}>
-            <Image source={bugi} style={styles.writerImage} />
+            <Image
+              source={{ uri: `${url}/images/${writerImage}` }}
+              style={styles.writerImage}
+            />
             <View style={styles.writerProps}>
               <View style={styles.propsTop}>
-                <Text style={{ fontSize: 20 }}>{board.writer}</Text>
+                <Text style={{ fontSize: 20 }}>{writer}</Text>
               </View>
               <View style={styles.propsBottom}>
-                <Text>{session.firsttrack}</Text>
+                <Text style={{ fontSize: 14 }}>{session?.firstTrack}</Text>
               </View>
             </View>
             <View
               style={
-                session.member_id === board.member_id
+                session?.member_id === board.member_id
                   ? styles.postSetting
                   : { zIndex: -10, opacity: 0 }
               }
@@ -352,10 +368,12 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         <View style={styles.functionalSpace}>
           <Pressable
             style={styles.functionalButton}
-            onPress={board.member_id === session.member_id ? toMyChat : toQuest}
+            onPress={
+              board.member_id === session?.member_id ? toMyChat : toQuest
+            }
           >
             <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-              {board.member_id === session.member_id ? "채팅목록" : "문의하기"}
+              {board.member_id === session?.member_id ? "채팅목록" : "문의하기"}
             </Text>
           </Pressable>
         </View>
@@ -408,7 +426,6 @@ const styles = StyleSheet.create({
     height: vh / 20,
     paddingTop: 20,
     width: vw - vw / 2.25,
-    marginLeft: -2,
     justifyContent: "center"
   },
   propsBottom: {

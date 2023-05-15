@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState, useEffect } from "react";
 import {
   Text,
@@ -8,7 +9,7 @@ import {
   Image
 } from "react-native";
 import useStore from "../../../store";
-
+import Axios from "axios";
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
@@ -19,12 +20,22 @@ type chat = {
 };
 
 function ChatBubble(chat: chat) {
-  const { session } = useStore();
+  const { session, url } = useStore();
   const sender = chat.sender_id;
-  const my_id = session.member_id;
+  const my_id = session?.member_id;
   const previous = chat.previousSender;
+  const [senderImage, setSenderImage] = useState("");
+
   useEffect(() => {
-    console.log(chat);
+    if (my_id !== sender) {
+      Axios.get(`${url}/member/get_image?member_id=${sender.member_id}`)
+        .then((res) => {
+          setSenderImage(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, []);
   if (my_id === sender) {
     if (chat.message === "송금요청") {
@@ -51,7 +62,7 @@ function ChatBubble(chat: chat) {
         >
           <View style={{ flexDirection: "row", marginBottom: 5 }}>
             <Image
-              source={{ uri: sender?.profile_img }}
+              source={{ uri: `${url}/images/${senderImage}` }}
               style={{
                 marginLeft: 10,
                 width: 30,

@@ -18,12 +18,12 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import useStore from "../../../store";
 import Axios from "axios";
-
+import { Post } from "../../types/PostType";
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 type RootStackParamList = {
-  item: undefined;
+  board: Post;
 };
 type itemListProps = NativeStackScreenProps<RootStackParamList, "item">;
 
@@ -70,7 +70,6 @@ function ItemList({ board, navigation }: itemListProps) {
 
   useEffect(() => {
     favorite();
-    console.log(board);
   }, [isFocused]);
 
   return (
@@ -88,7 +87,9 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
-        <Text style={styles.itemPrice}>{board.price}원</Text>
+        <Text style={styles.itemPrice}>
+          {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
+        </Text>
       </View>
       <View style={styles.likesInfo}>
         <Text style={styles.itemViewCount}>
@@ -122,14 +123,15 @@ export const styles = StyleSheet.create({
     flex: 1
   },
   itemImage: {
-    flex: 1,
-    width: "85%",
-    height: "85%",
     paddingVertical: "39%",
     marginLeft: 18,
     marginTop: 5,
     borderRadius: 8,
     borderWidth: 0.3,
+    borderColor: "lightgrey",
+    flex: 1,
+    width: "85%",
+    height: "85%",
     overflow: "hidden"
   },
   itemTitle: {

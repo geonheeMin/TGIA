@@ -1,7 +1,7 @@
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { launchImageLibrary, launchCamera } from "react-native-image-picker";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
@@ -27,6 +27,7 @@ import {
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import cancel from "../../assets/design/backIcon.png";
 import nextIcon from "../../assets/design/nextIcon.png";
 import gallery from "../../assets/design/camera.png";
@@ -63,7 +64,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const { session, url } = useStore(); //작성자 id
   const board = params?.board ? params.board : "new"; //새 글 작성 or 기존 글 수정 판단
   const [title, setTitle] = useState(""); //게시글 제목
-  const [itemName, setItemName] = useState("") // 게시글 물품명 (카카오페이 물품명)
   const [category, setCategory] = useState(""); //게시글 카테고리
   const [text, setText] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
@@ -81,10 +81,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const [categoryVisible, setCategoryVisible] = useState(false);
   const [placeVisible, setPlaceVisible] = useState(false);
   const [trackVisible, setTrackVisible] = useState(false);
+  //const [item_name, setItem_name] = useState("");
+  const [trackWord, setTrackWord] = useState("");
   const [modalOpen, setModalOpen] = useState(false); //모달 open시 배경 어둡게 하기 위한 state
 
   const [isCategoryRecommended, setIsCategoryRecommended] = useState(false);
-  const [testResult, setTestResult] = useState("");
 
   const formData = new FormData(); //서버로 전송할 데이터 공간
 
@@ -104,7 +105,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       setPlace(board.place);
       setTrack(board.track);
       setDepartment(board.department);
-      setItemName(board.item_name);
       board.images.map((item) => {
         images.push({ image: `${url}/images/${item}`, boardImage: true });
       });
@@ -114,17 +114,35 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     }
   }
 
+  const formCheck = () => {
+    if (title === "") return false;
+    if (category === "") return false;
+    if (images.length === 0) return false;
+    if (text === "") return false;
+    if (price === null) return false;
+    if (place === "") return false;
+    if (department === "") return false;
+    if (track === "") return false;
+    //if (item_name === "") return false;
+    return true;
+  };
+
   function AddButton() {
-    if (postButton === "등록") {
-      Alert.alert("게시글 등록", "게시글을 등록하시겠습니까?", [
-        { text: "취소", style: "cancel" },
-        { text: "등록", onPress: postAdd }
-      ]);
+    if (formCheck()) {
+      if (postButton === "등록") {
+        Alert.alert("게시글 등록", "게시글을 등록하시겠습니까?", [
+          { text: "취소", style: "cancel" },
+          { text: "등록", onPress: postAdd }
+        ]);
+      } else {
+        Alert.alert("게시글 수정", "게시글을 수정하시겠습니까?", [
+          { text: "취소", style: "cancel" },
+          { text: "수정", onPress: postUpdate }
+        ]);
+      }
     } else {
-      Alert.alert("게시글 수정", "게시글을 수정하시겠습니까?", [
-        { text: "취소", style: "cancel" },
-        { text: "수정", onPress: postUpdate }
-      ]);
+      Alert.alert("게시글을 정확히 입력해주십시오.",
+      {text: "취소", style: "cancel"})
     }
   }
 
@@ -526,6 +544,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             categoryVisible ? styles.categoryModalO : styles.categoryModalX
           }
         >
+          {}
           <FlatList
             data={categories}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -601,17 +620,98 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   //   const selection = tracks.filter((item) => item.value === selected);
   //   return selection[0].label;
   // };
-  const trackModalControl = () => {
+  const TrackPageControl = () => {
     setModalOpen(!modalOpen);
     setTrackVisible(!trackVisible);
   };
-  const TrackModal = () => {
+  const collegeList = [...new Set(tracks.map((item) => item.college))];
+  const renderTrackList = (department: string) => {
+    const trackList = [
+      ...new Set(
+        tracks
+          .filter((item) => item.department === department)
+          .map((item) => item.track)
+      )
+    ];
+    return (
+      <FlatList
+        data={trackList}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        renderItem={(item) => {
+          return (
+            <Pressable
+              style={styles.trackItem}
+              onPress={() => {
+                setTrack(item.item);
+                setDepartment(department);
+                TrackPageControl();
+              }}
+            >
+              <Text>{item.item}</Text>
+            </Pressable>
+          );
+        }}
+      />
+    );
+  };
+  const renderDepartmentList = (college: string) => {
+    const departmentList = [
+      ...new Set(
+        tracks
+          .filter((item) => item.college === college)
+          .map((item) => item.department)
+      )
+    ];
+    return (
+      <FlatList
+        data={departmentList}
+        renderItem={(item) => {
+          return (
+            <View>
+              <View style={styles.separator} />
+              <View style={styles.departmentItem}>
+                <Text
+                  style={{ color: "#267dfd", fontSize: 16, fontWeight: "bold" }}
+                >
+                  {item.item}
+                </Text>
+              </View>
+              <View style={styles.separator} />
+              {renderTrackList(item.item)}
+            </View>
+          );
+        }}
+      />
+    );
+  };
+  const renderCollege = () => {
+    return (
+      <FlatList
+        data={collegeList}
+        renderItem={(item) => {
+          return (
+            <View>
+              <View style={styles.collegeItem}>
+                <Text
+                  style={{ color: "#134bff", fontSize: 18, fontWeight: "bold" }}
+                >
+                  {item.item}
+                </Text>
+              </View>
+              {renderDepartmentList(item.item)}
+            </View>
+          );
+        }}
+      />
+    );
+  };
+  const TrackPage = () => {
     return (
       <Modal
         transparent={true}
         animationType="fade"
         visible={trackVisible}
-        onRequestClose={() => trackModalControl()}
+        onRequestClose={TrackPageControl}
       >
         <Pressable
           style={{
@@ -619,27 +719,28 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             backgroundColor: "transparent",
             zIndex: trackVisible ? 52 : 0
           }}
-          onPress={() => trackModalControl()}
+          onPress={TrackPageControl}
         />
-        <View style={trackVisible ? styles.trackModalO : styles.trackModalX}>
-          <FlatList
-            data={tracks}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            renderItem={(item) => {
-              return (
-                <Pressable
-                  style={styles.trackItem}
-                  onPress={() => {
-                    setTrack(item.item.track);
-                    setDepartment(item.item.department);
-                    trackModalControl();
-                  }}
-                >
-                  <Text>{item.item.track}</Text>
-                </Pressable>
-              );
+        <View style={trackVisible ? styles.TrackPageO : styles.TrackPageX}>
+          <View
+            style={{
+              height: vh / 20,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingHorizontal: vw / 50
             }}
-          />
+          >
+            <Pressable
+              style={{ position: "absolute", left: vw / 50 }}
+              onPress={TrackPageControl}
+            >
+              <IonIcon name={"md-close-sharp"} size={20} />
+            </Pressable>
+            <Text style={{ fontWeight: "bold" }}>트랙 설정</Text>
+          </View>
+          <View style={styles.separator} />
+          {renderCollege()}
         </View>
       </Modal>
     );
@@ -659,7 +760,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         <ImageModal />
         <CategoryModal />
         <PlaceModal />
-        <TrackModal />
+        <TrackPage />
         <View
           style={{
             position: "absolute",
@@ -670,17 +771,14 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             opacity: modalOpen ? 0.5 : 0
           }}
         ></View>
-        <View style={styles.topBar}>
-          <Pressable style={styles.cancelButton} onPress={toList}>
-            <Image source={cancel} style={styles.cancelIcon} />
-            <Text style={{ marginLeft: 15, fontWeight: "bold", fontSize: 20 }}>
+        <View style={styles.topBar} removeClippedSubviews={true}>
+          <Pressable style={styles.cancelButton} onPress={CancelButton}>
+            <IonIcon name={"chevron-back-sharp"} size={25} />
+            <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 20 }}>
               글쓰기
             </Text>
           </Pressable>
-          <Pressable
-            style={styles.postButton}
-            onPress={board === "new" ? postAdd : postUpdate}
-          >
+          <Pressable style={styles.postButton} onPress={AddButton}>
             <Text style={{ color: "#0d44fe", fontSize: 18, fontWeight: "600" }}>
               {board === "new" ? "등록" : "수정"}
             </Text>
@@ -733,17 +831,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         <View style={styles.titleBar}>
           <TextInput
             placeholder={"제목"}
+            placeholderTextColor={"lightgrey"}
             style={styles.titleInput}
             value={title}
             onChangeText={setTitle}
-          />
-        </View>
-        <View style={styles.itemNameBar}>
-          <TextInput
-            placeholder={"물품명"}
-            style={styles.itemNameInput}
-            value={itemName}
-            onChangeText={setItemName}
           />
         </View>
         <View style={styles.categoryBar}>
@@ -757,7 +848,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             <Text
               style={{
                 fontSize: 15,
-                color: isCategoryRecommended ? "black" : "grey"
+                color: isCategoryRecommended ? "black" : "lightgrey"
               }}
             >
               {board !== "new"
@@ -766,13 +857,18 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 ? "카테고리 선택"
                 : category}
             </Text>
-            <Image source={nextIcon} style={styles.nextIcon} />
+            <IonIcon
+              name={"chevron-forward-sharp"}
+              size={20}
+              style={styles.nextIcon}
+            />
           </Pressable>
         </View>
         <View style={styles.priceBar}>
           <TextInput
             value={price?.toString()}
             placeholder={"₩ 가격"}
+            placeholderTextColor={"lightgrey"}
             keyboardType="number-pad"
             style={styles.priceInput}
             onChange={(e) =>
@@ -797,7 +893,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             iconStyle={styles.freeButton}
             innerIconStyle={styles.freeButton}
           />
-          <Text style={{ marginLeft: 10 }}>나눔</Text>
+          <Text style={{ marginLeft: vw / 25 }}>나눔</Text>
         </View>
 
         <View style={styles.textBar}>
@@ -805,6 +901,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             multiline={true}
             style={styles.textInput}
             placeholder={"내용을 입력해주세요"}
+            placeholderTextColor={"lightgrey"}
             value={text}
             onChangeText={setText}
           />
@@ -820,20 +917,24 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 marginRight: 35,
                 textAlign: "right",
                 width: vw / 2.12,
-                color: "grey"
+                color: "lightgrey"
               }}
             >
               {/* {place === "" ? "장소 선택" : showPlace(place)} */}
               {place === "" ? "장소 선택" : place}
             </Text>
-            <Image source={nextIcon} style={styles.nextIcon} />
+            <IonIcon
+              name={"chevron-forward-sharp"}
+              size={20}
+              style={styles.nextIcon}
+            />
           </Pressable>
         </View>
         <View style={styles.trackBar}>
           <Text style={{ flex: 2, marginLeft: 5 }}>보여줄 트랙 설정</Text>
           <Pressable
             style={styles.trackButton}
-            onPress={() => trackModalControl()}
+            onPress={() => TrackPageControl()}
           >
             <Text
               style={{
@@ -841,13 +942,17 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 marginRight: 35,
                 textAlign: "right",
                 width: vw / 2.12,
-                color: "grey"
+                color: "lightgrey"
               }}
             >
               {/* {track === "" ? "" : showTrack(track)} */}
-              {track === "" ? "" : track}
+              {track === "" ? "트랙 선택" : track}
             </Text>
-            <Image source={nextIcon} style={styles.nextIcon} />
+            <IonIcon
+              name={"chevron-forward-sharp"}
+              size={20}
+              style={styles.nextIcon}
+            />
           </Pressable>
         </View>
       </SafeAreaView>
@@ -868,7 +973,7 @@ const styles = StyleSheet.create({
   },
   topBar: {
     borderBottomWidth: 0.2,
-    height: vh / 20,
+    height: Platform.OS === "ios" ? vh / 20 : vh / 15,
     flexDirection: "row",
     alignItems: "center"
   },
@@ -916,7 +1021,7 @@ const styles = StyleSheet.create({
   },
   selectImgIcon: {
     flexDirection: "row",
-    justifytext: "center",
+    justifyContent: "center",
     alignItems: "center",
     marginLeft: 20,
     borderWidth: 1,
@@ -926,7 +1031,7 @@ const styles = StyleSheet.create({
   },
   selectedImgIcon: {
     flexDirection: "row",
-    justifytext: "center",
+    justifyContent: "center",
     alignItems: "center",
     marginRight: 20,
     borderWidth: 1,
@@ -946,20 +1051,8 @@ const styles = StyleSheet.create({
   titleInput: {
     fontSize: 17.5,
     width: vw - vw / 20,
-    paddingLeft: 5
-  },
-  itemNameBar: {
-    height: vh / 20,
-    borderBottomWidth: 0.2,
-    borderBottomColor: "#e9e9e9",
-    marginHorizontal: 10,
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  itemNameInput: {
-    fontSize: 14.5,
-    width: vw - vw / 20,
-    paddingLeft: 5
+    paddingLeft: 5,
+    color: "black"
   },
   categoryBar: {
     height: vh / 14,
@@ -995,7 +1088,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     paddingLeft: 5,
     width: vw - vw / 3,
-    height: vh / 20
+    height: vh / 20,
+    color: "black"
   },
   freeButton: {
     borderRadius: 15 / PixelRatio.get(),
@@ -1013,10 +1107,12 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   textInput: {
-    justifytext: "center",
+    justifyContent: "center",
     alignSelf: "flex-start",
     width: vw - vw / 12.5,
-    height: vh / 4.5
+    height: vh / 4.5,
+    textAlignVertical: "top",
+    color: "black"
   },
   placeBar: {
     height: vh / 16,
@@ -1029,7 +1125,7 @@ const styles = StyleSheet.create({
   placeButton: {
     height: vh / 22,
     flexDirection: "row",
-    justifytext: "center",
+    justifyContent: "center",
     alignItems: "center",
     flex: 3
   },
@@ -1042,7 +1138,7 @@ const styles = StyleSheet.create({
   trackButton: {
     height: vh / 22,
     flexDirection: "row",
-    justifytext: "center",
+    justifyContent: "center",
     alignItems: "center",
     flex: 3
   },
@@ -1149,11 +1245,11 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 50
   },
   /** 트랙 표시 모달 style
-   * trackModalO : 카테고리 모달이 on 일 때
-   * trackModalX : 카테고리 모달이 off 일 때
+   * TrackPageO : 카테고리 모달이 on 일 때
+   * TrackPageX : 카테고리 모달이 off 일 때
    * trackItem : FlatList 로 카테고리를 목록으로 만들 때 각각의 style
    */
-  trackModalO: {
+  TrackPageO: {
     position: "absolute",
     borderWidth: 1,
     left: vw * 0.05,
@@ -1162,7 +1258,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     zIndex: 53
   },
-  trackModalX: {
+  TrackPageX: {
     position: "absolute",
     borderWidth: 1,
     left: 100,
@@ -1171,7 +1267,19 @@ const styles = StyleSheet.create({
     zIndex: 0
   },
   trackItem: {
-    width: vw - vw / 10,
+    width: (vw * 9) / 10,
+    height: (vh * 0.75) / 14,
+    justifyContent: "center",
+    paddingLeft: vw / 50
+  },
+  departmentItem: {
+    width: (vw * 9) / 10,
+    height: (vh * 0.75) / 14,
+    justifyContent: "center",
+    paddingLeft: vw / 50
+  },
+  collegeItem: {
+    width: (vw * 9) / 10,
     height: (vh * 0.75) / 14,
     justifyContent: "center",
     paddingLeft: vw / 50

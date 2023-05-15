@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -10,11 +10,13 @@ import {
   Dimensions,
   RefreshControl,
   Platform,
-  PermissionsAndroid,
   Image,
   Pressable,
   PixelRatio,
-  LayoutAnimation
+  LayoutAnimation,
+  TouchableOpacity,
+  LayoutChangeEvent,
+  Animated
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
@@ -24,11 +26,14 @@ import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import MatIcon from "react-native-vector-icons/MaterialIcons";
+import OctIcon from "react-native-vector-icons/Octicons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-
+import { tracks } from "../../assets/data/track";
+import { Post } from "../../types/PostType";
 type RootStackParamList = {
   List: undefined;
 };
+
 type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
 const vw = Dimensions.get("window").width;
@@ -38,7 +43,6 @@ const sh = Dimensions.get("screen").height;
 function ListScreen({ route, navigation }: ListScreenProps) {
   const { session, url } = useStore();
   const [posts, setPosts] = useState([{}]);
-  //postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const filterList = [
@@ -52,8 +56,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     { label: "부기굿즈", value: "goods" }
   ];
   const [filter, setFilter] = useState(filterList[0]);
-  const [newPosts, setNewPosts] = useState([]);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [newPosts, setNewPosts] = useState<Array<Post>>([]);
 
   /** */
   const [isNewChecked, setIsNewChecked] = useState(true);
@@ -70,12 +73,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const [modalBackOpacity, setModalBackOpacity] = useState(0.0);
   const [modalBackZIndex, setModalBackZIndex] = useState(-50);
 
+  const [rangeModalTop, setRangeModalTop] = useState(-vh / 2.3);
+  const [rangeBackOpacity, setRangeBackOpacity] = useState(0.0);
+  const [rangeBackZIndex, setRangeBackZIndex] = useState(-50);
+  const [rangeWidth, setRangeWidth] = useState(0);
   const modalOpenAnimation = () => {
     LayoutAnimation.configureNext({
       duration: 150,
       update: {
-        type: LayoutAnimation.Types.linear,
-        property: LayoutAnimation.Properties.width
+        type: LayoutAnimation.Types.linear
       }
     });
     setModalTop(0);
@@ -91,8 +97,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     LayoutAnimation.configureNext({
       duration: 150,
       update: {
-        type: LayoutAnimation.Types.linear,
-        property: LayoutAnimation.Properties.width
+        type: LayoutAnimation.Types.linear
       }
     });
     setModalTop(-vh / 2.3);
@@ -128,7 +133,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     setCurrentChecked("low");
   };
 
-  const adjustFilter = (checked) => {
+  const adjustFilter = (checked: string) => {
     switch (checked) {
       case "new":
         newPosts.sort((a, b) => b.post_id - a.post_id);
@@ -167,7 +172,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     filterModalClose();
   };
 
-  const cancelFilter = (checked) => {
+  const cancelFilter = (checked: string) => {
     switch (checked) {
       case "new":
         newPosts.sort((a, b) => b.post_id - a.post_id);
@@ -259,35 +264,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     navigation.navigate("Add");
   }, [navigation]);
 
-  const renderItem = ({ item }) => {
-    const renderBoard = {
-      post_id: item.post_id,
-      title: item.title,
-      price: item.price,
-      locationType: item.locationType,
-      location_text: item.location_text,
-      writer: item.writer,
-      category: item.category,
-      text: item.text,
-      date: item.date,
-      track: item.track,
-      images: item.images,
-      member_id: item.member_id,
-      likes: item.likes,
-      views: item.views,
-      department: item.department,
-      createdDate: item.createdDate,
-      item_name: item.item_name,
-      purchased: item.purchased
-    };
-    return <ItemList board={renderBoard} navigation={navigation} />;
+  const renderItem = (item: Post) => {
+    return <ItemList board={item} navigation={navigation} />;
   };
 
   const listRefresh = () => {
     setIsRefreshing(true);
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a, b) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -301,7 +286,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   useEffect(() => {
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a, b) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -313,7 +298,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   useEffect(() => {
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a, b) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -476,6 +461,390 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
+  const rangeModalOpenAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setRangeModalTop(0);
+  };
+
+  const rangeModalOpen = () => {
+    setRangeBackOpacity(0.2);
+    setRangeBackZIndex(50);
+    rangeModalOpenAnimation();
+  };
+
+  const rangeModalCloseAnimation = () => {
+    LayoutAnimation.configureNext({
+      duration: 150,
+      update: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.width
+      }
+    });
+    setRangeModalTop(-vh / 2.3);
+  };
+
+  const rangeModalClose = () => {
+    setRangeBackOpacity(0.0);
+    setRangeBackZIndex(-50);
+    rangeModalCloseAnimation();
+  };
+
+  const [rangeValue, setRangeValue] = useState(4);
+  const [rangeAnimatedValue, setRangeAnimatedValue] = useState(
+    new Animated.Value(55)
+  );
+  const [rangeAnimatedWidth, setRangeAnimatedWidth] = useState(
+    new Animated.Value(0)
+  );
+  const getRangeCategory = (value) => {
+    switch (value) {
+      case 1:
+        return "트랙";
+      case 2:
+        return "학부";
+      case 3:
+        return "단과대";
+      case 4:
+        return "전체";
+    }
+  };
+  const [rangeCategory, setRangeCategory] = useState(
+    getRangeCategory(rangeValue)
+  );
+
+  const getRange = (isFirst: boolean, value: number) => {
+    switch (value) {
+      case 1:
+        return isFirst ? session?.firstTrack : session?.secondTrack;
+      case 2:
+        return isFirst ? session?.first_department : session?.second_department;
+      case 3:
+        return isFirst ? session?.first_college : session?.second_college;
+      case 4:
+        return "한성대학교";
+    }
+  };
+  const [rangeText, setRangeText] = useState(getRangeCategory(rangeValue));
+  const moveAnimation = (index: number) => {
+    Animated.timing(rangeAnimatedValue, {
+      toValue: 55 + (((index - 1) / 1) * rangeWidth) / 3.0,
+      duration: 400,
+      useNativeDriver: false
+    }).start();
+  };
+  const moveWidthAnimation = (index: number) => {
+    Animated.timing(rangeAnimatedWidth, {
+      toValue: (((index - 1) / 1) * rangeWidth) / 3.0,
+      duration: 400,
+      useNativeDriver: false
+    }).start();
+  };
+  const moveRange = (index: number) => {
+    setRangeValue(index);
+    moveAnimation(index);
+    moveWidthAnimation(index);
+    setRangeText(getRange(currentSelected, index));
+    setWhichTrack(currentSelected);
+  };
+  const adjustRange = () => {
+    setRangeCategory(getRangeCategory(rangeValue));
+    if (rangeValue === 4) {
+      Axios.get(`${url}/post/all`)
+        .then((res) => {
+          res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+          setPosts(res.data);
+          setNewPosts(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      const searchFilterDto = {
+        track: rangeValue === 1 ? rangeText : null,
+        departments: rangeValue === 2 ? [rangeText] : null,
+        college: rangeValue === 3 ? rangeText : null
+      };
+      Axios.post(`${url}/detailSearch`, searchFilterDto)
+        .then((res) => {
+          console.log(res.data.map((item) => item.department));
+          setNewPosts(res.data);
+        })
+        .catch((err) => console.log(err));
+    }
+    rangeModalClose();
+  };
+  const resetRange = () => {
+    setRangeCategory(getRangeCategory(1));
+    setRangeText(getRange(true, 1));
+    setWhichTrack(true);
+    moveRange(1);
+    Axios.get(`${url}/post/all`)
+      .then((res) => {
+        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+        setPosts(res.data);
+        setNewPosts(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    rangeModalClose();
+  };
+  const cancelRange = () => {
+    switch (rangeCategory) {
+      case "트랙":
+        setRangeValue(1);
+        moveRange(1);
+
+        break;
+      case "학부":
+        setRangeValue(2);
+        moveRange(2);
+        break;
+      case "단과대":
+        setRangeValue(3);
+        moveRange(3);
+        break;
+      case "한성대학교":
+        setRangeValue(4);
+        moveRange(4);
+        break;
+    }
+    setCurrentSelected(whichTrack);
+    rangeModalClose();
+  };
+  /** currentSelected: 1트랙 검색인지 2트랙 검색인지 => true면 1트랙, false면 2트랙 */
+  const [whichTrack, setWhichTrack] = useState(true);
+  const [currentSelected, setCurrentSelected] = useState(whichTrack);
+  const RangeModal = () => {
+    return (
+      <View style={rangeModalStyles.modalContainer}>
+        <View style={{ flex: 1.5 }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+              borderBottomWidth: 0.5,
+              borderColor: "lightgrey"
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>게시글 범위 설정</Text>
+          </View>
+        </View>
+        <View
+          style={{
+            height: vh / 15,
+            marginTop: 15,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: vw / 10
+          }}
+        >
+          {[1, 2].map((value, index) => (
+            <Pressable
+              style={value === 1 ? { marginRight: 10 } : { marginLeft: 10 }}
+              onPress={() => {
+                setCurrentSelected(value === 1);
+              }}
+              key={index}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <View
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 30,
+                    borderWidth: 2,
+                    marginRight: 10,
+                    borderColor:
+                      value === 1
+                        ? currentSelected
+                          ? "#1e42fe"
+                          : "lightgrey"
+                        : currentSelected
+                        ? "lightgrey"
+                        : "#1e42fe",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 15,
+                      height: 15,
+                      borderRadius: 15,
+                      backgroundColor:
+                        value === 1
+                          ? currentSelected
+                            ? "#1e42fe"
+                            : "lightgrey"
+                          : currentSelected
+                          ? "lightgrey"
+                          : "#1e42fe"
+                    }}
+                  />
+                </View>
+                <Text>{value} 트랙 검색</Text>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+        <View
+          style={{
+            flex: 1.5,
+            justifyContent: "center"
+          }}
+        >
+          <View style={{ justifyContent: "center", marginTop: vh / 20 }}>
+            <View
+              onLayout={(event: LayoutChangeEvent) =>
+                setRangeWidth(event.nativeEvent.layout.width)
+              }
+              style={{
+                marginHorizontal: 60,
+                width: "auto",
+                height: 5,
+                borderRadius: 10,
+                backgroundColor: "lightgrey"
+              }}
+            />
+            <Animated.View
+              style={{
+                position: "absolute",
+                height: 5,
+                left: 60,
+                borderRadius: 10,
+                width: rangeAnimatedWidth,
+                borderColor: rangeValue >= 1 ? "#4a71fd" : "black",
+                backgroundColor: rangeValue > 1 ? "#4a71fd" : "transparent"
+              }}
+            />
+            <Animated.View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 10,
+                position: "absolute",
+                left: rangeAnimatedValue,
+                backgroundColor: "#1e52fe",
+                zIndex: 3,
+                borderWidth: 1,
+                borderColor: "white"
+              }}
+            />
+            <Pressable
+              style={{
+                position: "absolute",
+                height: 15,
+                width: rangeWidth / 6,
+                left: 60
+              }}
+              onPress={() => moveRange(1)}
+            >
+              <View />
+            </Pressable>
+            {[1, 2, 3, 4].map((value, index) => (
+              <Pressable
+                style={{
+                  position: "absolute",
+                  height: 15,
+                  width: 20,
+                  alignItems: "center",
+                  left: 50 + ((value - 1) * rangeWidth) / 3
+                }}
+                onPress={() => moveRange(value)}
+                key={index}
+              >
+                <View
+                  style={{
+                    height: 15,
+                    width: 3,
+                    borderRadius: 5,
+                    backgroundColor: rangeValue >= value ? "#1e52fe" : "grey"
+                  }}
+                />
+              </Pressable>
+            ))}
+            <Pressable
+              style={{
+                position: "absolute",
+                height: 15,
+                width: rangeWidth / 3,
+                left: 60 + rangeWidth / 6
+              }}
+              onPress={() => moveRange(2)}
+            >
+              <View />
+            </Pressable>
+            <Pressable
+              style={{
+                position: "absolute",
+                height: 15,
+                width: rangeWidth / 3,
+                left: 60 + rangeWidth / 2
+              }}
+              onPress={() => moveRange(3)}
+            >
+              <View />
+            </Pressable>
+            <Pressable
+              style={{
+                position: "absolute",
+                height: 15,
+                width: rangeWidth / 6,
+                left: 60 + (5 * rangeWidth) / 6
+              }}
+              onPress={() => moveRange(4)}
+            >
+              <View />
+            </Pressable>
+          </View>
+        </View>
+        <View
+          style={{
+            flex: 3,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Text style={{ fontSize: 23, fontWeight: "bold", color: "#1e52fe" }}>
+            {getRange(currentSelected, rangeValue)}
+          </Text>
+          <Text style={{ fontSize: 18, marginTop: 10 }}>
+            내에서 게시글을 찾습니다.
+          </Text>
+        </View>
+        <View style={rangeModalStyles.buttonBar}>
+          <Pressable onPress={resetRange}>
+            <View style={rangeModalStyles.cancelButton}>
+              <IonIcon name="refresh" size={25} color="white" />
+              <Text style={rangeModalStyles.cancelText}>초기화</Text>
+            </View>
+          </Pressable>
+          <Pressable onPress={adjustRange}>
+            <View style={rangeModalStyles.applyButton}>
+              <IonIcon name="checkmark" size={25} color="white" />
+              <Text style={rangeModalStyles.applyText}>적용</Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -495,6 +864,23 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       >
         <FilterModal />
       </View>
+      <View
+        style={{
+          position: "absolute",
+          bottom: rangeModalTop,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0.34,
+          borderLeftWidth: 0.34,
+          borderRightWidth: 0.34,
+          width: vw,
+          height: vh / 2.6,
+          zIndex: 55,
+          backgroundColor: "white"
+        }}
+      >
+        <RangeModal />
+      </View>
       <Pressable
         style={{
           width: vw,
@@ -509,26 +895,67 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       >
         <View />
       </Pressable>
+      <Pressable
+        style={{
+          width: vw,
+          height: vh,
+          position: "absolute",
+          bottom: 0,
+          opacity: rangeBackOpacity,
+          backgroundColor: "black",
+          zIndex: rangeBackZIndex
+        }}
+        onPress={cancelRange}
+      >
+        <View />
+      </Pressable>
       <View style={styles.topBar}>
-        <View style={styles.filterButton}>
-          <Pressable
-            onPress={() => {
-              filterModalOpen();
-            }}
-          >
-            <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
-          </Pressable>
+        <View style={styles.topBarLeftSide}>
+          <TouchableOpacity onPress={() => rangeModalOpen()}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingLeft: 15
+              }}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "600" }}>
+                {rangeCategory}
+              </Text>
+              <View style={styles.triangle} />
+            </View>
+          </TouchableOpacity>
         </View>
-        <View style={{ flex: 2, alignItems: "flex-end" }}>
+        <View style={styles.topBarRightSide}>
+          <View style={styles.searchButton}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate(["Search"]);
+              }}
+            >
+              <OctIcon name="search" size={20} style={{ marginRight: 10 }} />
+            </Pressable>
+          </View>
+          <View style={styles.filterButton}>
+            <Pressable
+              onPress={() => {
+                filterModalOpen();
+              }}
+            >
+              <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
+            </Pressable>
+          </View>
+        </View>
+        {/* <View style={{ flex: 2, alignItems: "flex-end" }}>
           <Text>{session.username}</Text>
-        </View>
+        </View> */}
       </View>
       <View
         style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}
       >
         <FlatList
           data={newPosts}
-          renderItem={renderItem}
+          renderItem={({ item }: { item: Post }) => renderItem(item)}
           ItemSeparatorComponent={() => <View style={styles.seperator} />}
           refreshControl={
             <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
@@ -630,26 +1057,128 @@ const filterModalStyles = StyleSheet.create({
   }
 });
 
+const rangeModalStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+    top: -vh / 4,
+    height: vh,
+    backgroundColor: "#000",
+    opacity: 0.5
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderWidth: 0.34,
+    width: vw,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: vh / 2.3,
+    position: "absolute",
+    paddingBottom: vh / 20,
+    bottom: 0
+  },
+  filterContainer: {
+    flex: 7,
+    paddingHorizontal: vw / 25,
+    paddingVertical: vh / 75
+  },
+  sectionContainerTop: {
+    flex: 3,
+    borderBottomWidth: 0.5,
+    borderColor: "#a7a7a7",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  sectionContainerMiddle: {
+    borderBottomWidth: 0.5,
+    borderColor: "#a7a7a7",
+    flex: 4,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  sectionContainerBottom: {
+    flex: 3,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  buttonBar: {
+    flex: 1.5,
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    flexDirection: "row",
+    paddingHorizontal: vw / 10,
+    borderTopWidth: 0.25,
+    borderColor: "lightgrey"
+  },
+  cancelButton: {
+    flexDirection: "row",
+    height: vh / 20,
+    width: vw / 3.2,
+    borderRadius: 40 / PixelRatio.get(),
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#ababab",
+    marginLeft: vw / 70
+  },
+  cancelText: {
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18,
+    color: "white"
+  },
+  applyButton: {
+    width: vw / 3.2,
+    height: vh / 20,
+    borderRadius: 40 / PixelRatio.get(),
+    marginRight: vw / 70,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: "#1e4eff"
+  },
+  applyText: {
+    color: "white",
+    marginLeft: 15,
+    fontWeight: "500",
+    fontSize: 18
+  }
+});
+
 const styles = StyleSheet.create({
   container: {
     height: vh,
     backgroundColor: "white"
   },
   seperator: {
-    backgroundColor: "#727272",
+    backgroundColor: "lightgrey",
     opacity: 0.4,
-    height: 0.34
+    height: 0.5
   },
   topBar: {
     borderBottomWidth: 0.2,
-    height: vh / 17.5,
+    height: Platform.OS === "ios" ? vh / 17.5 : vh / 15,
     flexDirection: "row",
     alignItems: "center"
   },
-  filterButton: {
-    marginLeft: 5,
+  topBarLeftSide: {
+    flex: 1,
+    height: vh / 17.5,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingLeft: 5
+  },
+  topBarRightSide: {
+    flex: 1,
+    height: vh / 17.5,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingRight: 5
+  },
+  filterButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    transform: [{ scaleX: -1 }]
   },
   triangle: {
     width: 0,
@@ -661,8 +1190,7 @@ const styles = StyleSheet.create({
     borderRightColor: "transparent",
     borderLeftColor: "transparent",
     backgroundColor: "transparent",
-    position: "absolute",
-    left: 77
+    marginLeft: 5
   },
   writeButton: {
     backgroundColor: "#0c61fe",

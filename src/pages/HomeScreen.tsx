@@ -18,19 +18,11 @@ import logo from "../../assets/logo.png";
 import api from "../api";
 import Axios from "axios";
 import useStore from "../../store";
+import { tracks } from "../assets/data/track";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Home: undefined;
-};
-
-type member = {
-  user_id: number;
-  id: string;
-  username: string;
-  email: string;
-  profile_img: string;
-  trackA: string;
 };
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "Home">;
@@ -52,13 +44,32 @@ function HomeScreen({ navigation }: HomeScreenProps) {
   const LogIn = () => {
     Axios.get(`${url}/member/get?user_id=${loginId}`)
       .then((res) => {
-        console.log(JSON.stringify(res.data));
-        AsyncStorage.setItem("session", JSON.stringify(res.data)).then(() => {
-          AsyncStorage.getItem("session").then((value) => {
-            setSession(JSON.parse(value));
-            navigation.navigate("List");
-          });
-        });
+        console.log(res.data);
+        const firstTrack = res.data.firsttrack;
+        const secondTrack = res.data.secondtrack;
+        const firstDepart = tracks.find(
+          (item) => item.track === firstTrack
+        )?.department;
+        const secondDepart = tracks.find(
+          (item) => item.track === secondTrack
+        )?.department;
+        const profileListDto = {
+          member_id: res.data.member_id,
+          first_department: firstDepart,
+          second_department: secondDepart
+        };
+        Axios.post(`${url}/profile/add_college`, profileListDto)
+          .then((res) => {
+            AsyncStorage.setItem("session", JSON.stringify(res.data)).then(
+              () => {
+                AsyncStorage.getItem("session").then((value) => {
+                  setSession(JSON.parse(value));
+                  navigation.replace("List");
+                });
+              }
+            );
+          })
+          .catch((error) => console.log(error));
       })
       .catch((error) => console.log(error));
     // const stringifyUser = JSON.stringify(user);
@@ -144,8 +155,9 @@ const styles = StyleSheet.create({
     borderColor: "lightgrey",
     borderRadius: 3,
     width: vw / 1.75,
-    height: 30,
-    marginBottom: vh / 75
+    height: vh / 25,
+    marginBottom: vh / 75,
+    color: "black"
   },
   passwordInput: {
     borderWidth: 1,
@@ -153,7 +165,7 @@ const styles = StyleSheet.create({
     borderColor: "lightgrey",
     borderRadius: 3,
     width: vw / 1.75,
-    height: 30
+    height: vh / 25
   },
   buttons: {
     marginTop: vh / 15,

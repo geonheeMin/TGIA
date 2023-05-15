@@ -10,8 +10,10 @@ import {
   Image,
   Modal,
   LayoutAnimation,
-  PixelRatio
+  PixelRatio,
+  Platform
 } from "react-native";
+import * as React from "react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
@@ -466,6 +468,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     });
     setBackWidth(vw - vw / 4);
     setInputWidth(vw - vw / 2.5);
+    inputRef.current?.blur();
   };
 
   const toBack = () => {
@@ -778,8 +781,8 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
               }}
             >
               <View style={sortModalStyles.cancelButton}>
-                <IonIcon name="close" size={25} color="white" />
-                <Text style={sortModalStyles.cancelText}>취소</Text>
+                <IonIcon name="refresh" size={25} color="white" />
+                <Text style={sortModalStyles.cancelText}>초기화</Text>
               </View>
             </Pressable>
             <Pressable
@@ -906,8 +909,8 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
           <View style={categoryFilterModalStyles.buttonBar}>
             <Pressable onPress={resetCategoryFilter}>
               <View style={categoryFilterModalStyles.cancelButton}>
-                <IonIcon name="close" size={25} color="white" />
-                <Text style={categoryFilterModalStyles.cancelText}>취소</Text>
+                <IonIcon name="refresh" size={25} color="white" />
+                <Text style={categoryFilterModalStyles.cancelText}>초기화</Text>
               </View>
             </Pressable>
             <Pressable onPress={adjustCategoryFilter}>
@@ -968,8 +971,10 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
           <View style={departmentFilterModalStyles.buttonBar}>
             <Pressable onPress={resetDepartmentFilter}>
               <View style={departmentFilterModalStyles.cancelButton}>
-                <IonIcon name="close" size={25} color="white" />
-                <Text style={departmentFilterModalStyles.cancelText}>취소</Text>
+                <IonIcon name="refresh" size={25} color="white" />
+                <Text style={departmentFilterModalStyles.cancelText}>
+                  초기화
+                </Text>
               </View>
             </Pressable>
             <Pressable onPress={adjustDepartmentFilter}>
@@ -1170,25 +1175,19 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
           onPress={toBack}
           style={{ marginLeft: vw / 50, marginRight: vw / 30 }}
         >
-          <Image
-            source={backIcon}
-            style={{
-              overflow: "visible",
-              resizeMode: "stretch",
-              width: vw / 17,
-              height: vw / 12.5
-            }}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={30} />
         </Pressable>
         <View style={[styles.searchWordBar, { width: backWidth }]}>
           <IonIcon name="search" style={{ marginLeft: 10 }} />
           <TextInput
             placeholder="검색할 단어를 입력하세요"
+            placeholderTextColor={"grey"}
             style={{
               marginLeft: 10,
               height: vh / 22,
               width: inputWidth,
-              backgroundColor: "#f0f0f0"
+              backgroundColor: "#f0f0f0",
+              color: "black"
             }}
             ref={inputRef}
             onChangeText={setSearchWord}
@@ -1198,7 +1197,6 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
             }}
             returnKeyType="search"
             value={searchWord}
-            editable={isEditing}
             onPressIn={searchInputFocusedIn}
           />
         </View>
@@ -1237,21 +1235,22 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
           height: vh / 17.5,
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "space-around",
+          justifyContent: "center",
           borderBottomWidth: 0.5
         }}
       >
         <Pressable
           style={{
             borderWidth: 0.5,
-            width: vw / 3.8,
+            width: Platform.OS === "ios" ? vw / 3.8 : vw / 4.4,
             height: vh / 25,
             borderRadius: vh / 25,
             flexDirection: "row",
             justifyContent: "space-around",
             paddingHorizontal: vw / 25,
             alignItems: "center",
-            backgroundColor: placeFilterChecked ? "#1e201f" : "white"
+            backgroundColor: placeFilterChecked ? "#1e201f" : "white",
+            marginRight: vw / 20
           }}
           onPress={placeModalOpen}
         >
@@ -1267,7 +1266,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         <Pressable
           style={{
             borderWidth: 0.5,
-            width: vw / 3.8,
+            width: Platform.OS === "ios" ? vw / 3.8 : vw / 4.4,
             height: vh / 25,
             borderRadius: vh / 25,
             flexDirection: "row",
@@ -1290,14 +1289,15 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         <Pressable
           style={{
             borderWidth: 0.5,
-            width: vw / 3.8,
+            width: Platform.OS === "ios" ? vw / 3.8 : vw / 4.4,
             height: vh / 25,
             borderRadius: vh / 25,
             flexDirection: "row",
             justifyContent: "space-around",
             paddingHorizontal: vw / 25,
             alignItems: "center",
-            backgroundColor: departmentFilterChecked ? "#1e201f" : "white"
+            backgroundColor: departmentFilterChecked ? "#1e201f" : "white",
+            marginLeft: vw / 20
           }}
           onPress={departmentModalOpen}
         >

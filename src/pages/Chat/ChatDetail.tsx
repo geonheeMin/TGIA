@@ -13,7 +13,10 @@ import {
   StyleSheet,
   Image,
   PixelRatio,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView
 } from "react-native";
 import { useState, useCallback, useEffect, useRef } from "react";
 import Axios from "axios";
@@ -26,10 +29,11 @@ import backArrow from "../../assets/design/backArrow.png";
 import ChatBubble from "./ChatBubble";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import { WebView } from "react-native-webview";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useNavigationState } from "@react-navigation/native";
+import { useIsFocused, useNavigationState } from "@react-navigation/native";
 
 type RootStackParamList = {
   ChatDetail: undefined;
@@ -43,14 +47,19 @@ type MyFLatListProps<T> = FlatListProps<T>;
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
+const sh = Dimensions.get("screen").height;
 
 function ChatDetail({ route, navigation }: ChatDetailProps) {
   const chatRef = useRef(null);
   const { session, url } = useStore();
+  const isFocused = useIsFocused();
   const params = route.params;
-  const chatroom = params.chatroom;
-  const post = params.post;
-  const other = session.member_id === post.member_id;
+  const chatroom = params?.chatroom;
+  const post = params?.post;
+  const other =
+    chatroom.member_a === session?.member_id
+      ? chatroom.member_b
+      : chatroom.member_a;
   const [chats, setChats] = useState([]);
   const [msg, setMsg] = useState("");
   const [otherName, setOtherName] = useState("");
@@ -59,6 +68,8 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const [isPaying, setIsPaying] = useState(false);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
   const [pressedBack, setPressedBack] = useState(false);
+  const [keyHeight, setKeyHeight] = useState(0);
+  const [keyVisible, setKeyVisible] = useState(false);
   /** isChatLoaded: Axios 통신으로 받아온 데이터 처리 완료 여부, true면 Axios 함수 처리가 완전히 끝난 것으로 Axios 통신해도 되는 상태
    * false면 아직 Axios로 받아온 데이터를 처리하는 과정으로 Axios 통신하면 안된다는 것을 의미
    */
@@ -68,7 +79,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const request = {
     post_id: post.post_id,
     user_id: post.member_id,
-    buyer_id: session.member_id,
+    buyer_id: session?.member_id,
     price: post.price,
     item_name: post.title
   };
@@ -94,7 +105,6 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       .catch((error) => {
         console.log(error);
       });
-    setIsPaying(false);
   };
 
   const handleNavigationStateChange = (navState) => {
@@ -106,6 +116,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       setPaymentUrl("");
       //WebView && WebView.unmount && WebView.unmount();
       // 이동할 페이지 url을 자유롭게 변경해 주세요.
+      setIsPaying(false);
       navigation.navigate("Detail", { board: board });
     }
     // //취소 시
@@ -139,7 +150,6 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       (msg) =>
         msg.message_id < item.message_id && msg.chatroom_id === item.chatroom_id
     );
-    console.log(previousList);
     const previous =
       previousList.length > 0
         ? previousList[previousList.length - 1].sender
@@ -168,7 +178,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const sendApi = (api: string) => {
     const SendMessageRequestDTO = {
       chatroom_id: chatroom.chatroom_id,
-      sender_id: session.member_id,
+      sender_id: session?.member_id,
       message: api
     };
     Axios.post(`${url}/chat/send_V2`, SendMessageRequestDTO, {
@@ -187,7 +197,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const sendMessage = () => {
     const SendMessageRequestDTO = {
       chatroom_id: chatroom.chatroom_id,
-      sender_id: session.member_id,
+      sender_id: session?.member_id,
       message: msg
     };
     Axios.post(`${url}/chat/send_V2`, SendMessageRequestDTO, {
@@ -204,15 +214,24 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   const getChats = () => {
-    Axios.get(`${url}/chat/get_chat_message_list`, {
-      params: { id: chatroom.chatroom_id, member_id: session.member_id }
-    })
-      .then((res) => {
-        setIsChatLoaded(!isChatLoaded);
-        setChats(res.data);
-        setIsChatLoaded(!isChatLoaded);
+    console.log(`${isPaying} : isPaying, ${isChatLoaded} : isChatLoaded`);
+    if (isChatLoaded) {
+      console.log("채팅을 로딩합니다.");
+      Axios.get(`${url}/chat/get_chat_message_list`, {
+        params: { id: chatroom.chatroom_id, member_id: session?.member_id }
       })
-      .catch((error) => console.log(error));
+        .then((res) => {
+          setIsChatLoaded(false);
+          setChats(res.data);
+        })
+        .then((res) => {
+          setIsChatLoaded(true);
+          console.log("이제 Axios가 끝났으므로 채팅을 로딩합니다.");
+        })
+        .catch((error) => console.log(error));
+    } else {
+      console.log("아직 Axios가 완료되지 않아 채팅을 로딩하지 않습니다.");
+    }
   };
 
   const menuClosed = () => {
@@ -220,11 +239,12 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       <View
         style={{
           position: "absolute",
-          bottom: vh / 25,
+          bottom: Platform.OS === "ios" ? vh / 33 + keyHeight : vh / 66,
           flexDirection: "row",
           width: vw,
-          height: vh / 17.5,
+          height: vh / 20,
           justifyContent: "space-between",
+          alignItems: "center",
           borderTopWidth: 0.34,
           borderTopColor: "#eaeaea",
           zIndex: 10,
@@ -233,7 +253,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       >
         <Pressable
           style={{
-            marginLeft: 10,
+            marginLeft: Platform.OS === "ios" ? 10 : 15,
             justifyContent: "center",
             alignItems: "center"
           }}
@@ -277,7 +297,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       <View
         style={{
           position: "absolute",
-          bottom: vh / 25,
+          bottom: vh / 50,
           flexDirection: "row",
           width: vw,
           height: vh / 7.5,
@@ -291,7 +311,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       >
         <Pressable
           style={{
-            left: 10,
+            left: Platform.OS === "ios" ? 10 : 15,
             justifyContent: "center",
             alignItems: "center",
             position: "absolute"
@@ -330,7 +350,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
                 backgroundColor: "#fee10c"
               }}
               onPress={
-                post.member_id === session.member_id
+                post.member_id === session?.member_id
                   ? () => requestPayment()
                   : tryPayment
               }
@@ -338,7 +358,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
               <FontAwesomeIcon name="won" color="#6b6b6b" size={25} />
             </Pressable>
             <Text style={{ fontWeight: "600", fontSize: 15 }}>
-              {post.member_id === session.member_id ? "송금요청" : "송금하기"}
+              {post.member_id === session?.member_id ? "송금요청" : "송금하기"}
             </Text>
           </View>
           <View
@@ -387,7 +407,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
                 size={25}
               />
             </Pressable>
-            <Text style={{ fontWeight: "600", fontSize: 15 }}>가격 협의</Text>
+            <Text style={{ fontWeight: "600", fontSize: 15 }}>거래 예약</Text>
           </View>
         </View>
       </View>
@@ -395,40 +415,64 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   useEffect(() => {
-    if (!isPaying) {
+    if (isFocused) {
       getChats();
       const newTimerId = setInterval(() => {
         getChats();
-      }, 1500);
+      }, 2000);
       setTimerId(newTimerId);
-    } else {
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (isPaying) {
       timerId && clearInterval(timerId);
       setTimerId(null);
     }
-    return () => {
-      timerId && clearInterval(timerId);
-      setTimerId(null);
-    };
   }, [isPaying]);
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.kakao}>
-        {isLoading ? (
-          <ActivityIndicator size="large" />
-        ) : (
-          <WebView
-            source={{ uri: paymentUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
-          />
-        )}
-      </View>
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      console.log(sh - vh);
+    }
+    Axios.get(`${url}/member/get_username?id=${other}`)
+      .then((res) => {
+        setOtherName(res.data);
+      })
+      .catch((err) => console.log(err));
+    const keyUpListener = Keyboard.addListener("keyboardWillShow", (e) => {
+      setKeyHeight(e.endCoordinates.height - 20);
+      setKeyVisible(true);
+    });
+    const keyDownListener = Keyboard.addListener("keyboardWillHide", () => {
+      setKeyHeight(0);
+      setKeyVisible(false);
+    });
+  }, []);
+
+  return Platform.OS === "android" ? (
+    <KeyboardAvoidingView
+      behavior={"height"}
+      keyboardVerticalOffset={30}
+      style={styles.container}
+    >
+      {isPaying ? (
+        <View style={styles.kakao}>
+          {isLoading ? (
+            <ActivityIndicator size="large" />
+          ) : (
+            <WebView
+              source={{ uri: paymentUrl }}
+              onNavigationStateChange={handleNavigationStateChange}
+            />
+          )}
+        </View>
+      ) : null}
       <View
         style={{
-          paddingTop: vh / 25,
           borderBottomWidth: 1,
           borderBottomColor: "#d7d7d7",
-          height: vh / 10,
+          height: vh / 15,
           width: vw,
           flexDirection: "row",
           alignItems: "center"
@@ -439,18 +483,14 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             height: vh / 20,
             position: "absolute",
             left: 0,
-            top: vh / 25,
             flexDirection: "row",
             alignItems: "center"
           }}
         >
           <Pressable onPress={() => backward()} style={{ marginLeft: 10 }}>
-            <Image
-              source={backArrow}
-              style={{ width: vw / 15, height: vw / 15, overflow: "visible" }}
-            />
+            <IonIcon name={"chevron-back-sharp"} size={25} />
           </Pressable>
-          <Text style={{ marginLeft: vw / 40 }}>a</Text>
+          <Text style={{ marginLeft: vw / 40 }}>{otherName}</Text>
         </View>
         <View
           style={{
@@ -461,7 +501,12 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
           <Text style={{ fontSize: 20 }}>{post.title}</Text>
         </View>
       </View>
-      <View style={{ paddingTop: 5, height: vh - vh / 3.9 }}>
+      <View
+        style={{
+          paddingTop: 5,
+          height: isMenuOpened ? vh - vh / 4.55 : vh - vh / 7.55
+        }}
+      >
         <FlatList
           data={chats}
           renderItem={renderChat}
@@ -470,7 +515,69 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
         />
       </View>
       {isMenuOpened ? menuOpened() : menuClosed()}
-    </View>
+    </KeyboardAvoidingView>
+  ) : (
+    <SafeAreaView style={styles.container}>
+      {isPaying ? (
+        <View style={styles.kakao}>
+          {isLoading ? (
+            <ActivityIndicator size="large" />
+          ) : (
+            <WebView
+              source={{ uri: paymentUrl }}
+              onNavigationStateChange={handleNavigationStateChange}
+            />
+          )}
+        </View>
+      ) : null}
+      <View
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: "#d7d7d7",
+          height: vh / 20,
+          width: vw,
+          flexDirection: "row",
+          alignItems: "center"
+        }}
+      >
+        <View
+          style={{
+            height: vh / 20,
+            position: "absolute",
+            left: 0,
+            flexDirection: "row",
+            alignItems: "center"
+          }}
+        >
+          <Pressable onPress={() => backward()} style={{ marginLeft: 10 }}>
+            <IonIcon name={"chevron-back-sharp"} size={25} />
+          </Pressable>
+          <Text style={{ marginLeft: vw / 40 }}>{otherName}</Text>
+        </View>
+        <View
+          style={{
+            marginLeft: "auto",
+            marginRight: "auto"
+          }}
+        >
+          <Text style={{ fontSize: 20 }}>{post.title}</Text>
+        </View>
+      </View>
+      <View
+        style={{
+          paddingTop: 5,
+          height: isMenuOpened ? vh - vh / 3.64 : vh - vh / 3.9
+        }}
+      >
+        <FlatList
+          data={chats}
+          renderItem={renderChat}
+          showsVerticalScrollIndicator={false}
+          ref={chatRef}
+        />
+      </View>
+      {isMenuOpened ? menuOpened() : menuClosed()}
+    </SafeAreaView>
   );
 }
 
@@ -491,10 +598,9 @@ const styles = StyleSheet.create({
   inputBar: {
     flexDirection: "row",
     marginLeft: vw / 20,
-    height: vh / 20,
+    height: vh / 15,
     marginRight: vw / 5,
-    width: vw - vw / 10,
-    top: vh - vh / 4
+    width: vw - vw / 10
   },
   inputArea: {
     borderWidth: 1,
