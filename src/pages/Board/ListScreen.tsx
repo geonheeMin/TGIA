@@ -34,8 +34,6 @@ type RootStackParamList = {
   List: undefined;
 };
 
-//최신화 테스트
-
 type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
 const vw = Dimensions.get("window").width;
