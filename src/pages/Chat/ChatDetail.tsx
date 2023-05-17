@@ -16,7 +16,9 @@ import {
   ActivityIndicator,
   Platform,
   Keyboard,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  BackHandler,
+  Linking
 } from "react-native";
 import { useState, useCallback, useEffect, useRef } from "react";
 import Axios from "axios";
@@ -31,9 +33,12 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
+import PaymentCompleted from "./PaymentCompleted";
 import { WebView } from "react-native-webview";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useIsFocused, useNavigationState } from "@react-navigation/native";
+import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
+import SendIntentAndroid from "react-native-send-intent";
 
 type RootStackParamList = {
   ChatDetail: undefined;
@@ -93,13 +98,16 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   const tryPayment = () => {
-    console.log(1);
+    console.log(request);
     setIsPaying(true);
     Axios.post(`${url}/payment/ready`, request)
       .then((res) => {
-        console.log(res.data);
         //Linking.openURL(res.data.next_redir ect_mobile_url)
-        setPaymentUrl(res.data.next_redirect_app_url);
+        setPaymentUrl(
+          Platform.OS === "ios"
+            ? res.data.next_redirect_app_url
+            : res.data.next_redirect_app_url
+        );
         setIsLoading(false);
       })
       .catch((error) => {
@@ -116,8 +124,9 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       setPaymentUrl("");
       //WebView && WebView.unmount && WebView.unmount();
       // 이동할 페이지 url을 자유롭게 변경해 주세요.
+      navigation.navigate("Payment");
       setIsPaying(false);
-      navigation.navigate("Detail", { board: board });
+      setIsLoading(false);
     }
     // //취소 시
     // else if (url.includes('payment/cancel')){
@@ -143,6 +152,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     timerId && clearInterval(timerId);
     setTimerId(null);
     navigation.goBack();
+    return true;
   };
 
   const renderChat = ({ item }) => {
@@ -214,9 +224,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   const getChats = () => {
-    console.log(`${isPaying} : isPaying, ${isChatLoaded} : isChatLoaded`);
     if (isChatLoaded) {
-      console.log("채팅을 로딩합니다.");
       Axios.get(`${url}/chat/get_chat_message_list`, {
         params: { id: chatroom.chatroom_id, member_id: session?.member_id }
       })
@@ -226,11 +234,8 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
         })
         .then((res) => {
           setIsChatLoaded(true);
-          console.log("이제 Axios가 끝났으므로 채팅을 로딩합니다.");
         })
         .catch((error) => console.log(error));
-    } else {
-      console.log("아직 Axios가 완료되지 않아 채팅을 로딩하지 않습니다.");
     }
   };
 
@@ -415,19 +420,15 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   useEffect(() => {
-    if (isFocused) {
+    if (isPaying) {
+      timerId && clearInterval(timerId);
+      setTimerId(null);
+    } else {
       getChats();
       const newTimerId = setInterval(() => {
         getChats();
       }, 2000);
       setTimerId(newTimerId);
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    if (isPaying) {
-      timerId && clearInterval(timerId);
-      setTimerId(null);
     }
   }, [isPaying]);
 
@@ -448,6 +449,10 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       setKeyHeight(0);
       setKeyVisible(false);
     });
+    const backListener = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backward
+    );
   }, []);
 
   return Platform.OS === "android" ? (
@@ -463,7 +468,18 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
           ) : (
             <WebView
               source={{ uri: paymentUrl }}
+              //onNavigationStateChange={handleNavigationStateChange}
               onNavigationStateChange={handleNavigationStateChange}
+              onShouldStartLoadWithRequest={(e) => {
+                if (e.url.startsWith("intent")) {
+                  SendIntentAndroid.openAppWithUri(e.url)
+                    .then((res) => console.log(res))
+                    .catch((err) => console.log(err));
+                  return false;
+                }
+                return true;
+              }}
+              originWhitelist={["*"]}
             />
           )}
         </View>
@@ -526,6 +542,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             <WebView
               source={{ uri: paymentUrl }}
               onNavigationStateChange={handleNavigationStateChange}
+              originWhitelist={["*"]}
             />
           )}
         </View>

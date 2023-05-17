@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,17 +12,20 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
-import Creative from "../Tracks/Creative";
-import Art from "../Tracks/Art";
-import SocialScience from "../Tracks/SocialScience";
-import GlobalFashion from "../Tracks/GlobalFashion";
-import ICTDesign from "../Tracks/ICTDesign";
-import BeautyDesign from "../Tracks/BeautyDesign";
-import ComputerEngineering from "../Tracks/ComputerEngineering";
-import Mechanical from "../Tracks/Mechanical";
-import ITConvergence from "../Tracks/ITConvergence";
-import SmartManagement from "../Tracks/SmartManagement";
-import SmartFactory from "../Tracks/SmartFactory";
+import { tracks } from "../../assets/data/track";
+// import Creative from "../Tracks/Creative";
+// import Art from "../Tracks/Art";
+// import SocialScience from "../Tracks/SocialScience";
+// import GlobalFashion from "../Tracks/GlobalFashion";
+// import ICTDesign from "../Tracks/ICTDesign";
+// import BeautyDesign from "../Tracks/BeautyDesign";
+// import ComputerEngineering from "../Tracks/ComputerEngineering";
+// import Mechanical from "../Tracks/Mechanical";
+// import ITConvergence from "../Tracks/ITConvergence";
+// import SmartManagement from "../Tracks/SmartManagement";
+// import SmartFactory from "../Tracks/SmartFactory";
+import { FlatList } from "react-native-gesture-handler";
+import { defaultScrollInterpolator } from "../../utils/animations";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -33,23 +36,85 @@ type TrackSettingScreenProps = NativeStackScreenProps<
 >;
 
 function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
-  const [visible, setVisible] = useState(false);
-  const [visible2, setVisible2] = useState(false);
-  const [visible3, setVisible3] = useState(false);
-  const [visible4, setVisible4] = useState(false);
-  const [visible5, setVisible5] = useState(false);
-  const [visible6, setVisible6] = useState(false);
-  const [visible7, setVisible7] = useState(false);
-  const [visible8, setVisible8] = useState(false);
-  const [visible9, setVisible9] = useState(false);
-  const [visible10, setVisible10] = useState(false);
-  const [visible11, setVisible11] = useState(false);
-  const aTrackId = route.params.id[0]; // atrack 파라미터
-  const bTrackId = route.params.id[1]; // btrack 파라미터
+  const [collegeMenu, setCollegeMenu] = useState("");
+  const [departmentMenu, setDepartmentMenu] = useState("");
+  const [trackMenu, setTrackMenu] = useState("");
+  const aTrackId = route.params?.id[0]; // atrack 파라미터
+  const bTrackId = route.params?.id[1]; // btrack 파라미터
+  const collegeList = [...new Set(tracks.map((item) => item.college))];
+
+  const renderTrack = (depart) => {
+    const trackList = [
+      ...new Set(
+        tracks
+          .filter((item) => item.department === depart)
+          .map((item) => item.track)
+      )
+    ];
+    return (
+      <FlatList
+        data={trackList}
+        renderItem={(item) => {
+          return (
+            <Pressable onPress={() => setTrackMenu(item.item)}>
+              <View style={{}}>
+                <Text>{item.item}</Text>
+              </View>
+            </Pressable>
+          );
+        }}
+      />
+    );
+  };
+
+  const renderDepart = (college) => {
+    const departmentList = [
+      ...new Set(
+        tracks
+          .filter((item) => item.college === college)
+          .map((item) => item.department)
+      )
+    ];
+    return (
+      <FlatList
+        data={departmentList}
+        renderItem={(item) => {
+          return (
+            <Pressable onPress={() => setDepartmentMenu(item.item)}>
+              <View style={{}}>
+                <Text>{item.item}</Text>
+                {departmentMenu === item.item ? renderCollege(item.item) : null}
+              </View>
+            </Pressable>
+          );
+        }}
+      />
+    );
+  };
+
+  const renderCollege = () => {
+    return (
+      <FlatList
+        data={collegeList}
+        renderItem={(item) => {
+          return (
+            <Pressable onPress={() => setCollegeMenu(item.item)}>
+              <View style={styles.collegeZone}>
+                <Text> {item.item} </Text>
+                {collegeMenu === item.item ? renderDepart(item.item) : null}
+              </View>
+            </Pressable>
+          );
+        }}
+      />
+    );
+  };
 
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
+
+  useEffect(() => console.log(collegeList), []);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -64,164 +129,16 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
             style={styles.backButton}
           />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "600",  paddingLeft: vw / 40 }}>
+        <Text style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}>
           트랙 설정
         </Text>
       </View>
-      <ScrollView>
-        <View style={styles.menuZone}>
-          <View style={styles.collegeZone}>
-            <Text style={styles.collegeName}>크리에이티브인문예술대학</Text>
-          </View>
-          <TouchableOpacity
-            style={visible === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible(!visible)}
-          >
-            <Text
-              style={visible === true ? styles.departOn : styles.departOff}
-            >
-              크리에이티브 인문학부
-            </Text>
-          </TouchableOpacity>
-          {visible && <Creative navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible2 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible2(!visible2)}
-          >
-            <Text
-              style={visible2 === true ? styles.departOn : styles.departOff}
-            >
-              예술학부
-            </Text>
-          </TouchableOpacity>
-          {visible2 && <Art navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-        </View>
-        <View style={styles.menuZone}>
-          <View style={styles.collegeZone}>
-            <Text style={styles.collegeName}>미래융합사회과학대학</Text>
-          </View>
-          <TouchableOpacity
-            style={visible3 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible3(!visible3)}
-          >
-            <Text
-              style={visible3 === true ? styles.departOn : styles.departOff}
-            >
-              사회과학부
-            </Text>
-          </TouchableOpacity>
-          {visible3 && <SocialScience navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-        </View>
-        <View style={styles.menuZone}>
-          <View style={styles.collegeZone}>
-            <Text style={styles.collegeName}>디자인대학</Text>
-          </View>
-          <TouchableOpacity
-            style={visible4 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible4(!visible4)}
-          >
-            <Text
-              style={visible4 === true ? styles.departOn : styles.departOff}
-            >
-              글로벌패션산업학부
-            </Text>
-          </TouchableOpacity>
-          {visible4 && <GlobalFashion navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible5 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible5(!visible5)}
-          >
-            <Text
-              style={visible5 === true ? styles.departOn : styles.departOff}
-            >
-              ICT디자인학부
-            </Text>
-          </TouchableOpacity>
-          {visible5 && <ICTDesign navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible6 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible6(!visible6)}
-          >
-            <Text
-              style={visible6 === true ? styles.departOn : styles.departOff}
-            >
-              뷰티디자인매니지먼트학과
-            </Text>
-          </TouchableOpacity>
-          {visible6 && <BeautyDesign navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-        </View>
-        <View style={styles.menuZone}>
-          <View style={styles.collegeZone}>
-            <Text style={styles.collegeName}>IT공과대학</Text>
-          </View>
-          <TouchableOpacity
-            style={visible7 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible7(!visible7)}
-          >
-            <Text
-              style={visible7 === true ? styles.departOn : styles.departOff}
-            >
-              컴퓨터공학부
-            </Text>
-          </TouchableOpacity>
-          {visible7 && <ComputerEngineering navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible8 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible8(!visible8)}
-          >
-            <Text
-              style={visible8 === true ? styles.departOn : styles.departOff}
-            >
-              기계전자공학부
-            </Text>
-          </TouchableOpacity>
-          {visible8 && <Mechanical navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible9 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible9(!visible9)}
-          >
-            <Text
-              style={visible9 === true ? styles.departOn : styles.departOff}
-            >
-              IT융합공학부
-            </Text>
-          </TouchableOpacity>
-          {visible9 && <ITConvergence navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible10 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible10(!visible10)}
-          >
-            <Text
-              style={visible10 === true ? styles.departOn : styles.departOff}
-            >
-              스마트경영공학부
-            </Text>
-          </TouchableOpacity>
-          {visible10 && <SmartManagement navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-          <TouchableOpacity
-            style={visible11 === true? styles.menuButtonOn : styles.menuButtonOff}
-            activeOpacity={0.7}
-            onPress={() => setVisible11(!visible11)}
-          >
-            <Text
-              style={visible11 === true ? styles.departOn : styles.departOff}
-            >
-              스마트팩토리컨설팅학과
-            </Text>
-          </TouchableOpacity>
-          {visible11 && <SmartFactory navigation={navigation} aTrack={aTrackId} bTrack={bTrackId}/>}
-        </View>
-      </ScrollView>
+      <View style={styles.menuZone}>
+        <FlatList
+          data={collegeList}
+          renderItem={(item) => renderCollege(item)}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -271,14 +188,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     paddingVertical: 10,
     borderBottomWidth: 0.8,
-    borderColor: "#2153d1",
+    borderColor: "#2153d1"
   },
   menuButtonOff: {
     marginVertical: 10,
     marginHorizontal: 15,
     paddingVertical: 10,
     borderBottomWidth: 0.8,
-    borderColor: "gray",
+    borderColor: "gray"
   },
   collegeName: {
     fontSize: 18,
@@ -291,12 +208,12 @@ const styles = StyleSheet.create({
   departOn: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#2153d1",
+    color: "#2153d1"
   },
   departOff: {
     fontSize: 15,
-    color: "black",
-  },
+    color: "black"
+  }
 });
 
 export default TrackSetting;
