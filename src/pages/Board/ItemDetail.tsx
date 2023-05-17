@@ -52,22 +52,23 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const [chatrooms, setChatrooms] = useState();
   const [diff, setDiff] = useState("");
   const timestamp = board.createdDate;
-  const date = new Date(timestamp);
   const [isFav, setIsFav] = useState(route.params.isFav);
   const [isFavOn, setIsFavOn] = useState(false);
   const isFocused = useIsFocused();
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const moment = require("moment");
+  const date = new moment(timestamp);
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
 
   const timeCalc = () => {
-    const now = new Date();
-    const gapTime = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
-    const gapHour = Math.floor(gapTime / 60);
-    const gapDay = Math.floor(gapHour / 24);
+    const now = new moment();
+    const gapTime = now.diff(date, "minutes");
+    const gapHour = now.diff(date, "hours");
+    const gapDay = now.diff(date, "days");
+    const isAm = date.format("A") === "AM" ? "오전" : "오후";
     if (gapTime < 1) {
       return "방금 전";
     } else if (gapTime < 60) {
@@ -77,7 +78,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     } else if (gapDay < 7) {
       return `${gapDay}일 전`;
     } else {
-      return `${date}`;
+      return `${date.format(`YYYY년 M월 D일 ${isAm} 시 m분`)}`;
     }
   };
 

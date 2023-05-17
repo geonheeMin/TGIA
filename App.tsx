@@ -29,6 +29,7 @@ import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
 import Creative from "./src/pages/Tracks/Creative";
 import PaymentCompleted from "./src/pages/Chat/PaymentCompleted";
+//import CategorySearchScreen from './src/pages/Search/CategorySearchScreen';
 
 import useStore from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";

@@ -93,6 +93,15 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     sendApi("송금요청");
   };
 
+  const reservation = () => {
+    const post_id = {
+      post_id: post.post_id
+    };
+    Axios.post(`${url}/reservation_posts`, post_id).then((res) => {
+      sendApi("거래예약");
+    });
+  };
+
   const sendPosition = () => {
     sendApi("위치전송");
   };
@@ -405,6 +414,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
                 borderRadius: vw / 7,
                 backgroundColor: "#00bb40"
               }}
+              onPress={reservation}
             >
               <FontAwesomeIcon
                 name="calendar-check-o"

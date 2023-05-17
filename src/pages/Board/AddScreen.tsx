@@ -36,25 +36,12 @@ import Axios from "axios";
 import { categories } from "../../assets/data/category";
 import { places } from "../../assets/data/place";
 import { tracks } from "../../assets/data/track";
+import { Post } from "../../types/PostType";
 
 type RootStackParamList = {
   Add: undefined;
 };
 type AddScreenProps = NativeStackScreenProps<RootStackParamList, "Add">;
-
-interface Board {
-  post_id: number;
-  title: string;
-  category: string;
-  text: string;
-  member_id: string;
-  date: string;
-  price: number;
-  place: string;
-  track: string;
-  img: string;
-  department: string;
-}
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -63,6 +50,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   const params = route.params;
   const { session, url } = useStore(); //작성자 id
   const board = params?.board ? params.board : "new"; //새 글 작성 or 기존 글 수정 판단
+  const [postButton, setPostButton] = useState(
+    board === "new" ? "등록" : "수정"
+  );
   const [title, setTitle] = useState(""); //게시글 제목
   const [category, setCategory] = useState(""); //게시글 카테고리
   const [text, setText] = useState(""); //게시글 내용
@@ -141,8 +131,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         ]);
       }
     } else {
-      Alert.alert("게시글을 정확히 입력해주십시오.",
-      {text: "취소", style: "cancel"})
+      Alert.alert("게시글을 정확히 입력해주십시오.", {
+        text: "취소",
+        style: "cancel"
+      });
     }
   }
 
@@ -231,7 +223,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       department: department,
       image_id: 1,
       locationType: board.locationType,
-      item_name: board.item_name
+      item_name: board.item_name,
+      statusType: board.statusType
     };
     console.log(request);
     Axios.put(`${url}/post/edit`, request, {

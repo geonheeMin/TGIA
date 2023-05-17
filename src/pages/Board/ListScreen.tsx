@@ -307,6 +307,12 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       });
   }, []);
 
+  useEffect(() => {
+    if (isFocused) {
+      listRefresh();
+    }
+  }, [isFocused]);
+
   const FilterModal = () => {
     return (
       <View style={filterModalStyles.modalContainer}>

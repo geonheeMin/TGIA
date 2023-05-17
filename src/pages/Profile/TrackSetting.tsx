@@ -13,6 +13,7 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import { tracks } from "../../assets/data/track";
+import { useStore } from "zustand";
 // import Creative from "../Tracks/Creative";
 // import Art from "../Tracks/Art";
 // import SocialScience from "../Tracks/SocialScience";
@@ -56,10 +57,17 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
         data={trackList}
         renderItem={(item) => {
           return (
-            <Pressable onPress={() => setTrackMenu(item.item)}>
-              <View style={{}}>
-                <Text>{item.item}</Text>
+            <Pressable
+              onPress={() =>
+                trackMenu === item.item
+                  ? setTrackMenu("")
+                  : setTrackMenu(item.item)
+              }
+            >
+              <View style={styles.collegeZone}>
+                <Text style={styles.collegeName}>{item.item}</Text>
               </View>
+              <View style={styles.separator} />
             </Pressable>
           );
         }}
@@ -80,11 +88,18 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
         data={departmentList}
         renderItem={(item) => {
           return (
-            <Pressable onPress={() => setDepartmentMenu(item.item)}>
-              <View style={{}}>
-                <Text>{item.item}</Text>
-                {departmentMenu === item.item ? renderCollege(item.item) : null}
+            <Pressable
+              onPress={() =>
+                departmentMenu === item.item
+                  ? setDepartmentMenu("")
+                  : setDepartmentMenu(item.item)
+              }
+            >
+              <View style={styles.collegeZone}>
+                <Text style={styles.collegeName}>{item.item}</Text>
+                {departmentMenu === item.item ? renderTrack(item.item) : null}
               </View>
+              <View style={styles.separator} />
             </Pressable>
           );
         }}
@@ -98,11 +113,18 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
         data={collegeList}
         renderItem={(item) => {
           return (
-            <Pressable onPress={() => setCollegeMenu(item.item)}>
+            <Pressable
+              onPress={() =>
+                collegeMenu === item.item
+                  ? setCollegeMenu("")
+                  : setCollegeMenu(item.item)
+              }
+            >
               <View style={styles.collegeZone}>
-                <Text> {item.item} </Text>
+                <Text style={styles.collegeName}> {item.item} </Text>
                 {collegeMenu === item.item ? renderDepart(item.item) : null}
               </View>
+              <View style={styles.separator} />
             </Pressable>
           );
         }}
@@ -213,6 +235,11 @@ const styles = StyleSheet.create({
   departOff: {
     fontSize: 15,
     color: "black"
+  },
+  separator: {
+    width: vw,
+    height: 1,
+    backgroundColor: "white"
   }
 });
 

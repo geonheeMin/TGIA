@@ -35,7 +35,7 @@ const useStore = create<preset>((set) => ({
   },
   //url: "http://3.35.217.228:8080" //yongki
   //url: "http://223.194.129.143:8080" // 민규
-  url: "http://54.180.124.49:8080" //geonhee
+  url: "http://223.194.135.51:8080" //geonhee
 }));
 
 export default useStore;

@@ -29,6 +29,7 @@ type itemListProps = NativeStackScreenProps<RootStackParamList, "item">;
 
 function ItemList({ board, navigation }: itemListProps) {
   const { session, url } = useStore();
+  const moment = require("moment");
   const [postId, setPostId] = useState(board.post_id);
   const [likes, setLikes] = useState(false); // 하트 채워짐 표시
   const [isFav, setIsFav] = useState(0); // 좋아요 정보. 0 : 좋아요 off, 1 : 좋아요 on
@@ -50,11 +51,12 @@ function ItemList({ board, navigation }: itemListProps) {
   };
 
   const timeCalc = () => {
-    const now = new Date();
-    const date = new Date(board.createdDate);
-    const gapTime = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
-    const gapHour = Math.floor(gapTime / 60);
-    const gapDay = Math.floor(gapHour / 24);
+    const now = new moment();
+    const date = new moment(board.createdDate);
+    const gapTime = now.diff(date, "minutes");
+    const gapHour = now.diff(date, "hours");
+    const gapDay = now.diff(date, "days");
+    const isAm = date.format("A") === "AM" ? "오전" : "오후";
     if (gapTime < 1) {
       return "방금 전";
     } else if (gapTime < 60) {
@@ -64,7 +66,7 @@ function ItemList({ board, navigation }: itemListProps) {
     } else if (gapDay < 7) {
       return `${gapDay}일 전`;
     } else {
-      return `${date}`;
+      return `${date.format(`YYYY년 M월 D일 ${isAm} 시 m분`)}`;
     }
   };
 
@@ -87,9 +89,28 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
-        <Text style={styles.itemPrice}>
-          {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
-        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+            paddingRight: 10
+          }}
+        >
+          {/* <View
+            style={{
+              backgroundColor: "grey",
+              justifyContent: "center",
+              height: 19,
+              width: 75
+            }}
+          >
+            <Text>{board.statusType}</Text>
+          </View> */}
+          <Text style={styles.itemPrice}>
+            {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
+          </Text>
+        </View>
       </View>
       <View style={styles.likesInfo}>
         <Text style={styles.itemViewCount}>

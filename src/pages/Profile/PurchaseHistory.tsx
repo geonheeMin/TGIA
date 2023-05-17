@@ -19,6 +19,7 @@ import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
+import { Post } from "../../types/PostType";
 
 type PurchaseHistoryScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -70,7 +71,8 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       department: item.department,
       createdDate: item.createdDate,
       item_name: item.item_name,
-      purchased: item.purchased
+      purchased: item.purchased,
+      statusType: item.statusType
     };
     return (
       <View>
