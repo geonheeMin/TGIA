@@ -1,4 +1,5 @@
 # TGIA-Front
+[[관리자 웹 링크]](https://github.com/geonheeMin/TGIA-Web)
 
 [[백엔드 링크]](https://github.com/geonheeMin/TGIA-Back)
 
