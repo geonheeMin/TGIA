@@ -41,6 +41,7 @@ const vh = Dimensions.get("window").height;
 const sh = Dimensions.get("screen").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
+  const moment = require("moment");
   const { session, url } = useStore();
   const [posts, setPosts] = useState([{}]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -136,12 +137,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const adjustFilter = (checked: string) => {
     switch (checked) {
       case "new":
-        newPosts.sort((a, b) => b.post_id - a.post_id);
-
+        newPosts.sort((a, b) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         setPreviousChecked("new");
         break;
       case "old":
-        newPosts.sort((a, b) => a.post_id - b.post_id);
+        newPosts.sort((a, b) =>
+          moment(a.createdDate).diff(moment(b.createdDate))
+        );
 
         setPreviousChecked("old");
         break;
@@ -175,11 +179,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const cancelFilter = (checked: string) => {
     switch (checked) {
       case "new":
-        newPosts.sort((a, b) => b.post_id - a.post_id);
+        newPosts.sort((a, b) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         newHandle();
         break;
       case "old":
-        newPosts.sort((a, b) => a.post_id - b.post_id);
+        newPosts.sort((a, b) =>
+          moment(a.createdDate).diff(moment(b.createdDate))
+        );
         oldHandle();
         break;
       case "much":
@@ -199,7 +207,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         lowHandle();
         break;
       default:
-        newPosts.sort((a, b) => b.post_id - a.post_id);
+        newPosts.sort((a, b) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         newHandle();
         break;
     }
@@ -272,7 +282,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     setIsRefreshing(true);
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -286,7 +298,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   useEffect(() => {
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -296,9 +310,12 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   }, [isFocused, filter]);
 
   useEffect(() => {
+    console.log(session);
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -563,7 +580,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     if (rangeValue === 4) {
       Axios.get(`${url}/post/all`)
         .then((res) => {
-          res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+          res.data.sort((a: Post, b: Post) =>
+            moment(b.createdDate).diff(moment(a.createdDate))
+          );
           setPosts(res.data);
           setNewPosts(res.data);
         })
@@ -592,7 +611,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     moveRange(1);
     Axios.get(`${url}/post/all`)
       .then((res) => {
-        res.data.sort((a: Post, b: Post) => b.post_id - a.post_id);
+        res.data.sort((a: Post, b: Post) =>
+          moment(b.createdDate).diff(moment(a.createdDate))
+        );
         setPosts(res.data);
         setNewPosts(res.data);
       })
@@ -851,6 +872,11 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
+  //test
+  const toTest = () => {
+    navigation.navigate("Test");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -951,6 +977,10 @@ function ListScreen({ route, navigation }: ListScreenProps) {
               <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
             </Pressable>
           </View>
+          <Pressable
+            onPress={() => toTest()}
+            style={{ width: 50, height: 50, backgroundColor: "black" }}
+          />
         </View>
         {/* <View style={{ flex: 2, alignItems: "flex-end" }}>
           <Text>{session.username}</Text>

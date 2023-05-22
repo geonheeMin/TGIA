@@ -43,44 +43,41 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const [profileImg, setProfileImg] = useState();
   const [img, setImg] = useState({});
 
-  useEffect(() => {
-    Axios.get(`${url}/profile?userId=` + session.member_id)
-      .then((res) => {
-        console.log(res.data);
-        setTrackFirst(res.data.firstTrack);
-        setTrackSecond(res.data.secondTrack);
-        setATrackId(res.data.atrackId);
-        setBTrackId(res.data.btrackId);
-        setProfileImg(res.data.imageFileName);
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.log("프로필 에러");
-      });
-  }, [isFocused]);
+  // useEffect(() => {
+  //   Axios.get(`${url}/profile?userId=` + session.member_id)
+  //     .then((res) => {
+  //       console.log(res.data);
+  //       setTrackFirst(res.data.firstTrack);
+  //       setTrackSecond(res.data.secondTrack);
+  //       setATrackId(res.data.atrackId);
+  //       setBTrackId(res.data.btrackId);
+  //       setProfileImg(res.data.imageFileName);
+  //       console.log(res.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log("프로필 에러");
+  //     });
+  // }, [isFocused]);
 
   useEffect(() => {
-    Axios.get(`${url}/member/get_image?member_id=` + session.member_id)
-      .then((res) => {
-        setProfileImg(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    setTrackFirst(session?.firstTrack);
+    setTrackSecond(session?.secondTrack);
   }, [isFocused]);
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
 
-  const toTrackSetting = () => {
-    navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId] });
+  const toTrackSetting = (number: number) => {
+    navigation.navigate("TrackSetting", { number: number });
   };
+
   const toSalesHistory = () => {
     navigation.navigate("SalesHistory", {
       profile_img: profileImg
     });
   };
+
   const toPurchaseHistory = useCallback(() => {
     navigation.navigate("PurchaseHistory");
   }, [navigation]);
@@ -123,7 +120,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         >
           <Image
             source={{
-              uri: `${url}/images/${profileImg}`
+              uri: `${url}/images/${session?.imageFileName}` //이미지 표시 안 되면 수정할 사항 1
             }}
             style={styles.profile}
           />
@@ -135,14 +132,20 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>
-            <TouchableOpacity onPress={toTrackSetting} activeOpacity={0.9}>
+            <TouchableOpacity
+              onPress={() => toTrackSetting(1)}
+              activeOpacity={0.9}
+            >
               <View style={styles.trackbox}>
                 <Text style={{ color: "white" }}>{trackFirst}</Text>
               </View>
             </TouchableOpacity>
           </View>
           <View style={styles.trackzone}>
-            <TouchableOpacity onPress={toTrackSetting} activeOpacity={0.9}>
+            <TouchableOpacity
+              onPress={() => toTrackSetting(2)}
+              activeOpacity={0.9}
+            >
               <View style={styles.trackbox}>
                 <Text style={{ color: "white" }}>{trackSecond}</Text>
               </View>

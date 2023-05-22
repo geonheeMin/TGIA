@@ -8,8 +8,12 @@ import {
   PixelRatio,
   Image
 } from "react-native";
+import { ChatApis } from "./ChatApis";
 import useStore from "../../../store";
 import Axios from "axios";
+import requestPayment from "../../assets/design/api/requestPay.png";
+import reservation from "../../assets/design/api/reservation.png";
+import sendLocation from "../../assets/design/api/myLocation.png";
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
@@ -38,10 +42,19 @@ function ChatBubble(chat: chat) {
     }
   }, []);
   if (my_id === sender) {
-    if (chat.message === "송금요청") {
+    if (chat.message === ChatApis[0].api) {
       return (
-        <View style={styles.myBubbleBox}>
-          <Text style={{ color: "white" }}>송금요청입니다.</Text>
+        <View style={styles.myApiBoxTop}>
+          <View style={styles.myApiBoxBottom} />
+          <Image source={ChatApis[0].img} />
+        </View>
+      );
+    }
+    if (chat.message === ChatApis[1].api) {
+      return (
+        <View style={styles.myApiBoxTop}>
+          <View style={styles.myApiBoxBottom} />
+          <Image source={ChatApis[0].img} />
         </View>
       );
     }
@@ -131,6 +144,38 @@ const styles = StyleSheet.create({
     minHeight: vh / 22,
     marginLeft: 45,
     marginBottom: 5
+  },
+  myApiBoxTop: {
+    backgroundColor: "#0b60fe",
+    borderRadius: 30 / PixelRatio.get(),
+    alignSelf: "flex-end",
+    Width: vw / 1.75,
+    height: vh / 5
+  },
+  myApiBoxBottom: {
+    backgroundColor: "white",
+    borderBottomRadius: 30 / PixelRatio.get(),
+    alignSelf: "flex-start",
+    position: "absolute",
+    width: vw / 1.75,
+    height: vh / 7,
+    bottom: 0
+  },
+  otherApiBoxTop: {
+    backgroundColor: "#0b60fe",
+    borderRadius: 30 / PixelRatio.get(),
+    alignSelf: "flex-start",
+    width: vw / 1.75,
+    height: vh / 5
+  },
+  otherApiBoxBottom: {
+    backgroundColor: "white",
+    borderBottomRadius: 30 / PixelRatio.get(),
+    alignSelf: "flex-start",
+    position: "absolute",
+    width: vw / 1.75,
+    height: vh / 7,
+    bottom: 0
   }
 });
 

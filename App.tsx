@@ -28,7 +28,9 @@ import ChatTitle from "./src/pages/Chat/ChatTitle";
 import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
 import Creative from "./src/pages/Tracks/Creative";
-import PaymentCompleted from "./src/pages/Chat/PaymentCompleted";
+import PaymentScreen from "./src/pages/Chat/PaymentScreen";
+import CategorySearchScreen from "./src/pages/Search/CategorySearchScreen";
+import TestScreen from "./src/pages/Board/TestScreen";
 //import CategorySearchScreen from './src/pages/Search/CategorySearchScreen';
 
 import useStore from "./store";
@@ -311,7 +313,13 @@ function App() {
           {(props) => <Creative {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Payment" options={{ headerShown: false }}>
-          {(props) => <PaymentCompleted {...props} />}
+          {(props) => <PaymentScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="CategorySearch" options={{ headerShown: false }}>
+          {(props) => <CategorySearchScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Test" options={{ headerShown: false }}>
+          {(props) => <TestScreen {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

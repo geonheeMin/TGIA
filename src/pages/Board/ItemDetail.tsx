@@ -124,12 +124,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       post_id: board.post_id,
       member_id: session?.member_id
     };
-    console.log(chatStartRequestDTO);
     Axios.post(`${url}/chat/start`, chatStartRequestDTO, {
       headers: { "Content-Type": "application/json" }
     })
       .then((res) => {
-        console.log(res.data);
         navigation.navigate("ChatDetail", {
           chatroom: res.data,
           post: board
@@ -141,6 +139,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     //   post: board
     // });
   }, [board, chatroom, navigation]);
+
+  const categorySearch = () => {
+    navigation.navigate("CategorySearch", { category: board.category });
+  };
 
   const changeImageState = () => {
     setPressed(!pressed);
@@ -170,7 +172,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    console.log(board.member_id);
     Axios.get(
       `${url}/post/details?postId=${board.post_id}&userId=${session?.member_id}`
     ).catch((error) => console.log(error));
@@ -321,21 +322,22 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             </Text>
           </View>
           <View style={styles.postEtc}>
-            <Pressable>
-              <View style={{}}>
+            <Pressable onPress={() => categorySearch()}>
+              <View>
                 <Text
                   style={{
                     color: "#a6a6a6",
-                    fontSize: 14
+                    fontSize: 15
                   }}
                 >
                   {board.category}
                 </Text>
+                <View style={{ height: 0.5, backgroundColor: "#a6a6a6" }} />
               </View>
             </Pressable>
             <Text style={{ color: "#a6a6a6", fontSize: 14 }}>
               {" "}
-              · {` ${timeCalc()}`}
+              · {`${timeCalc()}`}
             </Text>
           </View>
           <Text style={styles.postContent}>{board.text}</Text>
@@ -479,6 +481,7 @@ const styles = StyleSheet.create({
   },
   postEtc: {
     flexDirection: "row",
+    alignItems: "center",
     marginLeft: 15
   },
   postContent: {

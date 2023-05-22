@@ -36,9 +36,9 @@ function ItemList({ board, navigation }: itemListProps) {
   const [favId, setFavId] = useState(0);
   const isFocused = useIsFocused();
 
-  const toDetail = useCallback(() => {
+  const toDetail = () => {
     navigation.navigate("Detail", { board: board, isFav: isFav });
-  }, [board, navigation]);
+  };
 
   const favorite = () => {
     Axios.get(`${url}/profile/is_favorite`, {
@@ -56,6 +56,9 @@ function ItemList({ board, navigation }: itemListProps) {
     const gapTime = now.diff(date, "minutes");
     const gapHour = now.diff(date, "hours");
     const gapDay = now.diff(date, "days");
+    const gapWeek = now.diff(date, "weeks");
+    const gapMonth = now.diff(date, "months");
+    const gapYear = now.diff(date, "years");
     const isAm = date.format("A") === "AM" ? "오전" : "오후";
     if (gapTime < 1) {
       return "방금 전";
@@ -65,8 +68,12 @@ function ItemList({ board, navigation }: itemListProps) {
       return `${gapHour}시간 전`;
     } else if (gapDay < 7) {
       return `${gapDay}일 전`;
-    } else {
-      return `${date.format(`YYYY년 M월 D일 ${isAm} 시 m분`)}`;
+    } else if (gapWeek < 5) {
+      return `${gapWeek}주 전`;
+    } else if (gapMonth < 12) {
+      return `${gapMonth}개월 전`;
+    } else if (gapYear) {
+      return `${gapYear}년 전`;
     }
   };
 
@@ -94,34 +101,36 @@ function ItemList({ board, navigation }: itemListProps) {
             flexDirection: "row",
             justifyContent: "flex-end",
             alignItems: "flex-end",
-            paddingRight: 10
+            paddingRight: 5
           }}
         >
-          {/* <View
-            style={{
-              backgroundColor: "grey",
-              justifyContent: "center",
-              height: 19,
-              width: 75
-            }}
-          >
-            <Text>{board.statusType}</Text>
-          </View> */}
+          {board.statusType !== "거래예약" && "거래완료" ? null : (
+            <Text
+              style={{
+                borderWidth: 1,
+                borderRadius: 5,
+                borderColor: board.statusType === "거래예약" ? "grey" : "blue",
+                padding: 3,
+                color: board.statusType === "거래예약" ? "grey" : "blue"
+              }}
+            >
+              {board.statusType}
+            </Text>
+          )}
           <Text style={styles.itemPrice}>
             {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
           </Text>
+          <Text style={styles.itemViewCount}>
+            <Ionicons name="eye-outline" size={18} color={"gray"} />
+            {board.views}
+          </Text>
+          <Text style={styles.itemFavCount}>
+            <Entypo name="heart-outlined" size={18} color={"gray"} />
+            {board.likes}
+          </Text>
         </View>
       </View>
-      <View style={styles.likesInfo}>
-        <Text style={styles.itemViewCount}>
-          <Ionicons name="eye-outline" size={18} color={"gray"} />
-          {board.views}
-        </Text>
-        <Text style={styles.itemFavCount}>
-          <Entypo name="heart-outlined" size={18} color={"gray"} />
-          {board.likes}
-        </Text>
-      </View>
+      {/* <View style={styles.likesInfo}></View> */}
     </Pressable>
   );
 }
@@ -130,11 +139,11 @@ export const styles = StyleSheet.create({
   items: {
     paddingBottom: 5,
     backgroundColor: "white",
-    flexDirection: "row"
+    flexDirection: "row",
+    paddingVertical: 15
   },
   itemImageZone: {
-    flex: 1.2,
-    paddingVertical: 15
+    flex: 1.2
   },
   itemInfo: {
     flex: 2.1
@@ -164,21 +173,20 @@ export const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: "600",
     marginTop: 10,
-    marginLeft: 15
+    marginLeft: 5,
+    marginRight: 5
   },
   likeButton: {
     marginTop: vh / 40
   },
   itemViewCount: {
     fontSize: 18,
-    marginTop: vh / 9.6,
     marginRight: vw / 90,
     fontWeight: "300",
     color: "gray"
   },
   itemFavCount: {
     fontSize: 18,
-    marginTop: vh / 9.6,
     fontWeight: "300",
     color: "gray"
   },

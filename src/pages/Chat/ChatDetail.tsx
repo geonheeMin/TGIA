@@ -18,7 +18,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   BackHandler,
-  Linking
+  Alert
 } from "react-native";
 import { useState, useCallback, useEffect, useRef } from "react";
 import Axios from "axios";
@@ -33,12 +33,13 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
-import PaymentCompleted from "./PaymentCompleted";
 import { WebView } from "react-native-webview";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useIsFocused, useNavigationState } from "@react-navigation/native";
 import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
 import SendIntentAndroid from "react-native-send-intent";
+import Geolocation from "@react-native-community/geolocation";
+import { ChatApis } from "./ChatApis";
 
 type RootStackParamList = {
   ChatDetail: undefined;
@@ -59,14 +60,11 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const { session, url } = useStore();
   const isFocused = useIsFocused();
   const params = route.params;
-  const chatroom = params?.chatroom;
   const post = params?.post;
-  const other =
-    chatroom.member_a === session?.member_id
-      ? chatroom.member_b
-      : chatroom.member_a;
+  const chatroom = params?.chatroom;
   const [chats, setChats] = useState([]);
   const [msg, setMsg] = useState("");
+  const [other, setOther] = useState();
   const [otherName, setOtherName] = useState("");
   const [paymentUrl, setPaymentUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +78,16 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
    */
   const [isChatLoaded, setIsChatLoaded] = useState(true);
   const [isMenuOpened, setIsMenuOpened] = useState(false);
+  const [paymentSended, setPaymentSended] = useState<boolean>();
+
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
+  const [distance, setDistance] = useState(1000);
+  const [inHansung, setInHansung] = useState(false);
+
+  const Hansung = { latitude: 37.582429, longitude: 127.010084 };
+  const HansungOut = { latitude: 37.08236, longitude: 127.01116 };
+  const Hansung2 = { latitude: 37.58359, longitude: 127.00953 };
 
   const request = {
     post_id: post.post_id,
@@ -90,7 +98,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   const requestPayment = () => {
-    sendApi("송금요청");
+    sendApi(ChatApis[0].api);
   };
 
   const reservation = () => {
@@ -98,34 +106,36 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       post_id: post.post_id
     };
     Axios.post(`${url}/reservation_posts`, post_id).then((res) => {
-      sendApi("거래예약");
+      sendApi(ChatApis[2].api);
     });
   };
 
-  const sendPosition = () => {
-    sendApi("위치전송");
-  };
-
   const tryPayment = () => {
-    console.log(request);
-    setIsPaying(true);
-    Axios.post(`${url}/payment/ready`, request)
-      .then((res) => {
-        //Linking.openURL(res.data.next_redir ect_mobile_url)
-        setPaymentUrl(
-          Platform.OS === "ios"
-            ? res.data.next_redirect_app_url
-            : res.data.next_redirect_app_url
-        );
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // console.log(request);
+    // setIsPaying(true);
+    // Axios.post(`${url}/payment/ready`, request)
+    //   .then((res) => {
+    //     //Linking.openURL(res.data.next_redir ect_mobile_url)
+    //     console.log(res.data);
+    //     setPaymentUrl(
+    //       Platform.OS === "ios"
+    //         ? res.data.next_redirect_app_url
+    //         : res.data.next_redirect_app_url
+    //     );
+    //     {
+    //       setIsLoading(false);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+    stopChat();
+    navigation.navigate("Payment", { post: post });
   };
 
   const handleNavigationStateChange = (navState) => {
     const { url } = navState;
+    console.log(url);
     // 결제 완료 페이지 url이면
     if (url.includes("payment/success")) {
       // 내 앱 페이지로 이동시키기
@@ -133,7 +143,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       setPaymentUrl("");
       //WebView && WebView.unmount && WebView.unmount();
       // 이동할 페이지 url을 자유롭게 변경해 주세요.
-      navigation.navigate("Payment");
+      navigation.navigate("Payment", { post: post });
       setIsPaying(false);
       setIsLoading(false);
     }
@@ -157,11 +167,109 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     timeStyle: "medium"
   }).format(date);
 
-  const backward = () => {
+  const startChat = () => {
+    getChats();
+    const newTimerId = setInterval(() => {
+      getChats();
+    }, 2000);
+    setTimerId(newTimerId);
+  };
+
+  const stopChat = () => {
     timerId && clearInterval(timerId);
     setTimerId(null);
+  };
+
+  const checkChat = () => {
+    chats.map((item) => {
+      if (item.message.includes(ChatApis[1].api)) {
+        setPaymentSended(true);
+      } else {
+        setPaymentSended(false);
+      }
+    });
+  };
+
+  const locationCalc = useCallback(() => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log(position);
+        const lat = JSON.stringify(position.coords.latitude);
+        const lon = JSON.stringify(position.coords.longitude);
+
+        setLatitude(lat);
+        setLongitude(lon);
+      },
+      (err) => {
+        console.log(err.code, err.message);
+      },
+      Platform.OS === "android"
+        ? {}
+        : { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  }, []);
+
+  const distanceCalc = (Point, lat: number, lon: number) => {
+    const radius = 6371;
+    let toRadian = Math.PI / 180;
+    let deltaLatitude = Math.abs(Point.latitude - lat) * toRadian;
+    let deltaLongitude = Math.abs(Point.longitude - lon) * toRadian;
+    let sinDeltaLat = Math.sin(deltaLatitude / 2);
+    let sinDeltaLon = Math.sin(deltaLongitude / 2);
+
+    const squareRoot = Math.sqrt(
+      sinDeltaLat * sinDeltaLat +
+        Math.cos(Point.latitude * toRadian) *
+          Math.cos(lat * toRadian) *
+          sinDeltaLon *
+          sinDeltaLon
+    );
+    setDistance(2 * radius * Math.asin(squareRoot) * 1000);
+
+    if (distance <= 150) {
+      console.log(squareRoot);
+      setInHansung(true);
+    } else setInHansung(false);
+  };
+
+  const checkCalc = () => {
+    Alert.alert(
+      "위치 전송",
+      "현재 한성대학교 내에 있음을 상대방에게 알리겠습니까?",
+      [
+        {
+          text: "아니오",
+          style: "cancel"
+        },
+        {
+          text: "예",
+          onPress: () => {
+            distanceCalc(Hansung, latitude, longitude);
+            setTimeout(() => {
+              if (inHansung) {
+                sendApi(ChatApis[3].api);
+              } else {
+                Alert.alert(
+                  "위치 전송 실패",
+                  "현재 위치가 한성대학교 내에 있지 않습니다",
+                  [
+                    {
+                      text: "확인",
+                      style: "cancel"
+                    }
+                  ]
+                );
+              }
+            }, 1500);
+          }
+        }
+      ]
+    );
+  };
+
+  const backward = () => {
+    stopChat();
     navigation.goBack();
-    return true;
   };
 
   const renderChat = ({ item }) => {
@@ -392,6 +500,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
                 borderRadius: vw / 7,
                 backgroundColor: "#3775ff"
               }}
+              onPress={() => checkCalc()}
             >
               <EntypoIcon name="location" color="white" size={25} />
             </Pressable>
@@ -430,25 +539,39 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   };
 
   useEffect(() => {
-    if (isPaying) {
-      timerId && clearInterval(timerId);
-      setTimerId(null);
+    if (isFocused) {
+      startChat();
+      checkChat();
+      var isPurchased = false;
+      Axios.get(`${url}/get_status_type?post_id=${post.post_id}`)
+        .then((res) => {
+          console.log(res.data);
+          if (res.data === "거래완료") {
+            isPurchased = true;
+          }
+        })
+        .catch((err) => console.log(err));
+      if (isPurchased && !paymentSended) {
+        sendApi(ChatApis[1].api);
+      }
     } else {
-      getChats();
-      const newTimerId = setInterval(() => {
-        getChats();
-      }, 2000);
-      setTimerId(newTimerId);
+      stopChat();
     }
-  }, [isPaying]);
+  }, [isFocused]);
 
   useEffect(() => {
-    if (Platform.OS === "ios") {
-      console.log(sh - vh);
-    }
-    Axios.get(`${url}/member/get_username?id=${other}`)
+    Axios.get(`${url}/chat/get_ids?chatroom_id=${chatroom.chatroom_id}`)
       .then((res) => {
-        setOtherName(res.data);
+        setOther(
+          res.data.member_a === session?.member_id
+            ? res.data.member_b
+            : res.data.member_a
+        );
+        Axios.get(`${url}/member/get_username?id=${other}`)
+          .then((res) => {
+            setOtherName(res.data);
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
     const keyUpListener = Keyboard.addListener("keyboardWillShow", (e) => {
@@ -461,9 +584,17 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     });
     const backListener = BackHandler.addEventListener(
       "hardwareBackPress",
-      backward
+      () => {
+        stopChat();
+        return false;
+      }
     );
+    return () => backListener.remove();
   }, []);
+
+  useEffect(() => {
+    locationCalc();
+  }, [latitude, longitude]);
 
   return Platform.OS === "android" ? (
     <KeyboardAvoidingView
@@ -471,7 +602,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       keyboardVerticalOffset={30}
       style={styles.container}
     >
-      {isPaying ? (
+      {/* {isPaying ? (
         <View style={styles.kakao}>
           {isLoading ? (
             <ActivityIndicator size="large" />
@@ -493,7 +624,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             />
           )}
         </View>
-      ) : null}
+      ) : null} */}
       <View
         style={{
           borderBottomWidth: 1,
@@ -544,7 +675,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     </KeyboardAvoidingView>
   ) : (
     <SafeAreaView style={styles.container}>
-      {isPaying ? (
+      {/* {isPaying ? (
         <View style={styles.kakao}>
           {isLoading ? (
             <ActivityIndicator size="large" />
@@ -556,7 +687,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             />
           )}
         </View>
-      ) : null}
+      ) : null} */}
       <View
         style={{
           borderBottomWidth: 1,

@@ -91,7 +91,7 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   };
 
   useEffect(() => {
-    Axios.get(`${url}/post/buy_list?userId=` + session.member_id)
+    Axios.get(`${url}/post/buy_list?userId=` + session?.member_id)
       .then((res) => {
         setPosts(res.data);
         posts.sort((a, b) => b.post_id - a.post_id);
