@@ -82,7 +82,6 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
 
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
-  const [distance, setDistance] = useState(1000);
   const [inHansung, setInHansung] = useState(false);
 
   const Hansung = { latitude: 37.582429, longitude: 127.010084 };
@@ -193,12 +192,12 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
   const locationCalc = useCallback(() => {
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log(position);
-        const lat = JSON.stringify(position.coords.latitude);
-        const lon = JSON.stringify(position.coords.longitude);
-
+        const lat = parseInt(JSON.stringify(position.coords.latitude));
+        const lon = parseInt(JSON.stringify(position.coords.longitude));
         setLatitude(lat);
         setLongitude(lon);
+
+        distanceCalc(Hansung.latitude, Hansung.longitude, lat, lon);
       },
       (err) => {
         console.log(err.code, err.message);
@@ -209,25 +208,28 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     );
   }, []);
 
-  const distanceCalc = (Point, lat: number, lon: number) => {
+  const distanceCalc = (
+    HansungLat: number,
+    HansungLon: number,
+    lat: number,
+    lon: number
+  ) => {
     const radius = 6371;
-    let toRadian = Math.PI / 180;
-    let deltaLatitude = Math.abs(Point.latitude - lat) * toRadian;
-    let deltaLongitude = Math.abs(Point.longitude - lon) * toRadian;
-    let sinDeltaLat = Math.sin(deltaLatitude / 2);
-    let sinDeltaLon = Math.sin(deltaLongitude / 2);
+    const toRadian = Math.PI / 180;
+    const deltaLatitude = Math.abs(HansungLat - lat) * toRadian;
+    const deltaLongitude = Math.abs(HansungLon - lon) * toRadian;
+    const first =
+      Math.sin(deltaLatitude / 2) * Math.sin(deltaLatitude / 2) +
+      Math.cos(HansungLat * toRadian) *
+        Math.cos(lat * toRadian) *
+        Math.sin(deltaLongitude / 2) *
+        Math.sin(deltaLongitude / 2);
+    const second = 2 * Math.atan2(Math.sqrt(first), Math.sqrt(1 - first));
 
-    const squareRoot = Math.sqrt(
-      sinDeltaLat * sinDeltaLat +
-        Math.cos(Point.latitude * toRadian) *
-          Math.cos(lat * toRadian) *
-          sinDeltaLon *
-          sinDeltaLon
-    );
-    setDistance(2 * radius * Math.asin(squareRoot) * 1000);
+    const distance = radius * second;
 
     if (distance <= 150) {
-      console.log(squareRoot);
+      console.log(distance);
       setInHansung(true);
     } else setInHansung(false);
   };
@@ -244,7 +246,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
         {
           text: "예",
           onPress: () => {
-            distanceCalc(Hansung, latitude, longitude);
+            locationCalc();
             setTimeout(() => {
               if (inHansung) {
                 sendApi(ChatApis[3].api);
