@@ -130,7 +130,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     //     console.log(error);
     //   });
     stopChat();
-    navigation.navigate("Payment", { post: post });
+    navigation.navigate("Payment", { post: post, chatroom: chatroom });
   };
 
   const handleNavigationStateChange = (navState) => {
@@ -180,15 +180,15 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     setTimerId(null);
   };
 
-  const checkChat = () => {
-    chats.map((item) => {
-      if (item.message.includes(ChatApis[1].api)) {
-        setPaymentSended(true);
-      } else {
-        setPaymentSended(false);
-      }
-    });
-  };
+  // const checkChat = () => {
+  //   chats.map((item) => {
+  //     if (item.message.includes(ChatApis[1].api)) {
+  //       setPaymentSended(true);
+  //     } else {
+  //       setPaymentSended(false);
+  //     }
+  //   });
+  // };
 
   const locationCalc = useCallback(() => {
     Geolocation.getCurrentPosition(
@@ -538,26 +538,26 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
     );
   };
 
-  useEffect(() => {
-    if (isFocused) {
-      startChat();
-      checkChat();
-      var isPurchased = false;
-      Axios.get(`${url}/get_status_type?post_id=${post.post_id}`)
-        .then((res) => {
-          console.log(res.data);
-          if (res.data === "거래완료") {
-            isPurchased = true;
-          }
-        })
-        .catch((err) => console.log(err));
-      if (isPurchased && !paymentSended) {
-        sendApi(ChatApis[1].api);
-      }
-    } else {
-      stopChat();
-    }
-  }, [isFocused]);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     startChat();
+  //     checkChat();
+  //     var isPurchased = false;
+  //     Axios.get(`${url}/get_status_type?post_id=${post.post_id}`)
+  //       .then((res) => {
+  //         console.log(res.data);
+  //         if (res.data === "거래완료") {
+  //           isPurchased = true;
+  //         }
+  //       })
+  //       .catch((err) => console.log(err));
+  //     if (isPurchased && !paymentSended) {
+  //       sendApi(ChatApis[1].api);
+  //     }
+  //   } else {
+  //     stopChat();
+  //   }
+  // }, [isFocused]);
 
   useEffect(() => {
     Axios.get(`${url}/chat/get_ids?chatroom_id=${chatroom.chatroom_id}`)

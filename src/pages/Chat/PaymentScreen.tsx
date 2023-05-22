@@ -26,6 +26,7 @@ type PaymentProps = NativeStackScreenProps<PaymentPramList, "Payment">;
 
 function PaymentScreen({ route, navigation }: PaymentProps) {
   const post = route.params?.post;
+  const chatroom = route.params?.chatroom;
   const { session, url } = useStore();
   const [paymentUrl, setPaymentUrl] = useState("");
   const [paymentVisible, setPaymentVisible] = useState(false);
@@ -39,7 +40,21 @@ function PaymentScreen({ route, navigation }: PaymentProps) {
     item_name: post.title
   };
 
-  const toProfile = useCallback(() => {
+  const toChat = useCallback(() => {
+    if (paymentSuccess) {
+      const SendMessageRequestDTO = {
+        chatroom_id: chatroom.chatroom_id,
+        sender_id: session?.member_id,
+        message: "송금완료"
+      };
+      Axios.post(`${url}/chat/send_V2`, SendMessageRequestDTO, {
+        headers: { "Content-Type": "application/json" }
+      })
+        .then((res) => {})
+        .catch((error) => {
+          console.log(error);
+        });
+    }
     navigation.goBack();
   }, [navigation]);
 
@@ -117,7 +132,10 @@ function PaymentScreen({ route, navigation }: PaymentProps) {
             <Text style={styles.text2}>
               결제하기 버튼을 통해 카카오페이 간편결제를 실행합니다
             </Text>
-            <Pressable style={styles.completeButton} onPress={tryPayment}>
+            <Pressable
+              style={styles.completeButton}
+              onPress={() => tryPayment()}
+            >
               <Text style={styles.completeText}>결제하기</Text>
             </Pressable>
           </View>
@@ -131,7 +149,7 @@ function PaymentScreen({ route, navigation }: PaymentProps) {
             <Text style={styles.text2}>
               완료 버튼을 눌러 채팅 화면으로 이동하세요
             </Text>
-            <Pressable style={styles.completeButton} onPress={toProfile}>
+            <Pressable style={styles.completeButton} onPress={() => toChat()}>
               <Text style={styles.completeText}>완료</Text>
             </Pressable>
           </View>
