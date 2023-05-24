@@ -29,6 +29,9 @@ import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
 import Creative from "./src/pages/Tracks/Creative";
 import PaymentCompleted from "./src/pages/Chat/PaymentCompleted";
+import MannerInfo from "./src/pages/Profile/MannerInfo";
+import MannerReview from "./src/pages/Profile/MannerReview";
+import SalesList from "./src/pages/Profile/SalesList";
 
 import useStore from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -56,6 +59,7 @@ export type RootStackParamList = {
   Settings: undefined;
   Creative: undefined;
   Payment: undefined;
+  Sales: undefined;
 };
 
 export type LoginStackParamList = {
@@ -311,6 +315,24 @@ function App() {
         </Stack.Screen>
         <Stack.Screen name="Payment" options={{ headerShown: false }}>
           {(props) => <PaymentCompleted {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="MannerInfo"
+          options={{ headerShown: false }}
+        >
+          {(props) => <MannerInfo {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="MannerReview"
+          options={{ headerShown: false }}
+        >
+          {(props) => <MannerReview {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="SalesList"
+          options={{ headerShown: false }}
+        >
+          {(props) => <SalesList {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

@@ -33,9 +33,10 @@ const useStore = create<preset>((set) => ({
   setHasSession: (result: boolean) => {
     set((state) => ({ hasSession: result }));
   },
-  //url: "http://3.35.217.228:8080" //yongki
-  //url: "http://223.194.129.143:8080" // 민규
-  url: "http://54.180.124.49:8080" //geonhee
+  //url: "http://54.180.106.179:8080" //yongki
+  url: "http://3.36.56.61:8080" // 민규
+  //url: "http://223.194.130.205:8080" // 영식
+  //url: "http://54.180.124.49:8080" //geonhee
 }));
 
 export default useStore;

@@ -226,6 +226,12 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     );
   }, [activeIndex]);
 
+  const toMannerInfo = () => {
+    navigation.navigate("MannerInfo", {
+      member_Id: board.member_id
+    });
+  }
+
   return (
     <View style={pressed ? { backgroundColor: "black" } : styles.container}>
       <StatusBar barStyle={pressed ? "light-content" : "dark-content"} />
@@ -263,7 +269,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           </View>
         </Modal>
         <View style={styles.content}>
-          <View style={styles.postWriterBar}>
+          <Pressable
+            onPress={toMannerInfo}
+            style={styles.postWriterBar}
+          >
             <Image
               source={{ uri: `${url}/images/${writerImage}` }}
               style={styles.writerImage}
@@ -306,7 +315,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 </Pressable>
               </View>
             </View>
-          </View>
+          </Pressable>
           <View style={styles.hr} />
           <View style={styles.postTitle}>
             <Text

@@ -32,7 +32,6 @@ function ItemList({ board, navigation }: itemListProps) {
   const [postId, setPostId] = useState(board.post_id);
   const [likes, setLikes] = useState(false); // 하트 채워짐 표시
   const [isFav, setIsFav] = useState(0); // 좋아요 정보. 0 : 좋아요 off, 1 : 좋아요 on
-  const [favId, setFavId] = useState(0);
   const isFocused = useIsFocused();
 
   const toDetail = useCallback(() => {

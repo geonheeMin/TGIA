@@ -199,10 +199,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          {/* <Image
-            source={require("../../assets/bugi.png")}
-            style={styles.profile}
-          /> */}
           <Image
             source={
               Object.keys(img).length === 0

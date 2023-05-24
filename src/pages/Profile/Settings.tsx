@@ -17,6 +17,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import LocationCalc from "../../components/LocationCalc";
 import useStore from "../../../store";
+import Axios from "axios";
 import PaymentCompleted from "../Chat/PaymentCompleted";
 
 const vw = Dimensions.get("window").width;
@@ -39,6 +40,15 @@ function Settings({ navigation }: SettingsScreenProps) {
     navigation.navigate("Payment");
   }, [navigation]);
 
+  useEffect(() => {
+    Axios.get(`${url}/purchasedlistV2`)
+    .then(res => {
+      console.log(res.data);
+    })
+    .catch(e => {
+      console.log(e);
+    })
+  })
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>

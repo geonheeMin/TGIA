@@ -36,7 +36,8 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const { session, url } = useStore(); // 사용자 아이디
   const [trackFirst, setTrackFirst] = useState(session?.firstTrack); // 제 1트랙
   const [trackSecond, setTrackSecond] = useState(session?.secondTrack); // 제 2트랙
-  const [manner, setManner] = useState(36.5); // 매너온도
+  const [manner, setManner] = useState(455); // 매너 학점
+  const [mannerGrade, setMannerGrade] = useState(""); // 매너 등급
   const isFocused = useIsFocused();
   const [aTrackId, setATrackId] = useState(7);
   const [bTrackId, setBTrackId] = useState(9);
@@ -56,18 +57,35 @@ function Profile({ navigation, route }: ProfileScreenProps) {
       })
       .catch((error) => {
         console.log("프로필 에러");
+        console.log(error);
       });
+
+    Axios.get(`${url}/member/get_image?member_id=` + session.member_id)
+    .then((res) => {
+      setProfileImg(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }, [isFocused]);
 
   useEffect(() => {
-    Axios.get(`${url}/member/get_image?member_id=` + session.member_id)
-      .then((res) => {
-        setProfileImg(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [isFocused]);
+  if (manner >= 600) {
+    setMannerGrade("A+");
+  } else if (manner >= 500) {
+    setMannerGrade("A0");
+  } else if (manner >= 400) {
+    setMannerGrade("B+");
+  } else if (manner >= 300) {
+    setMannerGrade("B0");
+  } else if (manner >= 200) {
+    setMannerGrade("C+");
+  } else if (manner >= 100) {
+    setMannerGrade("C0");
+  } else {
+    setMannerGrade("D0");
+  }
+  }, [manner])
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
@@ -76,6 +94,11 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const toTrackSetting = () => {
     navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId] });
   };
+  const toMannerInfo = () => {
+    navigation.navigate("MannerInfo", {
+      member_Id: session.member_id
+    });
+  }
   const toSalesHistory = () => {
     navigation.navigate("SalesHistory", {
       profile_img: profileImg
@@ -150,18 +173,26 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           </View>
         </View>
       </View>
-      <View
-        style={{ flex: 0.4, justifyContent: "center", paddingHorizontal: 15 }}
-      >
-        <Text style={{ fontSize: 16 }}>매너 온도</Text>
+      <Pressable onPress={toMannerInfo} style={styles.mannerStatus}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={styles.mannerText}>
+            매너 학점 
+          </Text>
+          <Text style={styles.mannerGrade}>
+            {mannerGrade}
+          </Text>
+          <Text style={styles.mannerExp}>
+            {manner % 100 + "%"}
+          </Text>
+        </View>
         <View style={{ marginTop: 10, paddingRight: 15 }}>
           <ProgressBar
-            progress={manner / 100}
-            color={"green"}
+            progress={(manner % 100) / 100}
+            color={"#3064e7"}
             style={styles.progress}
           />
         </View>
-      </View>
+      </Pressable>
       <View style={styles.menuZoneTop}>
         <Text style={{ fontSize: 16, fontWeight: "600", marginTop: vh / 80 }}>
           나의 거래
@@ -280,6 +311,28 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: vh / 80,
     paddingHorizontal: vw / 20
+  },
+  mannerStatus: {
+    flex: 0.4,
+    justifyContent: "center",
+    paddingHorizontal: vw / 30,
+  },
+  mannerText: {
+    fontSize: 16,
+    textAlign: "left"
+  },
+  mannerGrade: {
+    fontSize: 16,
+    marginRight: vw * 0.55,
+    color: "#3064e7",
+    fontWeight: "500"
+  },
+  mannerExp: {
+    fontSize: 16,
+    textAlign: "right",
+    marginRight: vw * 0.04,
+    color: "#3064e7",
+    fontWeight: "500"
   },
   menuZoneTop: {
     flex: 1.1,
