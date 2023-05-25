@@ -133,10 +133,9 @@ function ItemList({ board, navigation }: itemListProps) {
 
 export const styles = StyleSheet.create({
   items: {
-    paddingBottom: 5,
     backgroundColor: "white",
     flexDirection: "row",
-    paddingVertical: 15
+    paddingVertical: 10
   },
   itemImageZone: {
     flex: 1.2

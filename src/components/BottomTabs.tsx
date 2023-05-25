@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  Text,
-  StyleSheet,
-  Dimensions,
-  Pressable,
-  SafeAreaView
-} from "react-native";
+import { Text, StyleSheet, Dimensions, Pressable, View } from "react-native";
 import { useCallback } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import OctIcon from "react-native-vector-icons/Octicons";
@@ -40,7 +34,7 @@ function BottomTabs({ navigation, screen }: BottomTab) {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.bottomBar}>
+    <View style={styles.bottomBar}>
       <Pressable onPress={toList} style={styles.bottomButton}>
         <OctIcon
           name="home"
@@ -95,7 +89,7 @@ function BottomTabs({ navigation, screen }: BottomTab) {
           프로필
         </Text>
       </Pressable>
-    </SafeAreaView>
+    </View>
   );
 }
 

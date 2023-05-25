@@ -973,9 +973,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           </View>
         </View>
       </View>
-      <View
-        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}
-      >
+      <View style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 }}>
         <FlatList
           data={newPosts}
           renderItem={({ item }: { item: Post }) => renderItem(item)}
