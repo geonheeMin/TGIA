@@ -127,8 +127,9 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   
     const purchaseReviewDTO = {
       buyer_id: session.member_id,
-      seller_id: 10,
+      seller_id: 13,
       review: text,
+      post_id: postId,
     }
 
     Axios.post(`${url}/manner/set_score`, request)

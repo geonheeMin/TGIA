@@ -39,7 +39,6 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const [posts, setPosts] = useState(
     postlist.postlist.sort((a, b) => b.post_id - a.post_id)
   );
-  const [review, setReview] = useState(1); // 리뷰 했다면 0, 리뷰 안했다면 1
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
@@ -78,21 +77,22 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       department: item.department,
       createdDate: item.createdDate,
       item_name: item.item_name,
-      purchased: item.purchased
+      purchased: item.purchased,
+      reviewType: item.reviewType
     };
 
 
     return (
       <View>
         <ItemList board={renderBoard} navigation={navigation} />
-        {review === 1 ? (
+        {item.reviewType === "후기완료" ? (
+          <View style={styles.reviewButton}>
+            <Text style={styles.reviewCompliteText}>후기 작성 완료</Text>
+          </View>
+        ) : (
           <Pressable style={styles.reviewButton} onPress={toReview}>
             <Text style={styles.reviewText}>거래 후기 남기기</Text>
           </Pressable>
-        ) : (
-          <View style={styles.reviewButton}>
-            <Text style={styles.reviewCompliteText}>거래 후기 남기기</Text>
-          </View>
         )}
       </View>
     );
@@ -109,17 +109,6 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
         console.log("buy" + error);
       });
   }, [isFocused]);
-
-  // const toReview = useCallback(() => {
-  //   navigation.navigate("MannerReview"
-  //   , {
-  //     //buyer_Id: tiem.buyer_id,
-  //     //seller_Id: item.member_id,
-  //     // post_Id: renderBoard.post_id
-  //   }
-  //   );
-  // }, [navigation]);
-
 
   return (
     <SafeAreaView style={styles.safeAreaView}>

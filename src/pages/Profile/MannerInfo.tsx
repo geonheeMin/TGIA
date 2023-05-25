@@ -40,6 +40,8 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
   const [reDealingRate, setReDealingRate] = useState(100); // 재거래 희망률
   const [responseRate, setResponseRate] = useState(100); // 응답률
   const [reviewData, setReviewData] = useState([]); // 받은 매너평가 순위 담는 배열
+  const [reviewCount, setReviewCount] = useState(0);
+  const [salesCount, setSalesCount] = useState(0); // 판매중인 게시물 개수
   const isFocused = useIsFocused();
   
 
@@ -56,17 +58,20 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
   }
 
   useEffect(() => {
-    // Axios.get(`${url}/profile?userId=` + memberId)
-    // .then((res) => {
-    //   //setNickname(res.data.username);
-    //   setTrackFirst(res.data.firstTrack);
-    //   setTrackSecond(res.data.secondTrack);
-    //   setProfileImg(res.data.imageFileName);
-    //   console.log(res.data);
-    // })
-    // .catch((error) => {
-    //   console.log(error);
-    // });
+    Axios.get(`${url}/get_seller_profile?userId=` + memberId)
+    .then((res) => {
+      setNickName(res.data.profileListDto.username);
+      setTrackFirst(res.data.profileListDto.firstTrack);
+      setTrackSecond(res.data.profileListDto.secondTrack);
+      setProfileImg(res.data.profileListDto.imageFileName);
+      setSubsction(res.data.profileListDto.createdDate);
+      setReviewCount(res.data.purchaseReview_전체개수);
+      setSalesCount(res.data.CountSellPostbyUser);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
     Axios.get(`${url}/manner/getTop3AndDealingRate?userId=` + memberId)
     .then((res) => {
@@ -147,8 +152,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
             style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
           >
             <Text style={{ fontSize: 16 }}>
-              {/* {session.username} */}
-              {memberId}
+              {nickName}
             </Text>
           </View>
           <View style={{ flex: 2, paddingVertical: 18 }}>
@@ -199,7 +203,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
           onPress={toSalesList}
           style={styles.salesListButton}  
         >
-          <Text style={styles.salesListButtonText}>판매상품 {10}개</Text>
+          <Text style={styles.salesListButtonText}>판매상품 {salesCount}개</Text>
           <SimpleLineIcons name="arrow-right" size={20} style={styles.salesListButtonArrow}/>
         </Pressable>
         <View
@@ -231,7 +235,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
           onPress={toMannerReviewList}
           style={styles.mannerReviewButton}  
         >
-          <Text style={styles.mannerReviewButtonText}>받은 거래 후기 ({2})</Text>
+          <Text style={styles.mannerReviewButtonText}>받은 거래 후기 ({reviewCount})</Text>
           <SimpleLineIcons name="arrow-right" size={20} style={styles.mannerReviewButtonArrow}/>
         </Pressable>
       </ScrollView>

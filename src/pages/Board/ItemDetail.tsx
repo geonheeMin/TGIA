@@ -74,6 +74,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     const gapDay = Math.floor(gapHour / 24);
     if (gapTime < 1) {
       return "방금 전";
+
+
     } else if (gapTime < 60) {
       return `${gapTime}분 전`;
     } else if (gapHour < 24) {
@@ -174,9 +176,11 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
 
   useEffect(() => {
     console.log(board.member_id);
-    Axios.get(
-      `${url}/post/details?postId=${board.post_id}&userId=${session?.member_id}`
-    ).catch((error) => console.log(error));
+    Axios.get(`${url}/post/details3?postId=${board.post_id}&userId=${session?.member_id}`)
+    .then((res) => {
+      console.log("디테일" + JSON.stringify(res.data));
+    })
+    .catch((error) => console.log(error));
     Axios.get(`${url}/member/get_username?id=${board.member_id}`)
       .then((res) => {
         setWriter(res.data);
@@ -395,6 +399,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           <Text style={styles.salesListButtonText}>판매상품 {10}개</Text>
           <SimpleLineIcons name="arrow-right" size={20} style={styles.salesListButtonArrow}/>
         </Pressable>
+        <View>
+
+        </View>
       </ScrollView>
       <View style={styles.hr} />
       <View style={styles.buttonBar}>
@@ -679,8 +686,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginRight: vw * 0.03
   },
-  
-  
 });
 
 export default ItemDetail;
