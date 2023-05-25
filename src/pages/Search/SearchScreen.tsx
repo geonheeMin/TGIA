@@ -15,8 +15,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
-import api from "../../api";
-import { useIsFocused } from "@react-navigation/native";
+import Axios from "axios";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -31,12 +30,11 @@ var inputWidth = vw - vw / 5;
 function SearchScreen({ route, navigation }: SearchScreenProps) {
   const { session, url } = useStore();
   const [searchWord, setSearchWord] = useState("");
-  const [searchCategory, setSearchCategory] = useState("");
-  const [searchTrack, setSearchTrack] = useState("");
   const [inputWidth, setInputWidth] = useState(vw - vw / 3);
   const [backWidth, setBackWidth] = useState(vw - vw / 5);
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef(null);
+  const [popularList, setPopularList] = useState([]);
 
   const searchInputFocusedIn = () => {
     setIsEditing(true);
@@ -69,6 +67,30 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
   const searchByWord = () => {
     navigation.navigate("SearchResult", { word: searchWord });
   };
+
+  useEffect(() => {
+    Axios.get(`${url}/getTop10keywords`)
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.length >= 10) {
+          setPopularList(res.data);
+        } else {
+          setPopularList([
+            "아이폰",
+            "맥북",
+            "맥북 에어",
+            "부기",
+            "과잠",
+            "z플립4",
+            "아이패드",
+            "자전거",
+            "자바",
+            "부기굿즈"
+          ]);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -110,6 +132,112 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
             <Text>취소</Text>
           </Pressable>
         ) : null}
+      </View>
+      <View
+        style={{
+          marginHorizontal: vw / 20,
+          height: vh / 3,
+          marginTop: vh / 15,
+          paddingHorizontal: 5,
+          flexDirection: "column"
+        }}
+      >
+        <View>
+          <Text style={{ marginLeft: 5, fontSize: 15, fontWeight: "bold" }}>
+            인기 검색어
+          </Text>
+        </View>
+        <View
+          style={{ marginTop: 10, height: 1, backgroundColor: "lightgrey" }}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            paddingHorizontal: 7.5,
+            marginTop: 15
+          }}
+        >
+          <View
+            style={{
+              width: (vw - vw / 10 - 40) / 2,
+              height: vh / 4.5,
+
+              justifyContent: "space-around"
+            }}
+          >
+            {popularList.map((item, index) => {
+              if (index < 5) {
+                return (
+                  <View key={index}>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          marginLeft: 5,
+                          fontWeight: "bold",
+                          width: 20,
+                          color: "blue"
+                        }}
+                      >
+                        {index + 1}
+                      </Text>
+                      <Text style={{ paddingLeft: 10, fontWeight: "600" }}>
+                        {item}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        marginTop: 5,
+                        marginHorizontal: 5,
+                        height: 1,
+                        backgroundColor: "lightgrey"
+                      }}
+                    />
+                  </View>
+                );
+              }
+            })}
+          </View>
+          <View
+            style={{
+              width: (vw - vw / 10 - 40) / 2,
+              height: vh / 4.5,
+              justifyContent: "space-around",
+              marginLeft: 10
+            }}
+          >
+            {popularList.map((item, index) => {
+              if (index >= 5) {
+                return (
+                  <View key={index}>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          marginLeft: 5,
+                          fontWeight: "bold",
+                          width: 20,
+                          color: "blue"
+                        }}
+                      >
+                        {index + 1}
+                      </Text>
+                      <Text style={{ fontWeight: "600", paddingLeft: 10 }}>
+                        {item}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        marginTop: 5,
+                        marginHorizontal: 5,
+                        height: 1,
+                        backgroundColor: "lightgrey"
+                      }}
+                    />
+                  </View>
+                );
+              }
+            })}
+          </View>
+        </View>
       </View>
       <BottomTabs navigation={navigation} screen="Search" />
     </SafeAreaView>

@@ -17,4 +17,5 @@ export type Post = {
   views: number;
   title: string;
   writer: string | undefined;
+  statusType: string;
 };

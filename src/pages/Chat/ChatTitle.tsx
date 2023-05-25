@@ -12,9 +12,7 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useCallback, useState, useEffect } from "react";
 import Axios from "axios";
-import chatlist from "../../assets/dummy/chatlist.json";
-import chatmessage from "../../assets/dummy/chat.json";
-import memberlist from "../../assets/dummy/member.json";
+import { ChatApis } from "./ChatApis";
 import useStore from "../../../store";
 type RootStackParamList = {
   ChatTitle: undefined;
@@ -34,6 +32,21 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
   const [post, setPost] = useState();
   const [otherImg, setOtherImg] = useState();
   const count = chat.count;
+
+  const convertMessage = () => {
+    switch (latestMsg) {
+      case ChatApis[0].api:
+        return "송금요청";
+      case ChatApis[1].api:
+        return "송금완료";
+      case ChatApis[2].api:
+        return "거래예약";
+      case ChatApis[3].api:
+        return "위치전송";
+      default:
+        return latestMsg;
+    }
+  };
 
   const toChatDetail = () => {
     navigation.navigate("ChatDetail", {
@@ -108,7 +121,7 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
           {otherName}
         </Text>
         <Text numberOfLines={1} style={{ marginTop: 5 }}>
-          {latestMsg}
+          {convertMessage()}
         </Text>
       </View>
       <View

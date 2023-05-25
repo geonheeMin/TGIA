@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
-import ItemList from "./ItemList";
+import ItemList from "../Board/ItemList";
 import writeIcon from "../../assets/design/pen1.png";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
@@ -28,34 +28,27 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import MatIcon from "react-native-vector-icons/MaterialIcons";
 import OctIcon from "react-native-vector-icons/Octicons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { tracks } from "../../assets/data/track";
 import { Post } from "../../types/PostType";
 type RootStackParamList = {
-  List: undefined;
+  CaegorySearch: undefined;
 };
 
-type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
+type CategorySearchProps = NativeStackScreenProps<
+  RootStackParamList,
+  "CategorySearch"
+>;
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 const sh = Dimensions.get("screen").height;
 
-function ListScreen({ route, navigation }: ListScreenProps) {
+function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
   const moment = require("moment");
   const { session, url } = useStore();
   const [posts, setPosts] = useState([{}]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
-  const filterList = [
-    { label: "전체보기", value: "all" },
-    { label: "도서", value: "book" },
-    { label: "필기구", value: "pencil" },
-    { label: "생활/가전", value: "life" },
-    { label: "의류", value: "clothes" },
-    { label: "뷰티/미용", value: "beauty" },
-    { label: "전자기기", value: "digital" },
-    { label: "부기굿즈", value: "goods" }
-  ];
-  const [filter, setFilter] = useState(filterList[0]);
   const [newPosts, setNewPosts] = useState<Array<Post>>([]);
 
   /** */
@@ -77,6 +70,11 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const [rangeBackOpacity, setRangeBackOpacity] = useState(0.0);
   const [rangeBackZIndex, setRangeBackZIndex] = useState(-50);
   const [rangeWidth, setRangeWidth] = useState(0);
+
+  const searchFilterDto = {
+    keyword: "",
+    categories: [route.params?.category]
+  };
   const modalOpenAnimation = () => {
     LayoutAnimation.configureNext({
       duration: 150,
@@ -279,7 +277,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
 
   const listRefresh = () => {
     setIsRefreshing(true);
-    Axios.get(`${url}/post/all`)
+    Axios.post(`${url}/detailSearch`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -295,7 +293,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   };
 
   useEffect(() => {
-    Axios.get(`${url}/post/all`)
+    Axios.post(`${url}/detailSearch`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -306,11 +304,11 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       .catch((error) => {
         console.log(error);
       });
-  }, [isFocused, filter]);
+  }, [isFocused]);
 
   useEffect(() => {
-    console.log(session);
-    Axios.get(`${url}/post/all`)
+    console.log(searchFilterDto);
+    Axios.post(`${url}/detailSearch`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -577,7 +575,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const adjustRange = () => {
     setRangeCategory(getRangeCategory(rangeValue));
     if (rangeValue === 4) {
-      Axios.get(`${url}/post/all`)
+      Axios.post(`${url}/detailSearch  `, searchFilterDto)
         .then((res) => {
           res.data.sort((a: Post, b: Post) =>
             moment(b.createdDate).diff(moment(a.createdDate))
@@ -608,7 +606,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     setRangeText(getRange(true, 1));
     setWhichTrack(true);
     moveRange(1);
-    Axios.get(`${url}/post/all`)
+    Axios.post(`${url}/detailSearch`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -890,23 +888,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       >
         <FilterModal />
       </View>
-      <View
-        style={{
-          position: "absolute",
-          bottom: rangeModalTop,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          borderTopWidth: 0.34,
-          borderLeftWidth: 0.34,
-          borderRightWidth: 0.34,
-          width: vw,
-          height: vh / 2.6,
-          zIndex: 55,
-          backgroundColor: "white"
-        }}
-      >
-        <RangeModal />
-      </View>
       <Pressable
         style={{
           width: vw,
@@ -918,37 +899,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           zIndex: modalBackZIndex
         }}
         onPress={filterModalClose}
-      >
-        <View />
-      </Pressable>
-      <Pressable
-        style={{
-          width: vw,
-          height: vh,
-          position: "absolute",
-          bottom: 0,
-          opacity: rangeBackOpacity,
-          backgroundColor: "black",
-          zIndex: rangeBackZIndex
-        }}
-        onPress={cancelRange}
-      >
-        <View />
-      </Pressable>
+      ></Pressable>
       <View style={styles.topBar}>
         <View style={styles.topBarLeftSide}>
-          <TouchableOpacity onPress={() => rangeModalOpen()}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingLeft: 15
-              }}
-            >
-              <Text style={{ fontSize: 20, fontWeight: "600" }}>
-                {rangeCategory}
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <IonIcon name={"chevron-back-sharp"} size={25} />
+              <Text style={{ marginLeft: 5, fontSize: 18, fontWeight: "bold" }}>
+                {route.params?.category}
               </Text>
-              <View style={styles.triangle} />
             </View>
           </TouchableOpacity>
         </View>
@@ -972,8 +931,13 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             </Pressable>
           </View>
         </View>
+        {/* <View style={{ flex: 2, alignItems: "flex-end" }}>
+          <Text>{session.username}</Text>
+        </View> */}
       </View>
-      <View style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 }}>
+      <View
+        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}
+      >
         <FlatList
           data={newPosts}
           renderItem={({ item }: { item: Post }) => renderItem(item)}
@@ -1227,4 +1191,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ListScreen;
+export default CategorySearchScreen;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   SafeAreaView,
-  ScrollView,
   Dimensions,
   StyleSheet,
   View,
@@ -14,12 +13,10 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
-import postlist from "../../assets/dummy/postdata.json";
 import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
-import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const vw = Dimensions.get("window").width;
@@ -32,17 +29,10 @@ type PurchaseHistoryScreenProps = NativeStackScreenProps<
 
 
 function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
-  const [purchased, setPurchased] = useState([]);
   const { session, url } = useStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
-  const [posts, setPosts] = useState(
-    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  );
-
-  const onSubmit = useCallback(() => {
-    Alert.alert("알림", "ㅎㅇ");
-  }, []);
+  const [posts, setPosts] = useState([]);
 
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
@@ -78,7 +68,8 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       createdDate: item.createdDate,
       item_name: item.item_name,
       purchased: item.purchased,
-      reviewType: item.reviewType
+      reviewType: item.reviewType,
+      statusType: item.statusType
     };
 
 
@@ -99,11 +90,10 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   };
 
   useEffect(() => {
-    Axios.get(`${url}/post/buy_list?userId=` + session.member_id)
+    Axios.get(`${url}/post/buy_list?userId=` + session?.member_id)
       .then((res) => {
         setPosts(res.data);
         posts.sort((a, b) => b.post_id - a.post_id);
-        console.log(res.data);
       })
       .catch((error) => {
         console.log("buy" + error);
@@ -133,7 +123,7 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
           <FlatList
             style={{ marginTop: 0 }}
             data={posts}
-            renderItem={renderItem}
+            renderItem={(item) => renderItem(item)}
             refreshing={isRefreshing}
           />
         ) : (

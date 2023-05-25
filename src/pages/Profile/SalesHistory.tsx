@@ -2,11 +2,9 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
-  Pressable,
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  ScrollView,
   Alert,
   Image,
   TouchableHighlight,
@@ -17,9 +15,9 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import ItemList from "../Board/ItemList";
-import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
+import { Post } from "../../types/PostType";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -36,16 +34,13 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const isFocused = useIsFocused();
-  const [newPosts, setNewPosts] = useState([{}]);
   const [posts, setPosts] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [complitedPosts, setComplitedPosts] = useState([]);
-  const [profileImg, setProfileImg] = useState(route.params.profile_img);
+  const [posts, setPosts] = useState<Array<Post>>([]);
+  const [sellingPosts, setSellingPosts] = useState<Array<Post>>([]);
+  const [completedPosts, setCompletedPosts] = useState<Array<Post>>([]);
+  const [profileImg, setProfileImg] = useState();
   const [img, setImg] = useState({});
-  // const [complitedPosts, setComplitedPosts] = useState(
-  //   postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  // );
 
   const tabUnderline = (tabNum: number) => {
     Animated.spring(position, {
@@ -91,18 +86,22 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
 
     useEffect(() => {
       if (!isLoaded) {
-        Axios.get(`${url}/post/my_list?userId=` + session.member_id)
+        Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
           .then((res) => {
-            setPosts(res.data);
-            posts.sort((a, b) => b.post_id - a.post_id);
-            setNewPosts(posts);
-            console.log("완료");
-            setIsLoaded(!isLoaded);
+            setSellingPosts(res.data);
+            sellingPosts.sort((a, b) => b.post_id - a.post_id);
           })
           .catch((error) => {
             console.log(error);
             console.log(posts);
           });
+        Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
+          .then((res) => {
+            setCompletedPosts(res.data);
+            completedPosts.sort((a, b) => b.post_id - a.post_id);
+            setIsLoaded(!isLoaded);
+          })
+          .catch((err) => console.log(posts));
       }
     }, []);
 
@@ -130,7 +129,7 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
     tabUnderline(1);
     return (
       <View>
-        {complitedPosts.length >= 1 ? (
+        {completedPosts.length >= 1 ? (
           <View>
             <Text>test</Text>
           </View>

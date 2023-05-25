@@ -1,13 +1,13 @@
 import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   Pressable,
   Image,
   View,
-  Dimensions,
+  Dimensions
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -25,14 +25,13 @@ type itemListProps = NativeStackScreenProps<RootStackParamList, "item">;
 
 function ItemList({ board, navigation }: itemListProps) {
   const { session, url } = useStore();
-  const [postId, setPostId] = useState(board.post_id);
-  const [likes, setLikes] = useState(false); // 하트 채워짐 표시
+  const moment = require("moment");
   const [isFav, setIsFav] = useState(0); // 좋아요 정보. 0 : 좋아요 off, 1 : 좋아요 on
   const isFocused = useIsFocused();
 
-  const toDetail = useCallback(() => {
+  const toDetail = () => {
     navigation.navigate("Detail", { board: board, isFav: isFav });
-  }, [board, navigation]);
+  };
 
   const favorite = () => {
     Axios.get(`${url}/profile/is_favorite`, {
@@ -45,11 +44,15 @@ function ItemList({ board, navigation }: itemListProps) {
   };
 
   const timeCalc = () => {
-    const now = new Date();
-    const date = new Date(board.createdDate);
-    const gapTime = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
-    const gapHour = Math.floor(gapTime / 60);
-    const gapDay = Math.floor(gapHour / 24);
+    const now = new moment();
+    const date = new moment(board.createdDate);
+    const gapTime = now.diff(date, "minutes");
+    const gapHour = now.diff(date, "hours");
+    const gapDay = now.diff(date, "days");
+    const gapWeek = now.diff(date, "weeks");
+    const gapMonth = now.diff(date, "months");
+    const gapYear = now.diff(date, "years");
+    const isAm = date.format("A") === "AM" ? "오전" : "오후";
     if (gapTime < 1) {
       return "방금 전";
     } else if (gapTime < 60) {
@@ -58,8 +61,12 @@ function ItemList({ board, navigation }: itemListProps) {
       return `${gapHour}시간 전`;
     } else if (gapDay < 7) {
       return `${gapDay}일 전`;
-    } else {
-      return `${date}`;
+    } else if (gapWeek < 5) {
+      return `${gapWeek}주 전`;
+    } else if (gapMonth < 12) {
+      return `${gapMonth}개월 전`;
+    } else if (gapYear) {
+      return `${gapYear}년 전`;
     }
   };
 
@@ -82,21 +89,43 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
-        <View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "flex-end",
+            paddingLeft: 10
+          }}
+        >
           <Text style={styles.itemPrice}>
             {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
           </Text>
-        </View>
-        <View style={styles.itemInfo_Count}>
-          <Text style={styles.itemViewCount}>
-              <Ionicons name="eye-outline" size={18} color={"gray"} />
+          {board.statusType !== "거래예약" && "거래완료" ? null : (
+            <Text
+              style={{
+                borderWidth: 1,
+                borderRadius: 5,
+                borderColor: board.statusType === "거래예약" ? "grey" : "blue",
+                padding: 3,
+                color: board.statusType === "거래예약" ? "grey" : "blue"
+              }}
+            >
+              {board.statusType}
+            </Text>
+          )}
+          <View
+            style={{ position: "absolute", right: 10, flexDirection: "row" }}
+          >
+            <Text style={styles.itemViewCount}>
+              <Ionicons name="eye-outline" size={15} color={"gray"} />
               {board.views}
             </Text>
             <Text style={styles.itemFavCount}>
-              <Entypo name="heart-outlined" size={18} color={"gray"} />
+              <Entypo name="heart-outlined" size={15} color={"gray"} />
               {board.likes}
             </Text>
           </View>
+        </View>
       </View>
     </Pressable>
   );
@@ -104,13 +133,19 @@ function ItemList({ board, navigation }: itemListProps) {
 
 export const styles = StyleSheet.create({
   items: {
-    paddingBottom: 5,
     backgroundColor: "white",
-    flexDirection: "row"
+    flexDirection: "row",
+    paddingVertical: 10
   },
   itemImageZone: {
-    flex: 1.2,
-    paddingVertical: 15
+    flex: 1.2
+  },
+  itemInfo: {
+    flex: 2.1
+  },
+  likesInfo: {
+    flexDirection: "row",
+    flex: 1
   },
   itemImage: {
     paddingVertical: "39%",
@@ -124,41 +159,38 @@ export const styles = StyleSheet.create({
     height: "85%",
     overflow: "hidden"
   },
-  itemInfo: {
-    flex: 2.4
-  },
   itemTitle: {
     fontSize: 16,
-    marginTop: vh * 0.032,
-    marginLeft: vw * 0.04,
+    marginTop: 15,
+    marginLeft: 15
+  },
+  itemPrice: {
+    fontSize: 19,
+    fontWeight: "600",
+    marginTop: 10,
+    marginLeft: 5,
+    marginRight: 5
+  },
+  likeButton: {
+    marginTop: vh / 40
+  },
+  itemViewCount: {
+    fontSize: 15,
+    marginRight: vw / 90,
+    fontWeight: "300",
+    color: "gray"
+  },
+  itemFavCount: {
+    fontSize: 15,
+    fontWeight: "300",
+    color: "gray"
   },
   itemEtc: {
     color: "grey",
     fontSize: 12.5,
     marginLeft: 15,
     marginTop: 5
-  },
-  itemPrice: {
-    fontSize: 19,
-    fontWeight: "600",
-    marginTop: 10,
-    marginLeft: 15
-  },
-  itemInfo_Count: {
-    flexDirection: "row"
-  },
-  itemViewCount: {
-    fontSize: 18,
-    marginLeft: vw * 0.42,
-    fontWeight: "300",
-    color: "gray"
-  },
-  itemFavCount: {
-    fontSize: 18,
-    marginLeft: vw * 0.015,
-    fontWeight: "300",
-    color: "gray"
-  },
+  }
 });
 
 export default ItemList;

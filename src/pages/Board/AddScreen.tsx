@@ -115,7 +115,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     if (place === "") return false;
     if (department === "") return false;
     if (track === "") return false;
-    //if (item_name === "") return false;
     return true;
   };
 
@@ -177,45 +176,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         console.log(isNaN(price));
         console.log(isNaN(session.member_id));
       });
-    // const post: Board = {
-    //   title: title,
-    //   category: category,
-    //   text: text,
-    //   user: id,
-    //   date: time,
-    //   price: parseInt(price),
-    //   place: place,
-    //   track: track,
-    //   img: img.uri,
-    // };
-    // formData.append('post', post); //게시글 객체
-    // formData.append('image', {
-    //   uri: img.uri, //이미지 uri
-    //   type: img.type, //이미지 타입(image/jpeg)
-    //   name: img.fileName //이미지 파일 이름
-    // })
-    // Axios.post('api', formData, {headers: {'text-Type': 'multipart/form-data',},});
-    // console.log(JSON.stringify(formData));
-
-    //toList();
   }
 
   /** 기존 글 수정시 호출되는 함수 */
   function postUpdate() {
-    // Axios.get('http://localhost:8080/api/update', {
-    //   params: {
-    //     title: title,
-    //     user: id,
-    //     category: category,
-    //     text: text,
-    //     date: time,
-    //   },
-    // });
-    // board.title = title;
-    // board.id = id;
-    // board.category = category;
-    // board.text = text;
-    // board.date = time;
     const request = {
       id: board.post_id,
       price: price,
@@ -231,12 +195,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     console.log(request);
     Axios.put(`${url}/post/edit`, request, {
       headers: { "text-Type": "application/json" }
-    }).then((res) =>
-      //navigation.replace("Detail", { board: res.data })
-      {
-        console.log(res.data);
-      }
-    );
+    }).then((res) => {
+      console.log(res.data);
+    });
     afterUpdate();
   }
 
@@ -922,7 +883,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 color: "lightgrey"
               }}
             >
-              {/* {place === "" ? "장소 선택" : showPlace(place)} */}
               {place === "" ? "장소 선택" : place}
             </Text>
             <IonIcon
@@ -947,7 +907,6 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 color: "lightgrey"
               }}
             >
-              {/* {track === "" ? "" : showTrack(track)} */}
               {track === "" ? "트랙 선택" : track}
             </Text>
             <IonIcon

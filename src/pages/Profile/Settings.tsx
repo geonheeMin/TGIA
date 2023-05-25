@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -6,23 +6,16 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  Alert,
   Image,
-  TouchableHighlight,
-  TextInput,
-  TouchableOpacity,
-  Linking,
+  TouchableOpacity
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import LocationCalc from "../../components/LocationCalc";
 import useStore from "../../../store";
-import Axios from "axios";
-import PaymentCompleted from "../Chat/PaymentCompleted";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
-
 
 type SettingsScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -35,11 +28,7 @@ function Settings({ navigation }: SettingsScreenProps) {
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
-
-  const toPayment = useCallback(() => {
-    navigation.navigate("Payment");
-  }, [navigation]);
-
+  
   useEffect(() => {
     Axios.get(`${url}/purchasedlistV2`)
     .then(res => {
@@ -64,11 +53,6 @@ function Settings({ navigation }: SettingsScreenProps) {
         </TouchableOpacity>
       </View>
       <LocationCalc />
-      <View style={{marginTop: 20}}>
-        <Pressable onPress={toPayment}>
-            <Text>결제 완료 테스트</Text>
-        </Pressable>
-      </View>
     </SafeAreaView>
   );
 }
@@ -96,7 +80,7 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
-  },
+  }
 });
 
 export default Settings;

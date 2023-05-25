@@ -1,10 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { NavigationContainer, ParamListBase } from "@react-navigation/native";
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps
-} from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, ActivityIndicator } from "react-native";
 import HomeScreen from "./src/pages/HomeScreen";
@@ -15,7 +12,6 @@ import SalesHistory from "./src/pages/Profile/SalesHistory";
 import PurchaseHistory from "./src/pages/Profile/PurchaseHistory";
 
 import ListScreen from "./src/pages/Board/ListScreen";
-import ItemList from "./src/pages/Board/ItemList";
 import ItemDetail from "./src/pages/Board/ItemDetail";
 import AddScreen from "./src/pages/Board/AddScreen";
 import SearchScreen from "./src/pages/Search/SearchScreen";
@@ -24,16 +20,16 @@ import FavScreen from "./src/pages/Profile/FavScreen";
 import ChatDetail from "./src/pages/Chat/ChatDetail";
 import ChatListScreen from "./src/pages/Chat/ChatListScreen";
 import ChatListFromPostScreen from "./src/pages/Chat/ChatListFromPostScreen";
-import ChatTitle from "./src/pages/Chat/ChatTitle";
 import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
 import Creative from "./src/pages/Tracks/Creative";
-import PaymentCompleted from "./src/pages/Chat/PaymentCompleted";
 import MannerInfo from "./src/pages/Profile/MannerInfo";
 import MannerReview from "./src/pages/Profile/MannerReview";
 import SalesList from "./src/pages/Profile/SalesList";
 import MannerReviewList from "./src/pages/Profile/MannerReviewList";
-
+import PaymentScreen from "./src/pages/Chat/PaymentScreen";
+import TryPaymentScreen from "./src/pages/Chat/TryPaymentScreen";
+import CategorySearchScreen from "./src/pages/Search/CategorySearchScreen";
 import useStore from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { not } from "react-native-reanimated";
@@ -83,11 +79,6 @@ export function SplashScreen() {
 export function ListStackScreen(route) {
   return (
     <Stack.Navigator initialRouteName="List">
-      {/* <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{headerShown: false}}
-      /> */}
       <Stack.Screen name="List" options={{ headerShown: false }}>
         {(props) => <ListScreen {...route} />}
       </Stack.Screen>
@@ -173,11 +164,6 @@ export function TabNavi() {
       >
         {(props) => <FavStackScreen {...props} />}
       </Tab.Screen>
-      {/* <Tab.Screen
-        name="Chatting"
-        component={HomeScreen}
-        options={{title: '채팅'}}
-      /> */}
       <Tab.Screen
         name="ProfileHome"
         component={ProfileStackScreen}
@@ -187,40 +173,10 @@ export function TabNavi() {
   );
 }
 
-// function LoginStackScreen() {
-//   return(
-//     <LoginStack.Navigator>
-//       <LoginStack.Screen
-//           name="LoginHome"
-//           component={HomeScreen}
-//           options={{title: '홈화면', headerShown: false}}
-//       />
-//       <LoginStack.Screen
-//           name="TabHome"
-//           component={TabNavi}
-//           options={{title: '로그인후', headerShown: false}}
-//       />
-//     </LoginStack.Navigator>
-//   );
-// }
-
 function App() {
-  // return (
-  //   <NavigationContainer >
-  //     <TabNavi />
-  //   </NavigationContainer>
-  // );
   const { session, setSession, hasSession, setHasSession } = useStore();
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    //   AsyncStorage.multiRemove(["session"], (err) => {
-    //     if (err) {
-    //       console.error(err);
-    //       return;
-    //     }
-    //     console.log("Keys removed successfully");
-    //   });
-    // }, []);
     AsyncStorage.getItem("session").then((value) => {
       if (value !== null) {
         const user = JSON.parse(value);
@@ -237,11 +193,6 @@ function App() {
   if (isLoading) {
     return <SplashScreen />;
   }
-
-  const sessionCheck = () => {
-    if (JSON.stringify(session) === "{}") return false;
-    else return true;
-  };
 
   return (
     <NavigationContainer>
@@ -316,7 +267,13 @@ function App() {
           {(props) => <Creative {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Payment" options={{ headerShown: false }}>
-          {(props) => <PaymentCompleted {...props} />}
+          {(props) => <PaymentScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="CategorySearch" options={{ headerShown: false }}>
+          {(props) => <CategorySearchScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="TryPayment" options={{ headerShown: false }}>
+          {(props) => <TryPaymentScreen {...props} />}
         </Stack.Screen>
         <Stack.Screen
           name="MannerInfo"
