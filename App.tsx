@@ -23,6 +23,10 @@ import ChatListFromPostScreen from "./src/pages/Chat/ChatListFromPostScreen";
 import ChangeProfile from "./src/pages/Profile/ChangeProfile";
 import Settings from "./src/pages/Profile/Settings";
 import Creative from "./src/pages/Tracks/Creative";
+import MannerInfo from "./src/pages/Profile/MannerInfo";
+import MannerReview from "./src/pages/Profile/MannerReview";
+import SalesList from "./src/pages/Profile/SalesList";
+import MannerReviewList from "./src/pages/Profile/MannerReviewList";
 import PaymentScreen from "./src/pages/Chat/PaymentScreen";
 import TryPaymentScreen from "./src/pages/Chat/TryPaymentScreen";
 import CategorySearchScreen from "./src/pages/Search/CategorySearchScreen";
@@ -52,6 +56,8 @@ export type RootStackParamList = {
   Settings: undefined;
   Creative: undefined;
   Payment: undefined;
+  Sales: undefined;
+  MannerReviewList: undefined;
 };
 
 export type LoginStackParamList = {
@@ -268,6 +274,30 @@ function App() {
         </Stack.Screen>
         <Stack.Screen name="TryPayment" options={{ headerShown: false }}>
           {(props) => <TryPaymentScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="MannerInfo"
+          options={{ headerShown: false }}
+        >
+          {(props) => <MannerInfo {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="MannerReview"
+          options={{ headerShown: false }}
+        >
+          {(props) => <MannerReview {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="SalesList"
+          options={{ headerShown: false }}
+        >
+          {(props) => <SalesList {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="MannerReviewList"
+          options={{ headerShown: false }}
+        >
+          {(props) => <MannerReviewList {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

@@ -17,30 +17,38 @@ import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
+const vw = Dimensions.get("window").width;
+const vh = Dimensions.get("window").height;
+
 type PurchaseHistoryScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "PurchaseHistory"
 >;
 
-const vw = Dimensions.get("window").width;
-const vh = Dimensions.get("window").height;
 
 function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const { session, url } = useStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const [posts, setPosts] = useState([]);
-  const [review, setReview] = useState(1); // 리뷰 했다면 0, 리뷰 안했다면 1
 
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
 
-  const toReview = useCallback(() => {
-    Alert.alert("리뷰입니다", "네");
-  }, []);
 
   const renderItem = ({ item }) => {
+    const toReview = () => {
+      navigation.navigate("MannerReview"
+      , {
+        seller_name: item.writer,
+        seller_Id: item.member_id,
+        post_Id: item.post_id
+      }
+    )};
+
     const renderBoard = {
       post_id: item.post_id,
       title: item.title,
@@ -60,19 +68,22 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       createdDate: item.createdDate,
       item_name: item.item_name,
       purchased: item.purchased,
+      reviewType: item.reviewType,
       statusType: item.statusType
     };
+
+
     return (
       <View>
         <ItemList board={renderBoard} navigation={navigation} />
-        {review === 1 ? (
-          <Pressable style={styles.reviewBtn} onPress={toReview}>
+        {item.reviewType === "후기완료" ? (
+          <View style={styles.reviewButton}>
+            <Text style={styles.reviewCompliteText}>후기 작성 완료</Text>
+          </View>
+        ) : (
+          <Pressable style={styles.reviewButton} onPress={toReview}>
             <Text style={styles.reviewText}>거래 후기 남기기</Text>
           </Pressable>
-        ) : (
-          <View style={styles.reviewBtn}>
-            <Text style={styles.reviewCompliteText}>거래 후기 남기기</Text>
-          </View>
         )}
       </View>
     );
@@ -85,10 +96,8 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
         posts.sort((a, b) => b.post_id - a.post_id);
       })
       .catch((error) => {
-        console.log(error);
-        console.log(posts);
+        console.log("buy" + error);
       });
-    console.log(posts);
   }, [isFocused]);
 
   return (
@@ -158,50 +167,7 @@ const styles = StyleSheet.create({
     paddingRight: vw / 35,
     height: vh / 17.5
   },
-  compliteButton: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginLeft: "auto",
-    paddingLeft: vw / 35,
-    paddingRight: vw / 35,
-    height: vh / 20
-  },
-  items: {
-    paddingBottom: vh / 150,
-    backgroundColor: "white",
-    flexDirection: "row"
-  },
-  itemImageZone: {
-    flex: 1,
-    paddingVertical: vh / 60
-  },
-  itemInfo: {
-    flex: 2
-  },
-  itemImage: {
-    flex: 1,
-    width: "85%",
-    height: "85%",
-    paddingVertical: "39%",
-    marginLeft: vw / 20.5,
-    marginTop: vh / 140,
-    borderRadius: 8,
-    borderWidth: 0.3
-  },
-  itemTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    marginTop: vh / 45,
-    marginLeft: vw / 25
-  },
-  itemPrice: {
-    fontSize: 15,
-    fontWeight: "400",
-    marginTop: vh / 90,
-    marginLeft: vw / 25
-  },
-  reviewBtn: {
+  reviewButton: {
     backgroundColor: "white",
     paddingVertical: vh / 86,
     borderTopWidth: 2,

@@ -28,11 +28,16 @@ function Settings({ navigation }: SettingsScreenProps) {
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
   }, [navigation]);
-
-  const toPayment = useCallback(() => {
-    navigation.navigate("Payment");
-  }, [navigation]);
-
+  
+  useEffect(() => {
+    Axios.get(`${url}/purchasedlistV2`)
+    .then(res => {
+      console.log(res.data);
+    })
+    .catch(e => {
+      console.log(e);
+    })
+  })
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
@@ -48,11 +53,6 @@ function Settings({ navigation }: SettingsScreenProps) {
         </TouchableOpacity>
       </View>
       <LocationCalc />
-      <View style={{ marginTop: 20 }}>
-        <Pressable onPress={toPayment}>
-          <Text>결제 완료 테스트</Text>
-        </Pressable>
-      </View>
     </SafeAreaView>
   );
 }

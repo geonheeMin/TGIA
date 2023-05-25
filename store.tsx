@@ -34,8 +34,6 @@ const useStore = create<preset>((set) => ({
   setHasSession: (result: boolean) => {
     set((state) => ({ hasSession: result }));
   },
-  //url: "http://3.35.217.228:8080" //yongki
-  //url: "http://223.194.129.143:8080" // 민규
   url: "http://223.194.129.126:8080", //geonhee,
   paymentSuccess: null,
   setPaymentSuccess: (result: boolean | null) => {

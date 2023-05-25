@@ -19,6 +19,8 @@ import unfav from "../../assets/design/unfavorite.png";
 import { useIsFocused } from "@react-navigation/native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { stackScrollInterpolator } from "../../utils/animations";
+import { ProgressBar } from "react-native-paper";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
 
 type RootStackParamList = {
   Detail: undefined;
@@ -42,6 +44,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const isFocused = useIsFocused();
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [manner, setManner] = useState(455); // 매너 학점
+  const [mannerGrade, setMannerGrade] = useState(""); // 매너 등급
   const moment = require("moment");
   const date = new moment(timestamp);
   const toUpdate = useCallback(() => {
@@ -56,6 +60,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     const isAm = date.format("A") === "AM" ? "오전" : "오후";
     if (gapTime < 1) {
       return "방금 전";
+
+
     } else if (gapTime < 60) {
       return `${gapTime}분 전`;
     } else if (gapHour < 24) {
@@ -144,9 +150,12 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    Axios.get(
-      `${url}/post/details?postId=${board.post_id}&userId=${session?.member_id}`
-    ).catch((error) => console.log(error));
+    console.log(board.member_id);
+    Axios.get(`${url}/post/details3?postId=${board.post_id}&userId=${session?.member_id}`)
+    .then((res) => {
+      console.log("디테일" + JSON.stringify(res.data));
+    })
+    .catch((error) => console.log(error));
     Axios.get(`${url}/member/get_username?id=${board.member_id}`)
       .then((res) => {
         setWriter(res.data);
@@ -200,6 +209,38 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     );
   }, [activeIndex]);
 
+  const toMannerInfo = () => {
+    navigation.navigate("MannerInfo", {
+      member_Id: board.member_id
+    });
+  }
+
+  useEffect(() => {
+    if (manner >= 600) {
+      setMannerGrade("A+");
+    } else if (manner >= 500) {
+      setMannerGrade("A0");
+    } else if (manner >= 400) {
+      setMannerGrade("B+");
+    } else if (manner >= 300) {
+      setMannerGrade("B0");
+    } else if (manner >= 200) {
+      setMannerGrade("C+");
+    } else if (manner >= 100) {
+      setMannerGrade("C0");
+    } else {
+      setMannerGrade("D0");
+    }
+  }, [manner])
+
+  const toSalesList = useCallback(() => {
+    navigation.navigate("SalesList", {
+      member_Id: board.member_id,
+      //profile_Img: profileImg,
+      nickName: board.writer
+    });
+  }, [navigation]);
+
   return (
     <View style={pressed ? { backgroundColor: "black" } : styles.container}>
       <StatusBar barStyle={pressed ? "light-content" : "dark-content"} />
@@ -237,7 +278,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           </View>
         </Modal>
         <View style={styles.content}>
-          <View style={styles.postWriterBar}>
+          <Pressable
+            onPress={toMannerInfo}
+            style={styles.postWriterBar}
+          >
             <Image
               source={{ uri: `${url}/images/${writerImage}` }}
               style={styles.writerImage}
@@ -250,37 +294,47 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 <Text style={{ fontSize: 14 }}>{session?.firstTrack}</Text>
               </View>
             </View>
-            <View
-              style={
-                session?.member_id === board.member_id
-                  ? styles.postSetting
-                  : { zIndex: -10, opacity: 0 }
-              }
-            >
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <Pressable style={styles.updateButton} onPress={toUpdate}>
-                  <Text>수정</Text>
-                </Pressable>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <Pressable style={styles.deleteButton}>
-                  <Text>삭제</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
+              {session?.member_id === board.member_id ? (
+                <View style={styles.postSetting}>
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Pressable style={styles.updateButton} onPress={toUpdate}>
+                      <Text>수정</Text>
+                    </Pressable>
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Pressable style={styles.deleteButton}>
+                      <Text>삭제</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.mannerInfo}>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text style={styles.mannerText}>매너학점</Text>
+                    <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+                  </View>
+                  <View style={{ marginTop: 8, paddingRight: 15 }}>
+                    <ProgressBar
+                      progress={(manner % 100) / 100}
+                      color={"#3064e7"}
+                      style={styles.progress}
+                    />
+                  </View>
+                </View>
+              )}
+          </Pressable>
           <View style={styles.hr} />
           <View style={styles.postTitle}>
             <Text
@@ -313,6 +367,16 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
             </Text>
           </View>
           <Text style={styles.postContent}>{board.text}</Text>
+        </View>
+        <Pressable
+          onPress={toSalesList}
+          style={styles.salesListButton}  
+        >
+          <Text style={styles.salesListButtonText}>판매상품 {10}개</Text>
+          <SimpleLineIcons name="arrow-right" size={20} style={styles.salesListButtonArrow}/>
+        </Pressable>
+        <View>
+
         </View>
       </ScrollView>
       <View style={styles.hr} />
@@ -555,7 +619,51 @@ const styles = StyleSheet.create({
   modalImage: {
     width: vw,
     height: vh
-  }
+  },
+  mannerInfo: {
+    width: vw / 4.5,
+    height: vh / 26,
+  },
+  mannerText: {
+    fontSize: 16,
+    textAlign: "left"
+  },
+  mannerGrade: {
+    fontSize: 14,
+    color: "#3064e7",
+    fontWeight: "500",
+    marginLeft: vw * 0.008,
+  },
+  mannerExp: {
+    fontSize: 16,
+    textAlign: "right",
+    marginRight: vw * 0.04,
+    color: "#3064e7",
+    fontWeight: "500"
+  },
+  progress: {
+    height: vh * 0.01,
+    borderRadius: 30
+  },
+  salesListButton: {
+    height: vh * 0.07,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopWidth: 0.4,
+    borderTopColor: "gray",
+    borderBottomWidth: 0.4,
+    borderBottomColor: "gray",
+  },
+  salesListButtonText: {
+    fontSize: 18,
+    marginLeft: vw * 0.03,
+    fontWeight: "700",
+  },
+  salesListButtonArrow: {
+    fontWeight: "700",
+    marginRight: vw * 0.03
+  },
 });
 
 export default ItemDetail;

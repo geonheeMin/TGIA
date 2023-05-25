@@ -23,7 +23,8 @@ import {
   ImageBackground,
   Keyboard,
   Platform,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  ActivityIndicator
 } from "react-native";
 import api from "../../api";
 import useStore from "../../../store";
@@ -74,6 +75,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   //const [item_name, setItem_name] = useState("");
   const [trackWord, setTrackWord] = useState("");
   const [modalOpen, setModalOpen] = useState(false); //모달 open시 배경 어둡게 하기 위한 state
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isCategoryRecommended, setIsCategoryRecommended] = useState(false);
 
@@ -219,7 +221,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           setTimeout(() => getCategoryRecommend(), 2000);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
+      .finally(() => {
+        setIsLoading(false); 
+      });
   };
 
   /** 이미지 모달 관리 함수 */
@@ -423,6 +428,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             .then((res) => {
               if (!isCategoryRecommended) {
                 setFilename(res.data);
+                setIsLoading(true);
                 setTimeout(() => getCategoryRecommend(), 3000);
               } else {
                 setFilename(res.data);
@@ -792,6 +798,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           />
         </View>
         <View style={styles.categoryBar}>
+        {isLoading ? ( // 로딩 중인 경우 로딩 스피너를 표시
+          <ActivityIndicator size="small" color="black" />
+        ) : (
           <Pressable
             style={styles.categoryButton}
             onPress={() => {
@@ -801,7 +810,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             <Text
               style={{
                 fontSize: 15,
-                color: isCategoryRecommended ? "black" : "lightgrey"
+                color: isCategoryRecommended ? "black" : "lightgrey",
               }}
             >
               {board !== "new"
@@ -816,7 +825,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               style={styles.nextIcon}
             />
           </Pressable>
-        </View>
+        )}
+      </View>
         <View style={styles.priceBar}>
           <TextInput
             value={price?.toString()}
