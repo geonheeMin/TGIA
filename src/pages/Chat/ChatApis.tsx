@@ -1,11 +1,11 @@
 export const ChatApis = [
   {
     api: "-requestPayment-",
-    img: require("../../assets/design/api/requestPay.png")
+    img: require("../../assets/design/api/requestPayment.png")
   },
   {
-    api: "-paymentClear-",
-    img: require("../../assets/design/api/requestPay.png")
+    api: "-paymentComplete-",
+    img: require("../../assets/design/api/paymentComplete.png")
   },
   {
     api: "-didReservation-",
@@ -13,6 +13,6 @@ export const ChatApis = [
   },
   {
     api: "-sendLocation-",
-    img: require("../../assets/design/api/myLocation.png")
+    img: require("../../assets/design/api/sendLocation.png")
   }
 ];

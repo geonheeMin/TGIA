@@ -79,13 +79,30 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
       >
         <Text style={{ fontSize: 17, fontWeight: "bold" }}>채팅</Text>
       </View>
-      <FlatList
-        data={chats.sort((a, b) => b.last_chatMessage - a.last_chatMessage)}
-        renderItem={renderItem}
-        refreshControl={
-          <RefreshControl onRefresh={refreshChats} refreshing={isRefreshing} />
-        }
-      />
+      {chats.length === 0 ? (
+        <Text
+          style={{
+            marginHorizontal: "auto",
+            marginVertical: "auto",
+            color: "white",
+            fontSize: 25,
+            fontWeight: "bold"
+          }}
+        >
+          아직 채팅을 하지 않았습니다
+        </Text>
+      ) : (
+        <FlatList
+          data={chats.sort((a, b) => b.last_chatMessage - a.last_chatMessage)}
+          renderItem={renderItem}
+          refreshControl={
+            <RefreshControl
+              onRefresh={refreshChats}
+              refreshing={isRefreshing}
+            />
+          }
+        />
+      )}
       <BottomTabs navigation={navigation} screen="ChatList" />
     </SafeAreaView>
   );

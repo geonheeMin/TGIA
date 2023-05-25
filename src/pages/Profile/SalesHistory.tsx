@@ -2,11 +2,9 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
-  Pressable,
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  ScrollView,
   Alert,
   Image,
   TouchableHighlight,
@@ -17,8 +15,6 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import ItemList from "../Board/ItemList";
-import postlist from "../../assets/dummy/postdata.json";
-import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
 import { Post } from "../../types/PostType";
@@ -38,16 +34,12 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const isFocused = useIsFocused();
   const [isLoaded, setIsLoaded] = useState(false);
   const [posts, setPosts] = useState<Array<Post>>([]);
   const [sellingPosts, setSellingPosts] = useState<Array<Post>>([]);
   const [completedPosts, setCompletedPosts] = useState<Array<Post>>([]);
   const [profileImg, setProfileImg] = useState();
   const [img, setImg] = useState({});
-  // const [complitedPosts, setComplitedPosts] = useState(
-  //   postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  // );
 
   const tabUnderline = (tabNum: number) => {
     Animated.spring(position, {
@@ -202,10 +194,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          {/* <Image
-            source={require("../../assets/bugi.png")}
-            style={styles.profile}
-          /> */}
           <Image
             source={
               Object.keys(img).length === 0

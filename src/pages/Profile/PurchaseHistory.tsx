@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   SafeAreaView,
-  ScrollView,
   Dimensions,
   StyleSheet,
   View,
@@ -14,13 +13,10 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
-import postlist from "../../assets/dummy/postdata.json";
 import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
-import { Post } from "../../types/PostType";
-
 type PurchaseHistoryScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "PurchaseHistory"
@@ -30,19 +26,11 @@ const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
-  const [purchased, setPurchased] = useState([]);
   const { session, url } = useStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
-  const [posts, setPosts] = useState(
-    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  );
-  const [newPosts, setNewPosts] = useState([{}]);
+  const [posts, setPosts] = useState([]);
   const [review, setReview] = useState(1); // 리뷰 했다면 0, 리뷰 안했다면 1
-
-  const onSubmit = useCallback(() => {
-    Alert.alert("알림", "ㅎㅇ");
-  }, []);
 
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
@@ -95,8 +83,6 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       .then((res) => {
         setPosts(res.data);
         posts.sort((a, b) => b.post_id - a.post_id);
-        setNewPosts(posts);
-        console.log("완료11");
       })
       .catch((error) => {
         console.log(error);
@@ -128,7 +114,7 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
           <FlatList
             style={{ marginTop: 0 }}
             data={posts}
-            renderItem={renderItem}
+            renderItem={(item) => renderItem(item)}
             refreshing={isRefreshing}
           />
         ) : (

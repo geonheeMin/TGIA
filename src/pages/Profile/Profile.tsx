@@ -9,7 +9,6 @@ import {
   Alert,
   TouchableOpacity,
   TouchableHighlight,
-  Animated,
   Dimensions
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,9 +22,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Axios from "axios";
 import { useIsFocused } from "@react-navigation/native";
-import { launchImageLibrary } from "react-native-image-picker";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -38,35 +35,12 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const [trackSecond, setTrackSecond] = useState(session?.secondTrack); // 제 2트랙
   const [manner, setManner] = useState(36.5); // 매너온도
   const isFocused = useIsFocused();
-  const [aTrackId, setATrackId] = useState(7);
-  const [bTrackId, setBTrackId] = useState(9);
   const [profileImg, setProfileImg] = useState();
-  const [img, setImg] = useState({});
-
-  // useEffect(() => {
-  //   Axios.get(`${url}/profile?userId=` + session.member_id)
-  //     .then((res) => {
-  //       console.log(res.data);
-  //       setTrackFirst(res.data.firstTrack);
-  //       setTrackSecond(res.data.secondTrack);
-  //       setATrackId(res.data.atrackId);
-  //       setBTrackId(res.data.btrackId);
-  //       setProfileImg(res.data.imageFileName);
-  //       console.log(res.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log("프로필 에러");
-  //     });
-  // }, [isFocused]);
 
   useEffect(() => {
     setTrackFirst(session?.firstTrack);
     setTrackSecond(session?.secondTrack);
   }, [isFocused]);
-
-  const onSubmit = useCallback(() => {
-    Alert.alert("알림", "ㅎㅇ");
-  }, []);
 
   const toTrackSetting = (number: number) => {
     navigation.navigate("TrackSetting", { number: number });
@@ -128,7 +102,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         <View
           style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
         >
-          <Text style={{ fontSize: 16 }}>{session.username}</Text>
+          <Text style={{ fontSize: 16 }}>{session?.username}</Text>
         </View>
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.trackzone}>

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Object = {
   atrackId: number;
@@ -22,6 +21,8 @@ interface preset {
   hasSession: boolean;
   setHasSession: (result: boolean) => void;
   url: string;
+  paymentSuccess: boolean | null;
+  setPaymentSuccess: (result: boolean | null) => void;
 }
 
 const useStore = create<preset>((set) => ({
@@ -35,7 +36,11 @@ const useStore = create<preset>((set) => ({
   },
   //url: "http://3.35.217.228:8080" //yongki
   //url: "http://223.194.129.143:8080" // 민규
-  url: "http://13.125.109.13:8080" //geonhee
+  url: "http://223.194.129.126:8080", //geonhee,
+  paymentSuccess: null,
+  setPaymentSuccess: (result: boolean | null) => {
+    set((state) => ({ paymentSuccess: result }));
+  }
 }));
 
 export default useStore;

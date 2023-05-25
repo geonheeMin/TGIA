@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useCallback, useState, useEffect } from "react";
+import { useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -7,15 +7,12 @@ import {
   Pressable,
   StyleSheet,
   Dimensions,
-  Image,
-  Platform,
-  ActivityIndicator
+  Image
 } from "react-native";
 import useStore from "../../../store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { WebView } from "react-native-webview";
-import SendIntentAndroid from "react-native-send-intent";
 import Axios from "axios";
+import { ChatApis } from "./ChatApis";
 
 const { width: vw, height: vh } = Dimensions.get("window");
 
@@ -27,11 +24,8 @@ type PaymentProps = NativeStackScreenProps<PaymentPramList, "Payment">;
 function PaymentScreen({ route, navigation }: PaymentProps) {
   const post = route.params?.post;
   const chatroom = route.params?.chatroom;
-  const { session, url } = useStore();
-  const [paymentUrl, setPaymentUrl] = useState("");
-  const [paymentVisible, setPaymentVisible] = useState(false);
-  const [paymentEnded, setPaymentEnded] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState<boolean>();
+  const { session, url, paymentSuccess, setPaymentSuccess } = useStore();
+
   const kakaoPayDto = {
     post_id: post.post_id,
     user_id: post.member_id,
@@ -40,75 +34,38 @@ function PaymentScreen({ route, navigation }: PaymentProps) {
     item_name: post.title
   };
 
-  const toChat = useCallback(() => {
+  const toChat = () => {
     if (paymentSuccess) {
       const SendMessageRequestDTO = {
         chatroom_id: chatroom.chatroom_id,
         sender_id: session?.member_id,
-        message: "송금완료"
+        message: ChatApis[1].api
       };
       Axios.post(`${url}/chat/send_V2`, SendMessageRequestDTO, {
         headers: { "Content-Type": "application/json" }
       })
-        .then((res) => {})
+        .then((res) => {
+          setPaymentSuccess(null);
+          navigation.goBack();
+        })
         .catch((error) => {
           console.log(error);
         });
     }
-    navigation.goBack();
-  }, [navigation]);
+  };
 
   const tryPayment = () => {
     Axios.post(`${url}/payment/ready`, kakaoPayDto)
       .then((res) => {
-        console.log(res.data);
-        setPaymentVisible(true);
-        setPaymentUrl(res.data.next_redirect_app_url);
+        navigation.navigate("TryPayment", {
+          url: res.data.next_redirect_app_url
+        });
       })
       .catch((err) => console.log(err));
   };
 
-  const handleNavigationStateChange = (navState) => {
-    const { url } = navState;
-    console.log(url);
-    if (url.includes("payment/success")) {
-      setPaymentVisible(false);
-      setPaymentSuccess(true);
-      setPaymentEnded(true);
-      setPaymentUrl("");
-    } else if (url.includes("payment/fail")) {
-      setPaymentVisible(false);
-      setPaymentSuccess(false);
-      setPaymentEnded(true);
-      setPaymentUrl("");
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      {paymentVisible ? (
-        Platform.OS === "ios" ? (
-          <WebView
-            source={{ uri: paymentUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
-            style={{ position: "absolute", width: vw, height: vh }}
-          />
-        ) : (
-          <WebView
-            source={{ uri: paymentUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
-            onShouldStartLoadWithRequest={(e) => {
-              if (e.url.startsWith("intent")) {
-                SendIntentAndroid.openAppWithUri(e.url);
-                return false;
-              }
-              return true;
-            }}
-            originWhitelist={["*"]}
-            style={{ position: "absolute", width: vw, height: vh }}
-          />
-        )
-      ) : null}
       <View style={styles.topBar}>
         <Image
           source={require("../../assets/logo.png")}
@@ -125,7 +82,7 @@ function PaymentScreen({ route, navigation }: PaymentProps) {
           resizeMode={"contain"}
         />
       </View>
-      {!paymentEnded ? (
+      {!paymentSuccess || paymentSuccess === null ? (
         <View>
           <Text style={styles.text1}>결제하시겠습니까?</Text>
           <View style={styles.buttonZone}>

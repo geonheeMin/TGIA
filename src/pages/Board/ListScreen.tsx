@@ -28,7 +28,6 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import MatIcon from "react-native-vector-icons/MaterialIcons";
 import OctIcon from "react-native-vector-icons/Octicons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { tracks } from "../../assets/data/track";
 import { Post } from "../../types/PostType";
 type RootStackParamList = {
   List: undefined;
@@ -872,11 +871,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     );
   };
 
-  //test
-  const toTest = () => {
-    navigation.navigate("Test");
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -977,14 +971,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
               <MatIcon name="sort" size={25} style={{ marginLeft: 10 }} />
             </Pressable>
           </View>
-          <Pressable
-            onPress={() => toTest()}
-            style={{ width: 50, height: 50, backgroundColor: "black" }}
-          />
         </View>
-        {/* <View style={{ flex: 2, alignItems: "flex-end" }}>
-          <Text>{session.username}</Text>
-        </View> */}
       </View>
       <View
         style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}

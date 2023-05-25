@@ -19,10 +19,7 @@ import {
 import ChatTitle from "./ChatTitle";
 import Axios from "axios";
 import useStore from "../../../store";
-import BottomTabs from "../../components/BottomTabs";
-import chatlist from "../../assets/dummy/chatlist.json";
-import chats from "../../assets/dummy/chat.json";
-import backIcon from "../../assets/design/backIcon.png";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 type RootStackParamList = {
   ChatListFromPost: undefined;
@@ -80,15 +77,7 @@ function ChatListFromPostScreen({
           style={{ position: "absolute", left: vw / 40 }}
           onPress={backToPost}
         >
-          <Image
-            source={backIcon}
-            style={{
-              width: vw / 15,
-              height: vh / 25,
-              resizeMode: "stretch",
-              overflow: "visible"
-            }}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </Pressable>
         <Text style={{ marginLeft: "auto", marginRight: "auto", fontSize: 20 }}>
           {post.title}

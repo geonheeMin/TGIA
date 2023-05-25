@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -6,18 +6,13 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  Alert,
   Image,
-  TouchableHighlight,
-  TextInput,
-  TouchableOpacity,
-  Linking
+  TouchableOpacity
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import LocationCalc from "../../components/LocationCalc";
 import useStore from "../../../store";
-import PaymentCompleted from "../Chat/PaymentScreen";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;

@@ -1,25 +1,20 @@
-import * as React from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useCallback, useState, useEffect} from 'react';
+import * as React from "react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useCallback, useState, useEffect } from "react";
 import {
   SafeAreaView,
-  ScrollView,
   Text,
   View,
-  Button,
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Image,
-  FlatList,
-} from 'react-native';
-import {ScreenContainer} from 'react-native-screens';
-import {useIsFocused} from '@react-navigation/native';
-import Axios from 'axios';
-import ItemList from '../Board/ItemList';
-import useStore from '../../../store';
-import postlist from "../../assets/dummy/postdata.json"
+  FlatList
+} from "react-native";
+import Axios from "axios";
+import ItemList from "../Board/ItemList";
+import useStore from "../../../store";
+import { useIsFocused } from "@react-navigation/native";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -27,17 +22,12 @@ const vh = Dimensions.get("window").height;
 type RootStackParamList = {
   Fav: undefined;
 };
-type FavScreenProps = NativeStackScreenProps<RootStackParamList, 'Fav'>;
+type FavScreenProps = NativeStackScreenProps<RootStackParamList, "Fav">;
 
-function FavScreen({route, navigation}: FavScreenProps) {
+function FavScreen({ route, navigation }: FavScreenProps) {
   const { session, url } = useStore();
-  const id = session.member_id
   const isFocused = useIsFocused();
-  const [posts, setPosts] = useState(
-    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  );
-  const [newPosts, setNewPosts] = useState([{}]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [posts, setPosts] = useState([]);
 
   const toProfile = useCallback(() => {
     navigation.navigate("Profile");
@@ -65,17 +55,16 @@ function FavScreen({route, navigation}: FavScreenProps) {
   };
 
   useEffect(() => {
-    Axios.get(`${url}/profile/favorite_list`, { params: { userId: session.member_id} })
-    .then((res) => {
-      setPosts(res.data);
-      posts.sort((a, b) => b.post_id - a.post_id);
-      setNewPosts(posts);
-      console.log(res.data);
-      console.log("받아옴");
+    Axios.get(`${url}/profile/favorite_list`, {
+      params: { userId: session?.member_id }
     })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((res) => {
+        setPosts(res.data);
+        posts.sort((a, b) => b.post_id - a.post_id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [isFocused]);
 
   return (
@@ -97,18 +86,13 @@ function FavScreen({route, navigation}: FavScreenProps) {
       </View>
 
       <View>
-        {posts.length >= 1 ? 
-          <FlatList
-            data={posts}
-            renderItem={renderItem}
-          />
-          :
-          <View style={styles.contentNone }>
-            <Text style={styles.contentNoneText}>
-              아직 관심 목록이 없어요.
-            </Text>
-          </View>     
-        }
+        {posts.length >= 1 ? (
+          <FlatList data={posts} renderItem={renderItem} />
+        ) : (
+          <View style={styles.contentNone}>
+            <Text style={styles.contentNoneText}>아직 관심 목록이 없어요.</Text>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -150,9 +134,8 @@ const styles = StyleSheet.create({
   },
   contentNoneText: {
     fontSize: 16,
-    color: "gray",
-  },
+    color: "gray"
+  }
 });
-
 
 export default FavScreen;

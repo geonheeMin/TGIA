@@ -16,7 +16,6 @@ import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import Axios from "axios";
-import { useIsFocused } from "@react-navigation/native";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -31,8 +30,6 @@ var inputWidth = vw - vw / 5;
 function SearchScreen({ route, navigation }: SearchScreenProps) {
   const { session, url } = useStore();
   const [searchWord, setSearchWord] = useState("");
-  const [searchCategory, setSearchCategory] = useState("");
-  const [searchTrack, setSearchTrack] = useState("");
   const [inputWidth, setInputWidth] = useState(vw - vw / 3);
   const [backWidth, setBackWidth] = useState(vw - vw / 5);
   const [isEditing, setIsEditing] = useState(false);

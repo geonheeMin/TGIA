@@ -2,28 +2,18 @@ import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useCallback, useEffect, useState } from "react";
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Button,
-  FlatList,
-  ListRenderItem,
   Dimensions,
-  TouchableOpacity,
   Image,
   Pressable,
   StatusBar,
-  PixelRatio,
   Modal
 } from "react-native";
 import Axios from "axios";
-import ItemList from "./ItemList";
 import useStore from "../../../store";
-import memberlist from "../../assets/dummy/member.json";
-import chatlist from "../../assets/dummy/chatlist.json";
-import bugi from "../../assets/bugi.png";
 import fav from "../../assets/design/favorite.png";
 import unfav from "../../assets/design/unfavorite.png";
 import { useIsFocused } from "@react-navigation/native";
@@ -41,16 +31,11 @@ const vh = Dimensions.get("window").height;
 function ItemDetail({ route, navigation }: ItemDetailProps) {
   const { session, url } = useStore();
   const board = route.params.board;
-  // const track = memberlist.memberlist.filter(
-  //   (item) => board.writer === item.username
-  // )[0].firsttrack;
   const [writer, setWriter] = useState("");
   const [writerImage, setWriterImage] = useState("");
   const [pressed, setPressed] = useState(false);
   const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
-  const [chatrooms, setChatrooms] = useState();
-  const [diff, setDiff] = useState("");
   const timestamp = board.createdDate;
   const [isFav, setIsFav] = useState(route.params.isFav);
   const [isFavOn, setIsFavOn] = useState(false);
@@ -81,11 +66,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       return `${date.format(`YYYY년 M월 D일 ${isAm} 시 m분`)}`;
     }
   };
-
-  const favControll = useEffect(() => {
-    if (isFav === 0) setIsFavOn(false);
-    else setIsFavOn(true);
-  }, [isFocused]);
 
   const doFav = () => {
     setIsFavOn(!isFavOn);
@@ -134,18 +114,10 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         });
       })
       .catch((error) => console.log(error));
-    // navigation.navigate("ChatDetail", {
-    //   chatroom: chatroom,
-    //   post: board
-    // });
   }, [board, chatroom, navigation]);
 
   const categorySearch = () => {
     navigation.navigate("CategorySearch", { category: board.category });
-  };
-
-  const changeImageState = () => {
-    setPressed(!pressed);
   };
 
   const matchingCategories = () => {
@@ -360,7 +332,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
         <View style={styles.vr} />
         <View style={styles.priceBar}>
           <View style={styles.priceText}>
-            <Text style={{ fontSize: 20 }}>{board.price}원</Text>
+            <Text style={{ fontSize: 20 }}>
+              {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
+            </Text>
           </View>
           <View style={styles.nego}>
             <Text style={{ fontSize: 12, color: "#7b7b7c" }}>
@@ -452,7 +426,6 @@ const styles = StyleSheet.create({
   postSetting: {
     width: vw / 4.5,
     height: vh / 12.5,
-    borderWidth: 1,
     marginHorizontal: 5,
     alignItems: "center"
   },

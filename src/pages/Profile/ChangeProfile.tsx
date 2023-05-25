@@ -61,7 +61,6 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
           .then((res) => {
             console.log(res.data + "성공");
             setSelectedImg(res.data);
-            //setFilename(res.data);
           })
           .catch((error) => console.log(error));
         setImg(res.assets[0]);

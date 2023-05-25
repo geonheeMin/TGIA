@@ -1,21 +1,16 @@
 import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useState, useEffect, useTransition } from "react";
+import { useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Button,
   Dimensions,
   TouchableOpacity,
-  TextInput,
-  Image
+  TextInput
 } from "react-native";
-import { ScreenContainer } from "react-native-screens";
-import logo from "../../assets/logo.png";
-import api from "../api";
 import Axios from "axios";
 import useStore from "../../store";
 import { tracks } from "../assets/data/track";
@@ -37,7 +32,6 @@ const saveSession = async (data: string) => {
 };
 
 function HomeScreen({ navigation }: HomeScreenProps) {
-  const memberlist = require("../assets/dummy/member.json");
   const [loginId, setLoginId] = useState("");
   const { session, setSession, url } = useStore();
 
@@ -72,13 +66,6 @@ function HomeScreen({ navigation }: HomeScreenProps) {
           .catch((error) => console.log(error));
       })
       .catch((error) => console.log(error));
-    // const stringifyUser = JSON.stringify(user);
-    // AsyncStorage.setItem("session", stringifyUser).then(() => {
-    //   AsyncStorage.getItem("session").then((value) => {
-    //     setSession(JSON.parse(value));
-    //     navigation.navigate("List");
-    //   });
-    // });
   };
 
   const test = () => {
@@ -86,18 +73,6 @@ function HomeScreen({ navigation }: HomeScreenProps) {
       console.log(AsyncStorage.getItem("session"));
     });
   };
-  let [isPending, startTransition] = useTransition();
-  // useEffect(() => {
-  //   Axios.get<Blob>('http://localhost:8080/api/image', {
-  //     params: {
-  //       id: '1',
-  //     },
-  //     responseType: 'blob',
-  //   }).then(res => {
-  //     const myFile = new Blob([res.data]);
-  //     setImgdb(myFile);
-  //   });
-  // }, []);
 
   return (
     <SafeAreaView style={styles.container}>

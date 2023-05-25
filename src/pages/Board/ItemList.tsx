@@ -1,17 +1,13 @@
 import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   Pressable,
   Image,
   View,
-  Dimensions,
-  Linking,
-  BackHandler
+  Dimensions
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -30,10 +26,7 @@ type itemListProps = NativeStackScreenProps<RootStackParamList, "item">;
 function ItemList({ board, navigation }: itemListProps) {
   const { session, url } = useStore();
   const moment = require("moment");
-  const [postId, setPostId] = useState(board.post_id);
-  const [likes, setLikes] = useState(false); // 하트 채워짐 표시
   const [isFav, setIsFav] = useState(0); // 좋아요 정보. 0 : 좋아요 off, 1 : 좋아요 on
-  const [favId, setFavId] = useState(0);
   const isFocused = useIsFocused();
 
   const toDetail = () => {
@@ -99,11 +92,14 @@ function ItemList({ board, navigation }: itemListProps) {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "flex-end",
+            justifyContent: "flex-start",
             alignItems: "flex-end",
-            paddingRight: 5
+            paddingLeft: 10
           }}
         >
+          <Text style={styles.itemPrice}>
+            {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
+          </Text>
           {board.statusType !== "거래예약" && "거래완료" ? null : (
             <Text
               style={{
@@ -117,20 +113,20 @@ function ItemList({ board, navigation }: itemListProps) {
               {board.statusType}
             </Text>
           )}
-          <Text style={styles.itemPrice}>
-            {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
-          </Text>
-          <Text style={styles.itemViewCount}>
-            <Ionicons name="eye-outline" size={18} color={"gray"} />
-            {board.views}
-          </Text>
-          <Text style={styles.itemFavCount}>
-            <Entypo name="heart-outlined" size={18} color={"gray"} />
-            {board.likes}
-          </Text>
+          <View
+            style={{ position: "absolute", right: 10, flexDirection: "row" }}
+          >
+            <Text style={styles.itemViewCount}>
+              <Ionicons name="eye-outline" size={15} color={"gray"} />
+              {board.views}
+            </Text>
+            <Text style={styles.itemFavCount}>
+              <Entypo name="heart-outlined" size={15} color={"gray"} />
+              {board.likes}
+            </Text>
+          </View>
         </View>
       </View>
-      {/* <View style={styles.likesInfo}></View> */}
     </Pressable>
   );
 }
@@ -166,7 +162,7 @@ export const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 16,
-    marginTop: 30,
+    marginTop: 15,
     marginLeft: 15
   },
   itemPrice: {
@@ -180,13 +176,13 @@ export const styles = StyleSheet.create({
     marginTop: vh / 40
   },
   itemViewCount: {
-    fontSize: 18,
+    fontSize: 15,
     marginRight: vw / 90,
     fontWeight: "300",
     color: "gray"
   },
   itemFavCount: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: "300",
     color: "gray"
   },

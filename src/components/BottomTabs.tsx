@@ -1,14 +1,12 @@
+import * as React from "react";
 import {
-  View,
   Text,
-  Image,
-  ImageBackground,
   StyleSheet,
   Dimensions,
   Pressable,
   SafeAreaView
 } from "react-native";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import OctIcon from "react-native-vector-icons/Octicons";
 import IonIcon from "react-native-vector-icons/Ionicons";
