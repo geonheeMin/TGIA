@@ -32,6 +32,7 @@ import PaymentCompleted from "./src/pages/Chat/PaymentCompleted";
 import MannerInfo from "./src/pages/Profile/MannerInfo";
 import MannerReview from "./src/pages/Profile/MannerReview";
 import SalesList from "./src/pages/Profile/SalesList";
+import MannerReviewList from "./src/pages/Profile/MannerReviewList";
 
 import useStore from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -60,6 +61,7 @@ export type RootStackParamList = {
   Creative: undefined;
   Payment: undefined;
   Sales: undefined;
+  MannerReviewList: undefined;
 };
 
 export type LoginStackParamList = {
@@ -333,6 +335,12 @@ function App() {
           options={{ headerShown: false }}
         >
           {(props) => <SalesList {...props} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="MannerReviewList"
+          options={{ headerShown: false }}
+        >
+          {(props) => <MannerReviewList {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

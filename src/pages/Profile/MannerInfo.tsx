@@ -110,6 +110,10 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
     });
   }, [navigation]);
 
+  const toMannerReviewList = useCallback(() => {
+    navigation.navigate("MannerReviewList");
+  }, []);
+
   return(
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
@@ -224,6 +228,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
       </View>
 
         <Pressable
+          onPress={toMannerReviewList}
           style={styles.mannerReviewButton}  
         >
           <Text style={styles.mannerReviewButtonText}>받은 거래 후기 ({2})</Text>
@@ -349,7 +354,6 @@ const styles = StyleSheet.create({
     marginLeft: vw * 0.015,
     marginRight: vw * 0.1,
   },
-
   salesListButton: {
     height: vh * 0.07,
     alignItems: "center",
@@ -423,7 +427,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: vh * 0.1,
   },
-
   mannerReviewButton: {
     height: vh * 0.07,
     alignItems: "center",
@@ -439,8 +442,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginRight: vw * 0.03
   },
-
-
 })
 
 export default MannerInfo;

@@ -17,7 +17,6 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import ItemList from "../Board/ItemList";
-import postlist from "../../assets/dummy/postdata.json";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
@@ -39,9 +38,7 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const [newPosts, setNewPosts] = useState([{}]);
-  const [posts, setPosts] = useState(
-    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  );
+  const [posts, setPosts] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
   const [complitedPosts, setComplitedPosts] = useState([]);
   const [profileImg, setProfileImg] = useState(route.params.profile_img);

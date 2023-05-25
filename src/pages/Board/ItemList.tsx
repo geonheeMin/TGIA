@@ -2,16 +2,12 @@ import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useCallback, useEffect, useState } from "react";
 import {
-  SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   Pressable,
   Image,
   View,
   Dimensions,
-  Linking,
-  BackHandler
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -86,19 +82,21 @@ function ItemList({ board, navigation }: itemListProps) {
         <Text style={styles.itemEtc}>
           {board.locationType} · {timeCalc()}
         </Text>
-        <Text style={styles.itemPrice}>
-          {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
-        </Text>
-      </View>
-      <View style={styles.likesInfo}>
-        <Text style={styles.itemViewCount}>
-          <Ionicons name="eye-outline" size={18} color={"gray"} />
-          {board.views}
-        </Text>
-        <Text style={styles.itemFavCount}>
-          <Entypo name="heart-outlined" size={18} color={"gray"} />
-          {board.likes}
-        </Text>
+        <View>
+          <Text style={styles.itemPrice}>
+            {!isNaN(board.price) ? board.price.toLocaleString() : undefined}원
+          </Text>
+        </View>
+        <View style={styles.itemInfo_Count}>
+          <Text style={styles.itemViewCount}>
+              <Ionicons name="eye-outline" size={18} color={"gray"} />
+              {board.views}
+            </Text>
+            <Text style={styles.itemFavCount}>
+              <Entypo name="heart-outlined" size={18} color={"gray"} />
+              {board.likes}
+            </Text>
+          </View>
       </View>
     </Pressable>
   );
@@ -114,13 +112,6 @@ export const styles = StyleSheet.create({
     flex: 1.2,
     paddingVertical: 15
   },
-  itemInfo: {
-    flex: 2.1
-  },
-  likesInfo: {
-    flexDirection: "row",
-    flex: 1
-  },
   itemImage: {
     paddingVertical: "39%",
     marginLeft: 18,
@@ -133,10 +124,19 @@ export const styles = StyleSheet.create({
     height: "85%",
     overflow: "hidden"
   },
+  itemInfo: {
+    flex: 2.4
+  },
   itemTitle: {
     fontSize: 16,
-    marginTop: 30,
-    marginLeft: 15
+    marginTop: vh * 0.032,
+    marginLeft: vw * 0.04,
+  },
+  itemEtc: {
+    color: "grey",
+    fontSize: 12.5,
+    marginLeft: 15,
+    marginTop: 5
   },
   itemPrice: {
     fontSize: 19,
@@ -144,28 +144,21 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 15
   },
-  likeButton: {
-    marginTop: vh / 40
+  itemInfo_Count: {
+    flexDirection: "row"
   },
   itemViewCount: {
     fontSize: 18,
-    marginTop: vh / 9.6,
-    marginRight: vw / 90,
+    marginLeft: vw * 0.42,
     fontWeight: "300",
     color: "gray"
   },
   itemFavCount: {
     fontSize: 18,
-    marginTop: vh / 9.6,
+    marginLeft: vw * 0.015,
     fontWeight: "300",
     color: "gray"
   },
-  itemEtc: {
-    color: "grey",
-    fontSize: 12.5,
-    marginLeft: 15,
-    marginTop: 5
-  }
 });
 
 export default ItemList;
