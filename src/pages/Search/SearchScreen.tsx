@@ -206,7 +206,7 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
             }}
           >
             {popularList.map((item, index) => {
-              if (index >= 5) {
+              if (10 > index && index >= 5) {
                 return (
                   <View key={index}>
                     <View style={{ flexDirection: "row" }}>

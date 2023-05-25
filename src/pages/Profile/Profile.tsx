@@ -39,37 +39,34 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const [profileImg, setProfileImg] = useState();
 
   useEffect(() => {
-  if (manner >= 600) {
-    setMannerGrade("A+");
-  } else if (manner >= 500) {
-    setMannerGrade("A0");
-  } else if (manner >= 400) {
-    setMannerGrade("B+");
-  } else if (manner >= 300) {
-    setMannerGrade("B0");
-  } else if (manner >= 200) {
-    setMannerGrade("C+");
-  } else if (manner >= 100) {
-    setMannerGrade("C0");
-  } else {
-    setMannerGrade("D0");
-  }
-  }, [manner])
+    if (manner >= 600) {
+      setMannerGrade("A+");
+    } else if (manner >= 500) {
+      setMannerGrade("A0");
+    } else if (manner >= 400) {
+      setMannerGrade("B+");
+    } else if (manner >= 300) {
+      setMannerGrade("B0");
+    } else if (manner >= 200) {
+      setMannerGrade("C+");
+    } else if (manner >= 100) {
+      setMannerGrade("C0");
+    } else {
+      setMannerGrade("D0");
+    }
+  }, [manner]);
 
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
   }, []);
 
-  const toTrackSetting = () => {
-    navigation.navigate("TrackSetting", { id: [aTrackId, bTrackId] });
-  };
   const toMannerInfo = () => {
     navigation.navigate("MannerInfo", {
       member_Id: session.member_id
     });
-  }
+  };
 
-  useEffect(() => {    
+  useEffect(() => {
     setTrackFirst(session?.firstTrack);
     setTrackSecond(session?.secondTrack);
   }, [isFocused]);
@@ -161,15 +158,9 @@ function Profile({ navigation, route }: ProfileScreenProps) {
       </View>
       <Pressable onPress={toMannerInfo} style={styles.mannerStatus}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={styles.mannerText}>
-            매너 학점 
-          </Text>
-          <Text style={styles.mannerGrade}>
-            {mannerGrade}
-          </Text>
-          <Text style={styles.mannerExp}>
-            {manner % 100 + "%"}
-          </Text>
+          <Text style={styles.mannerText}>매너 학점</Text>
+          <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+          <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
         </View>
         <View style={{ marginTop: 10, paddingRight: 15 }}>
           <ProgressBar
@@ -301,7 +292,7 @@ const styles = StyleSheet.create({
   mannerStatus: {
     flex: 0.4,
     justifyContent: "center",
-    paddingHorizontal: vw / 30,
+    paddingHorizontal: vw / 30
   },
   mannerText: {
     fontSize: 16,

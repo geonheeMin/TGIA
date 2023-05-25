@@ -17,30 +17,29 @@ import {
 import { RootStackParamList } from "../../../App";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ItemList from "../Board/ItemList";
-import postlist from "../../assets/dummy/postdata.json";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
 
-const { width: vw, height: vh } = Dimensions.get('window');
+const { width: vw, height: vh } = Dimensions.get("window");
 
-type SalesListScreenProps = NativeStackScreenProps<RootStackParamList, "SalesList">;
+type SalesListScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "SalesList"
+>;
 
-function SalesList({navigation, route}: SalesListScreenProps) {
+function SalesList({ navigation, route }: SalesListScreenProps) {
   const { session, url } = useStore();
   const [sellerId, setSellerId] = useState(route.params.member_Id); // 받아온 판매자 아이디
   const [nickName, setNickName] = useState(route.params.nickName); // 유저 닉네임
   const [profileImg, setProfileImg] = useState(route.params.profile_Img); // 프로필 이미지
   const [img, setImg] = useState({});
-  const [posts, setPosts] = useState(
-    postlist.postlist.sort((a, b) => b.post_id - a.post_id)
-  );
+  const [posts, setPosts] = useState([]);
 
   const goBack = useCallback(() => {
     navigation.goBack();
-  }, [navigation])
+  }, [navigation]);
 
-  
   const renderItem = ({ item }) => {
     const renderBoard = {
       post_id: item.post_id,
@@ -76,7 +75,7 @@ function SalesList({navigation, route}: SalesListScreenProps) {
       });
   }, []);
 
-  return(
+  return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -91,11 +90,10 @@ function SalesList({navigation, route}: SalesListScreenProps) {
         </TouchableOpacity>
       </View>
 
-
       <View style={styles.profileZone}>
         <View style={styles.titleZone}>
           <View style={styles.title}>
-            <Text style={styles.sellerText}>{nickName}님 판매상품</Text>    
+            <Text style={styles.sellerText}>{nickName}님 판매상품</Text>
           </View>
         </View>
         <View style={styles.sellerImageZone}>
@@ -119,9 +117,7 @@ function SalesList({navigation, route}: SalesListScreenProps) {
           />
         ) : (
           <View style={styles.salesNone}>
-            <Text style={styles.salesNoneText}>
-              판매중인 게시물이 없어요.
-            </Text>
+            <Text style={styles.salesNoneText}>판매중인 게시물이 없어요.</Text>
           </View>
         )}
       </View>
@@ -161,7 +157,7 @@ const styles = StyleSheet.create({
   },
   titleZone: {
     flex: 2.2,
-    marginHorizontal: vw * 0.05,
+    marginHorizontal: vw * 0.05
   },
   title: {
     flex: 2,
@@ -169,10 +165,10 @@ const styles = StyleSheet.create({
   },
   sellerText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   sellerImageZone: {
-    flex: 1,
+    flex: 1
   },
   sellerImage: {
     width: "80%",
@@ -181,10 +177,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: vh * 0.012,
     borderRadius: 100,
-    borderWidth: 0.3,
+    borderWidth: 0.3
   },
   salesList: {
-    flex: 7,
+    flex: 7
   },
   salesNone: {
     position: "absolute",
@@ -195,7 +191,7 @@ const styles = StyleSheet.create({
   salesNoneText: {
     fontSize: 16,
     color: "gray"
-  },
+  }
 });
 
 export default SalesList;

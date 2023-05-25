@@ -34,7 +34,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [posts, setPosts] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
   const [posts, setPosts] = useState<Array<Post>>([]);
   const [sellingPosts, setSellingPosts] = useState<Array<Post>>([]);

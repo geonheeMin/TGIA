@@ -522,7 +522,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     new Animated.Value(55)
   );
   const [rangeAnimatedWidth, setRangeAnimatedWidth] = useState(
-    new Animated.Value(0)
+    new Animated.Value((3 * rangeWidth) / 3.0)
   );
   const getRangeCategory = (value) => {
     switch (value) {
@@ -556,14 +556,14 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const moveAnimation = (index: number) => {
     Animated.timing(rangeAnimatedValue, {
       toValue: 55 + (((index - 1) / 1) * rangeWidth) / 3.0,
-      duration: 400,
+      duration: 500,
       useNativeDriver: false
     }).start();
   };
   const moveWidthAnimation = (index: number) => {
     Animated.timing(rangeAnimatedWidth, {
       toValue: (((index - 1) / 1) * rangeWidth) / 3.0,
-      duration: 400,
+      duration: 500,
       useNativeDriver: false
     }).start();
   };
@@ -604,10 +604,10 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     rangeModalClose();
   };
   const resetRange = () => {
-    setRangeCategory(getRangeCategory(1));
-    setRangeText(getRange(true, 1));
+    setRangeCategory(getRangeCategory(4));
+    setRangeText(getRange(true, 4));
     setWhichTrack(true);
-    moveRange(1);
+    moveRange(4);
     Axios.get(`${url}/post/all`)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
@@ -626,7 +626,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       case "트랙":
         setRangeValue(1);
         moveRange(1);
-
         break;
       case "학부":
         setRangeValue(2);
@@ -636,7 +635,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         setRangeValue(3);
         moveRange(3);
         break;
-      case "한성대학교":
+      case "전체":
         setRangeValue(4);
         moveRange(4);
         break;
