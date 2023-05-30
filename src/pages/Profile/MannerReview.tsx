@@ -27,7 +27,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   const [buyerName, setBuyerName] = useState(session.username);
   const [sellerName, setSellerName] = useState(route.params.seller_name);
   const [buyerId, setBuyerId] = useState(session.member_id);
-  const [sellerId, setSellerId] = useState(route.params.seller_id);
+  const [sellerId, setSellerId] = useState(route.params.seller_Id);
   const [postId, setPostId] = useState(route.params.post_Id);
   const [currentIndex, setCurrentIndex] = useState(4);
   const [score, setScore] = useState(10);
@@ -49,6 +49,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   const [noResponse, setNoResponse] = useState(false);
   const [text, setText] = useState("");
   const [reDealing, setReDealing] = useState(false);
+  const [announcement, setAnnouncement] = useState(0);
   
 
   const goBack = useCallback(() => {
@@ -114,7 +115,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   function submitReview() {
     const request = {
       buyerId: session.member_id, 
-      sellerId: 13,
+      sellerId: sellerId,
       post_id: postId,
       mannerScore: score,
       goodPrice: goodPrice,
@@ -127,7 +128,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   
     const purchaseReviewDTO = {
       buyer_id: session.member_id,
-      seller_id: 13,
+      seller_id: sellerId,
       review: text,
       post_id: postId,
     }
@@ -137,7 +138,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
       console.log(res)
     })
     .catch((error) => {
-      console.log(error)
+      console.log("set errer" + error)
     })
 
     Axios.post(`${url}/add_purchase_review`, purchaseReviewDTO)
@@ -146,7 +147,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
       goBack()
     })
     .catch((error) => {
-      console.log(error)
+      console.log("review error" + error)
     })
   }
   
@@ -205,14 +206,20 @@ function MannerReview({navigation, route}: MannerReviewProps) {
       <View style={styles.reviewZone}>
         {goodPrice ? (
           <Pressable
-            onPress={() => setGoodPrice(!goodPrice)}
+            onPress={() => {
+              setGoodPrice(!goodPrice);
+              setAnnouncement(announcement - 1);
+            }}
             style={[styles.reviewItem, { backgroundColor: "#3064e7" }]}
           >
             <Text style={styles.reviewTextTrue}>좋은 상품을 저렴하게 판매해요</Text>
           </Pressable>
         ) : (
           <Pressable
-            onPress={() => setGoodPrice(!goodPrice)}
+            onPress={() => {
+              setGoodPrice(!goodPrice);
+              setAnnouncement(announcement + 1);
+            }}
             style={styles.reviewItem}
           >
             <Text style={styles.reviewTextFalse}>좋은 상품을 저렴하게 판매해요</Text>
@@ -220,14 +227,20 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         )}
         {goodTime ? (
           <Pressable
-            onPress={() => setGoodTime(!goodTime)}
+            onPress={() => {
+              setGoodTime(!goodTime);
+              setAnnouncement(announcement - 1);
+            }}
             style={[styles.reviewItem, { backgroundColor: "#3064e7" }]}
           >
             <Text style={styles.reviewTextTrue}>시간 약속을 잘 지켜요</Text>
           </Pressable>
         ) : (
           <Pressable
-            onPress={() => setGoodTime(!goodTime)}
+            onPress={() => {
+              setGoodTime(!goodTime);
+              setAnnouncement(announcement + 1);
+            }}
             style={styles.reviewItem}
           >
             <Text style={styles.reviewTextFalse}>시간 약속을 잘 지켜요</Text>
@@ -235,14 +248,20 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         )}
         {fastResponse ? (
           <Pressable
-            onPress={() => setFastResponse(!fastResponse)}
+            onPress={() => {
+              setFastResponse(!fastResponse);
+              setAnnouncement(announcement - 1);
+            }}
             style={[styles.reviewItem, { backgroundColor: "#3064e7" }]}
           >
             <Text style={styles.reviewTextTrue}>응답 속도가 빨라요</Text>
           </Pressable>
         ) : (
           <Pressable
-            onPress={() => setFastResponse(!fastResponse)}
+            onPress={() => {
+              setFastResponse(!fastResponse);
+              setAnnouncement(announcement + 1);
+            }}
             style={styles.reviewItem}
           >
             <Text style={styles.reviewTextFalse}>응답 속도가 빨라요</Text>
@@ -250,14 +269,20 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         )}
         {badQuality ? (
           <Pressable
-            onPress={() => setBadQuality(!badQuality)}
+            onPress={() => {
+              setBadQuality(!badQuality);
+              setAnnouncement(announcement + 1);
+            }}
             style={[styles.reviewItem, { backgroundColor: "#d70b0ba2" }]}
           >
             <Text style={styles.reviewTextTrue}>상품에 하자가 있어요</Text>
           </Pressable>
         ) : (
           <Pressable
-            onPress={() => setBadQuality(!badQuality)}
+            onPress={() => {
+              setBadQuality(!badQuality);
+              setAnnouncement(announcement - 1);
+            }}
             style={styles.reviewItem}
           >
             <Text style={styles.reviewTextFalse}>상품에 하자가 있어요</Text>
@@ -265,14 +290,20 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         )}
         {noResponse ? (
           <Pressable
-            onPress={() => setNoResponse(!noResponse)}
+            onPress={() => {
+              setNoResponse(!noResponse);
+              setAnnouncement(announcement + 1);
+            }}
             style={[styles.reviewItem, { backgroundColor: "#d70b0ba2" }]}
           >
             <Text style={styles.reviewTextTrue}>연락이 잘 안 돼요</Text>
           </Pressable>
         ) : (
           <Pressable
-            onPress={() => setNoResponse(!noResponse)}
+            onPress={() => {
+              setNoResponse(!noResponse);
+              setAnnouncement(announcement - 1);
+            }}
             style={styles.reviewItem}
           >
             <Text style={styles.reviewTextFalse}>연락이 잘 안 돼요</Text>
@@ -280,9 +311,19 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         )}
       </View>
       <View style={styles.guideZone}>
-        <Text style={styles.guideTextA}>
-          {sellerName}님에게 거래 후기를 남겨보세요.
-        </Text>
+        {announcement === 0 ?
+          <Text style={styles.guideTextA}>
+            {sellerName}님에게 거래 후기를 남겨보세요.
+          </Text>
+          : announcement > 0 ?
+            <Text style={styles.guideTextA}>
+              {sellerName}님에게 감사 인사를 남겨보세요.
+            </Text>
+            : 
+            <Text style={styles.guideTextA}>
+              {sellerName}님에게 아쉬웠던 점을 남겨보세요.
+            </Text>
+        }
         <Text style={styles.guideTextB}>
           작성한 내용은 상대방 프로필에 공개됩니다.
         </Text>

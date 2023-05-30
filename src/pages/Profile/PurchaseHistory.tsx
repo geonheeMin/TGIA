@@ -17,7 +17,7 @@ import { useIsFocused } from "@react-navigation/native";
 import useStore from "../../../store";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -106,16 +106,11 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={toProfile}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}>
-          구매내역
-        </Text>
+        <Text style={styles.topBarText}>구매내역</Text>
       </View>
 
       <View>
@@ -151,21 +146,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
-  },
-  backButtonImg: {
-    width: vw / 12,
-    height: vh / 28,
-    marginLeft: vw / 50
-  },
   cancelButton: {
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
+  },
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   reviewButton: {
     backgroundColor: "white",

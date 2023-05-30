@@ -13,6 +13,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
 import LocationCalc from "../../components/LocationCalc";
 import useStore from "../../../store";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -29,27 +30,25 @@ function Settings({ navigation }: SettingsScreenProps) {
     navigation.navigate("Profile");
   }, [navigation]);
   
-  useEffect(() => {
-    Axios.get(`${url}/purchasedlistV2`)
-    .then(res => {
-      console.log(res.data);
-    })
-    .catch(e => {
-      console.log(e);
-    })
-  })
+  // useEffect(() => {
+  //   Axios.get(`${url}/purchasedlistV2`)
+  //   .then(res => {
+  //     console.log(res.data);
+  //   })
+  //   .catch(e => {
+  //     console.log(e);
+  //   })
+  // })
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={toProfile}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
       </View>
       <LocationCalc />
@@ -70,16 +69,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
-  },
   cancelButton: {
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
-    height: vh / 17.5
+    height: vh / 17.5,
   }
 });
 

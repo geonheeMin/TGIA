@@ -18,6 +18,7 @@ import ItemList from "../Board/ItemList";
 import Axios from "axios";
 import useStore from "../../../store";
 import { Post } from "../../types/PostType";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -158,16 +159,11 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={toProfile}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "600", marginLeft: vw / 40 }}>
-          판매내역
-        </Text>
+        <Text style={styles.topBarText}>판매내역</Text>
       </View>
       <View style={styles.topzone}>
         <View style={{ flex: 2, paddingVertical: 18 }}>
@@ -245,7 +241,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1
   },
-
   topBar: {
     borderBottomWidth: 0.2,
     borderColor: "gray",
@@ -253,14 +248,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
-  },
-  backButtonImg: {
-    width: vw / 12,
-    height: vh / 28,
-    marginLeft: vw / 50
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   cancelButton: {
     flexDirection: "row",

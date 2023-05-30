@@ -16,7 +16,7 @@ import useStore from "../../../store";
 import Axios from "axios";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
 
 const { width: vw, height: vh } = Dimensions.get('window');
@@ -42,6 +42,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
   const [reviewData, setReviewData] = useState([]); // 받은 매너평가 순위 담는 배열
   const [reviewCount, setReviewCount] = useState(0);
   const [salesCount, setSalesCount] = useState(0); // 판매중인 게시물 개수
+  const [purchaseReviews, setPurchaseReviews] = useState([]); // 구매자 리뷰 내용
   const isFocused = useIsFocused();
   
 
@@ -64,9 +65,11 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
       setTrackFirst(res.data.profileListDto.firstTrack);
       setTrackSecond(res.data.profileListDto.secondTrack);
       setProfileImg(res.data.profileListDto.imageFileName);
-      setSubsction(res.data.profileListDto.createdDate);
+      setManner(res.data.profileListDto.mannerscore);
+      setSubsction(res.data.createdDate);
+      setSalesCount(res.data.countSellPostbyUser);
       setReviewCount(res.data.purchaseReview_전체개수);
-      setSalesCount(res.data.CountSellPostbyUser);
+      setPurchaseReviews(res.data.latestPurchaseReviews);
       console.log(res.data);
     })
     .catch((error) => {
@@ -115,9 +118,48 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
     });
   }, [navigation]);
 
+  // const toOtherProfile = useCallback((buyerId) => {
+  //   navigation.navigate("MannerInfo", {
+  //     member_Id: buyerId
+  //   })
+  // }, [])
+
   const toMannerReviewList = useCallback(() => {
-    navigation.navigate("MannerReviewList");
+    navigation.navigate("MannerReviewList", {
+      member_Id: memberId
+    });
   }, []);
+
+
+  const renderPurchaseReviews = () => {
+    const toOtherProfile = (buyerId) => {
+      navigation.push("MannerInfo", {
+        member_Id: buyerId
+      });
+    };
+
+    return purchaseReviews.map((review, index) => {
+      const { buyer_username, review: reviewText, imageFilename, buyer_id: buyerId } = review;
+      return (
+        <Pressable
+          style={styles.purchaseReviews}
+          key={index}
+          onPress={() => toOtherProfile(buyerId)}
+        >
+          <View style={styles.reviewerImageZone}>
+            <Image
+              source={{ uri: `${url}/images/${imageFilename}` }}
+              style={styles.reviewerImage}
+            />
+          </View>
+          <View style={styles.reviewInfo}>
+            <Text style={styles.reviewWriter}>{buyer_username}</Text>
+            <Text style={styles.reviewText}>{reviewText}</Text>
+          </View>
+        </Pressable>
+      );
+    });
+  };
 
   return(
     <SafeAreaView style={styles.safeAreaView}>
@@ -125,16 +167,11 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={goBack}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={styles.topBarName}>
-          프로필
-        </Text>
+        <Text style={styles.topBarText}>프로필</Text>
       </View>
       <ScrollView>
         <View style={styles.profile}>
@@ -195,7 +232,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
         <View style={styles.statsZone}>
           <Entypo name="heart-outlined" size={20} color={"gray"} style={styles.statusIndent}/>
           <Text style={styles.statsText}>재거래 희망률 {reDealingRate}%</Text>
-          <Ionicons name="chatbubble-outline" size={18} color={"gray"} />
+          <IonIcon name="chatbubble-outline" size={18} color={"gray"} />
           <Text style={styles.statsText}>응답률 {responseRate}%</Text>
         </View>
         
@@ -212,7 +249,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
           <Text style={styles.mannerTypeButtonText}>받은 매너 평가</Text>
         </View>
 
-        <View style={styles.topMannerTypeZone}>
+        <View style={styles.mannerTypeZone}>
         {reviewData.length === 0 || reviewData[0] && reviewData[0][Object.keys(reviewData[0])[0]] === 0 ? (
           <Text style={styles.noReviewText}>받은 리뷰가 없어요</Text>
         ) : (
@@ -224,13 +261,12 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
               />
               <Text style={styles.reviewCount}>{reviewItem[Object.keys(reviewItem)[0]]}</Text>
               <View style={styles.reviewItem}>
-                <Text style={styles.reviewText}>{Object.keys(reviewItem)[0]}</Text>
+                <Text style={styles.reviewItemText}>{Object.keys(reviewItem)[0]}</Text>
               </View>
             </View>
           ))
         )}
       </View>
-
         <Pressable
           onPress={toMannerReviewList}
           style={styles.mannerReviewButton}  
@@ -238,6 +274,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
           <Text style={styles.mannerReviewButtonText}>받은 거래 후기 ({reviewCount})</Text>
           <SimpleLineIcons name="arrow-right" size={20} style={styles.mannerReviewButtonArrow}/>
         </Pressable>
+        {renderPurchaseReviews()}
       </ScrollView>
     </SafeAreaView>
   );
@@ -255,9 +292,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   cancelButton: {
     flexDirection: "row",
@@ -390,9 +427,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginRight: vw * 0.03
   },
-
-
-  topMannerTypeZone: {
+  mannerTypeZone: {
     height: vh * 0.3,
     justifyContent: "flex-start",
     borderBottomWidth: 0.4,
@@ -422,14 +457,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFEFEF",
     borderRadius: 17,
   },
-  reviewText: {
+  reviewItemText: {
     fontSize: 18,
   },
   noReviewText: {
     fontSize: 18,
     color: "gray",
     textAlign: "center",
-    marginTop: vh * 0.1,
+    marginTop: vh * 0.11,
   },
   mannerReviewButton: {
     height: vh * 0.07,
@@ -446,6 +481,34 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginRight: vw * 0.03
   },
+  purchaseReviews: {
+    height: vh * 0.1,
+    flexDirection: "row",
+    marginHorizontal: vw * 0.03,
+    marginTop: vh * 0.025,
+    borderBottomWidth: 0.4,
+    borderBottomColor: "gray",
+  },
+  reviewerImageZone: {
+    flex: 0.4,
+  },
+  reviewerImage: {
+    width: "75%",
+    height: "75%",
+    borderRadius: 100,
+    borderWidth: 0.3,
+  },
+  reviewInfo: {
+    flex: 1.3
+  },
+  reviewWriter: {
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  reviewText: {
+    marginTop: vh * 0.01,
+    fontSize: 16,
+  }
 })
 
 export default MannerInfo;

@@ -23,6 +23,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useIsFocused } from "@react-navigation/native";
+import Axios from "axios";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -37,6 +38,19 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const [mannerGrade, setMannerGrade] = useState(""); // 매너 등급
   const isFocused = useIsFocused();
   const [profileImg, setProfileImg] = useState();
+
+
+  useEffect(() => {
+    Axios.get(`${url}/get_seller_profile?userId=` + session?.member_id)
+    .then((res) => {
+      setProfileImg(res.data.profileListDto.imageFileName);
+      setManner(res.data.profileListDto.mannerscore);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, []);
 
   useEffect(() => {
     if (manner >= 600) {
@@ -157,8 +171,8 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </View>
       <Pressable onPress={toMannerInfo} style={styles.mannerStatus}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={styles.mannerText}>매너 학점</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'center' }}>
+          <Text style={styles.mannerText}>매너학점</Text>
           <Text style={styles.mannerGrade}>{mannerGrade}</Text>
           <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
         </View>
@@ -171,7 +185,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </Pressable>
       <View style={styles.menuZoneTop}>
-        <Text style={{ fontSize: 16, fontWeight: "600", marginTop: vh / 80 }}>
+        <Text style={styles.menuTitleText}>
           나의 거래
         </Text>
         <View style={{ paddingTop: vh / 100 }}>
@@ -187,7 +201,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           </Pressable>
           <TouchableHighlight
             style={styles.menuButton}
-            underlayColor="#F6F6F6"
+            underlayColor="#FBFBFB"
             onPress={toPurchaseHistory}
           >
             <View style={styles.menuButtonContent}>
@@ -201,7 +215,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.menuButton}
-            underlayColor="#F6F6F6"
+            underlayColor="#FBFBFB"
             onPress={toFav}
           >
             <View style={styles.menuButtonContent}>
@@ -212,13 +226,13 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </View>
       <View style={styles.menuZoneBottom}>
-        <Text style={{ fontSize: 16, fontWeight: "600", marginTop: vh / 80 }}>
+        <Text style={styles.menuTitleText}>
           기타
         </Text>
         <View style={{ paddingTop: 8 }}>
           <TouchableHighlight
             style={styles.menuButton}
-            underlayColor="#F6F6F6"
+            underlayColor="#FBFBFB"
             onPress={toChangeProfile}
           >
             <View style={styles.menuButtonContent}>
@@ -228,30 +242,22 @@ function Profile({ navigation, route }: ProfileScreenProps) {
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.menuButton}
-            underlayColor="#F6F6F6"
+            underlayColor="#FBFBFB"
             onPress={toSettings}
           >
             <View style={styles.menuButtonContent}>
               <Ionicons name="md-settings-outline" size={28} color={"black"} />
-              <Text style={styles.menuButtonText}>환경 설정</Text>
+              <Text style={styles.menuButtonText}>환경설정</Text>
             </View>
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.menuButton}
-            underlayColor="#F6F6F6"
+            underlayColor="#FBFBFB"
             onPress={logoutAlert}
           >
             <View style={styles.menuButtonContent}>
               <MaterialIcons name="logout" size={28} color={"#b41b1bba"} />
-              <Text
-                style={{
-                  color: "#b41b1bba",
-                  marginLeft: vw / 50,
-                  fontSize: 16
-                }}
-              >
-                로그 아웃
-              </Text>
+              <Text style={styles.logoutText}>로그아웃</Text>
             </View>
           </TouchableHighlight>
         </View>
@@ -327,6 +333,11 @@ const styles = StyleSheet.create({
     paddingTop: vh / 50,
     paddingHorizontal: vw / 30
   },
+  menuTitleText: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: vh / 80
+  },
   menuButton: {
     marginVertical: vh / 75,
     paddingVertical: vh / 190
@@ -338,6 +349,11 @@ const styles = StyleSheet.create({
   menuButtonText: {
     marginLeft: vw / 50,
     fontSize: 16
+  },
+  logoutText: {
+    marginLeft: vw / 50,
+    fontSize: 16,
+    color: "#b41b1bba"
   }
 });
 

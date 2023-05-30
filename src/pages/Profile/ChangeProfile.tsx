@@ -108,31 +108,25 @@ function ChangeProfile({ navigation, route }: ChangeProfileScreenProps) {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
-        <Pressable style={styles.cancelButton} onPress={toProfile}>
-          <IonIcon
-            name={"chevron-back-sharp"}
-            size={25}
-            style={styles.backButton}
-          />
-
-          <Text
-            style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}
-          >
-            프로필 변경
-          </Text>
-        </Pressable>
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={toProfile}
+          activeOpacity={0.5}
+        >
+          <IonIcon name={"chevron-back-sharp"} size={25} />
+        </TouchableOpacity>
+        <Text style={styles.topBarText}>프로필 변경</Text>
         <TouchableOpacity
           style={styles.completeButton}
           onPress={confirm}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Text style={{ fontSize: 16, right: 0, color: "blue" }}>완료</Text>
+          <Text style={styles.compliteButtonText}>완료</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.imgZone}>
         <Pressable style={styles.imgUploadButton} onPress={pickImage}>
           <Image
-            //source={require("../../assets/bugi.png")}
             source={
               Object.keys(img).length === 0
                 ? { uri: `${url}/images/${profileImg}` }
@@ -175,15 +169,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
-  },
-  backButtonImg: {
-    width: vw / 12,
-    height: vh / 28,
-    marginLeft: vw / 50
-  },
   cancelButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -191,7 +176,10 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
-    //backgroundColor: '#3064e7',
+  },
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   completeButton: {
     flexDirection: "row",
@@ -201,6 +189,11 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 20
+  },
+  compliteButtonText: {
+    fontSize: 16,
+    right: 0,
+    color: "blue"
   },
   imgZone: {
     flex: 0.35

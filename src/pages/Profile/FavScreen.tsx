@@ -15,6 +15,7 @@ import Axios from "axios";
 import ItemList from "../Board/ItemList";
 import useStore from "../../../store";
 import { useIsFocused } from "@react-navigation/native";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -73,18 +74,12 @@ function FavScreen({ route, navigation }: FavScreenProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={toProfile}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "600", paddingLeft: vw / 40 }}>
-          관심목록
-        </Text>
+        <Text style={styles.topBarText}>관심목록</Text>
       </View>
-
       <View>
         {posts.length >= 1 ? (
           <FlatList data={posts} renderItem={renderItem} />
@@ -110,21 +105,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
-  },
-  backButtonImg: {
-    width: vw / 12,
-    height: vh / 28,
-    marginLeft: vw / 50
-  },
   cancelButton: {
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
+  },
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   contentNone: {
     position: "absolute",

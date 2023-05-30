@@ -6,8 +6,6 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  ScrollView,
-  Alert,
   Image,
   TouchableHighlight,
   Animated,
@@ -20,6 +18,8 @@ import ItemList from "../Board/ItemList";
 import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
+import IonIcon from "react-native-vector-icons/Ionicons";
+
 
 const { width: vw, height: vh } = Dimensions.get("window");
 
@@ -81,12 +81,9 @@ function SalesList({ navigation, route }: SalesListScreenProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={goBack}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
       </View>
 

@@ -18,6 +18,7 @@ import { RootStackParamList } from "../../../App";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Axios from "axios";
 import useStore from "../../../store";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const { width: vw, height: vh } = Dimensions.get('window');
 
@@ -25,37 +26,54 @@ type MannerReviewListScreenProps = NativeStackScreenProps<RootStackParamList, "M
 
 function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
   const { session, url } = useStore();
-  const [profileImg, setProfileImg] = useState();
-  const [img, setImg] = useState({});
-  const [posts, setPosts] = useState();
+  const [memberId, setMemberId] = useState(route.params.member_Id); // 받아온 멤버 아이디
+  const [purchaseReviews, setPurchaseReviews] = useState([]); // 구매자 리뷰 내용
 
   const goBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const renderItem = ({ item }) => {
-    const renderBoard = {
-      review_id: item.review_id,
-      member_id: item.member_id,
-      writer: item.writer,
-      profileImg: item.profileImg,
-      text: item.text,
-      date: item.date,
+  useEffect(() => {
+    Axios.get(`${url}/get_all_pruchase_review?userId=` + memberId)
+    .then((res) => {
+      console.log(res.data);
+      console.log("dd");
+      setPurchaseReviews(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, []);
+
+  const renderPurchaseReviews = () => {
+    const toOtherProfile = (buyerId) => {
+      navigation.push("MannerInfo", {
+        member_Id: buyerId
+      });
     };
 
-    // return <ItemList board={renderBoard} navigation={navigation} />;
+    return purchaseReviews.map((review, index) => {
+      const { buyer_username, review: reviewText, imageFilename, buyer_id: buyerId } = review;
+      return (
+        <Pressable
+          style={styles.purchaseReviews}
+          key={index}
+          onPress={() => toOtherProfile(buyerId)}
+        >
+          <View style={styles.reviewerImageZone}>
+            <Image
+              source={{ uri: `${url}/images/${imageFilename}` }}
+              style={styles.reviewerImage}
+            />
+          </View>
+          <View style={styles.reviewInfo}>
+            <Text style={styles.reviewWriter}>{buyer_username}</Text>
+            <Text style={styles.reviewText}>{reviewText}</Text>
+          </View>
+        </Pressable>
+      );
+    });
   };
-
-  useEffect(() => {
-    // Axios.get(`${url}/manner/my_list?userId=` + sellerId)
-    //   .then((res) => {
-    //     setPosts(res.data);
-    //     posts.sort((a, b) => b.post_id - a.post_id);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-  }, []);
 
   return(
     <SafeAreaView style={styles.safeAreaView}>
@@ -63,29 +81,19 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={goBack}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={styles.topBarName}>
-          받은 거래 후기
-        </Text>
+        <Text style={styles.topBarText}>거래 후기 상세</Text>
       </View>
-      
       <View style={styles.reviewList}>
-        {posts.length >= 1 ? (
-          <FlatList
-            style={{ marginTop: 0 }}
-            data={posts}
-            renderItem={renderItem}
-          />
-        ) : (
+        {purchaseReviews.length >= 1 ? 
+          renderPurchaseReviews()
+        : (
           <View style={styles.reviewNone}>
             <Text style={styles.reviewNoneText}>
-              판매중인 게시물이 없어요.
+              받은 거래 후기가 없어요.
             </Text>
           </View>
         )}
@@ -106,9 +114,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   cancelButton: {
     flexDirection: "row",
@@ -116,11 +124,6 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
-  },
-  topBarName: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: vw / 3.65,
   },
   messageZone: {
     flex: 0.45,
@@ -131,21 +134,47 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.4,
     borderColor: "gray",
   }, 
-
-
   reviewList: {
     flex : 1,
   },
   reviewNone: {
     position: "absolute",
     alignItems: "center",
-    marginVertical: vh / 3,
-    left: "27.5%"
+    marginVertical: vh * 0.4,
   },
   reviewNoneText: {
     fontSize: 16,
-    color: "gray"
+    color: "gray",
+    marginLeft: vw * 0.3  
   },
+  purchaseReviews: {
+    height: vh * 0.1,
+    flexDirection: "row",
+    marginHorizontal: vw * 0.03,
+    marginTop: vh * 0.025,
+    borderBottomWidth: 0.4,
+    borderBottomColor: "gray",
+  },
+  reviewerImageZone: {
+    flex: 0.4,
+  },
+  reviewerImage: {
+    width: "75%",
+    height: "75%",
+    borderRadius: 100,
+    borderWidth: 0.3,
+  },
+  reviewInfo: {
+    flex: 1.3
+  },
+  reviewWriter: {
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  reviewText: {
+    marginTop: vh * 0.01,
+    fontSize: 16,
+  }
 });
 
 export default MannerReviewList;
