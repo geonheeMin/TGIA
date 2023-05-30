@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import {
   SafeAreaView,
   ScrollView,

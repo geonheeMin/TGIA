@@ -34,7 +34,7 @@ const useStore = create<preset>((set) => ({
   setHasSession: (result: boolean) => {
     set((state) => ({ hasSession: result }));
   },
-  url: "http://223.194.133.240:8080", //geonhee,
+  url: "http://3.38.214.99:8080", //geonhee,
   paymentSuccess: null,
   setPaymentSuccess: (result: boolean | null) => {
     set((state) => ({ paymentSuccess: result }));
