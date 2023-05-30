@@ -35,7 +35,7 @@ function ItemList({ board, navigation }: itemListProps) {
 
   const favorite = () => {
     Axios.get(`${url}/profile/is_favorite`, {
-      params: { postId: board.post_id, userId: session.member_id }
+      params: { postId: board.post_id, userId: session?.member_id }
     })
       .then((res) => {
         setIsFav(res.data);
@@ -133,9 +133,10 @@ function ItemList({ board, navigation }: itemListProps) {
 
 export const styles = StyleSheet.create({
   items: {
+    paddingBottom: 5,
     backgroundColor: "white",
     flexDirection: "row",
-    paddingVertical: 10
+    paddingVertical: 15
   },
   itemImageZone: {
     flex: 1.2

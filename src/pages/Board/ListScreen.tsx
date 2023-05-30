@@ -29,6 +29,7 @@ import MatIcon from "react-native-vector-icons/MaterialIcons";
 import OctIcon from "react-native-vector-icons/Octicons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { Post } from "../../types/PostType";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 type RootStackParamList = {
   List: undefined;
 };
@@ -37,10 +38,11 @@ type ListScreenProps = NativeStackScreenProps<RootStackParamList, "List">;
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
-const sh = Dimensions.get("screen").height;
 
 function ListScreen({ route, navigation }: ListScreenProps) {
   const moment = require("moment");
+  const insets = useSafeAreaInsets();
+  const [bottomHeight, setBottomHeight] = useState(0);
   const { session, url } = useStore();
   const [posts, setPosts] = useState([{}]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -955,7 +957,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           <View style={styles.searchButton}>
             <Pressable
               onPress={() => {
-                navigation.navigate(["Search"]);
+                navigation.navigate("Search");
               }}
             >
               <OctIcon name="search" size={20} style={{ marginRight: 10 }} />
@@ -972,7 +974,12 @@ function ListScreen({ route, navigation }: ListScreenProps) {
           </View>
         </View>
       </View>
-      <View style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 }}>
+      <View
+        style={{
+          marginTop: 0,
+          height: vh - vh / 11 - vh / 17.5 - insets.top
+        }}
+      >
         <FlatList
           data={newPosts}
           renderItem={({ item }: { item: Post }) => renderItem(item)}

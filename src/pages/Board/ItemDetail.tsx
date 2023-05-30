@@ -20,7 +20,10 @@ import { useIsFocused } from "@react-navigation/native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { stackScrollInterpolator } from "../../utils/animations";
 import { ProgressBar } from "react-native-paper";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
+import { places } from "../../assets/data/place";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import IonIcon from "react-native-vector-icons/Ionicons";
+import { Post } from "../../types/PostType";
 
 type RootStackParamList = {
   Detail: undefined;
@@ -33,6 +36,11 @@ const vh = Dimensions.get("window").height;
 function ItemDetail({ route, navigation }: ItemDetailProps) {
   const { session, url } = useStore();
   const board = route.params.board;
+  const location = places.filter((item) => board.locationType === item.label)[0]
+    .image;
+  const [sellerPosts, setSellerPosts] = useState([]);
+  const [sellerColumn, setSellerColumn] = useState(1);
+  const [categoryPosts, setCategoryPosts] = useState([]);
   const [writer, setWriter] = useState("");
   const [writerImage, setWriterImage] = useState("");
   const [pressed, setPressed] = useState(false);
@@ -60,8 +68,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     const isAm = date.format("A") === "AM" ? "오전" : "오후";
     if (gapTime < 1) {
       return "방금 전";
-
-
     } else if (gapTime < 60) {
       return `${gapTime}분 전`;
     } else if (gapHour < 24) {
@@ -150,12 +156,26 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   useEffect(() => {
-    console.log(board.member_id);
-    Axios.get(`${url}/post/details3?postId=${board.post_id}&userId=${session?.member_id}`)
-    .then((res) => {
-      console.log("디테일" + JSON.stringify(res.data));
-    })
-    .catch((error) => console.log(error));
+    Axios.get(
+      `${url}/post/details3?postId=${board.post_id}&userId=${session?.member_id}`
+    )
+      .then((res) => {
+        console.log(res.data.sellerPosts);
+        if (res.data.sellerPosts > 0) {
+          setSellerPosts(res.data.sellerPosts);
+          setSellerColumn(
+            res.data.sellerPosts.length / 2 + (res.data.sellerPosts.length % 2)
+          );
+        }
+        if (res.data.postsByCategory.length > 0) {
+          setCategoryPosts(
+            res.data.postsByCategory.filter(
+              (item) => item.post_id !== board.post_id
+            )
+          );
+        }
+      })
+      .catch((error) => console.log(error));
     Axios.get(`${url}/member/get_username?id=${board.member_id}`)
       .then((res) => {
         setWriter(res.data);
@@ -220,7 +240,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     navigation.navigate("MannerInfo", {
       member_Id: board.member_id
     });
-  }
+  };
 
   useEffect(() => {
     if (manner >= 600) {
@@ -238,7 +258,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     } else {
       setMannerGrade("D0");
     }
-  }, [manner])
+  }, [manner]);
 
   const toSalesList = useCallback(() => {
     navigation.navigate("SalesList", {
@@ -247,6 +267,65 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       nickName: board.writer
     });
   }, [navigation]);
+
+  const renderAssociatedItem = (item: Post, index: number) => {
+    let isFav = 0;
+    Axios.get(`${url}/profile/is_favorite`, {
+      params: { postId: item.post_id, userId: session?.member_id }
+    })
+      .then((res) => {
+        isFav = res.data;
+      })
+      .catch((error) => {});
+    const toAssociatedItem = () => {
+      navigation.push("Detail", { board: item, isFav: isFav });
+    };
+    return (
+      <Pressable
+        key={index}
+        style={{
+          width: (vw - 30) / 2,
+          height: vh / 5 - 10,
+          marginBottom: 10,
+          paddingTop: 5,
+          paddingHorizontal: 10
+        }}
+        onPress={() => toAssociatedItem()}
+      >
+        <Image
+          source={{ uri: `${url}/images/${item.images[0]}` }}
+          style={{
+            width: (vw - 30) / 2 - 20,
+            height: (vh / 5 - 10) / 1.75,
+            borderWidth: 1,
+            borderColor: "lightgrey",
+            borderRadius: 10
+          }}
+        />
+        <Text style={{ marginTop: 5, fontSize: 16, fontWeight: "600" }}>
+          {item.title.length > 13
+            ? item.title.slice(0, 11) + "..."
+            : item.title}
+        </Text>
+        <View
+          style={{
+            marginTop: 10,
+            flexDirection: "row",
+            alignItems: "flex-end"
+          }}
+        >
+          <View>
+            <Text style={{ color: "grey" }}>{item.locationType}</Text>
+          </View>
+          <View style={{ position: "absolute", right: 0 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+              {isNaN(item.price) ? item.price : item.price.toLocaleString()}원
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
 
   return (
     <View style={pressed ? { backgroundColor: "black" } : styles.container}>
@@ -285,10 +364,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           </View>
         </Modal>
         <View style={styles.content}>
-          <Pressable
-            onPress={toMannerInfo}
-            style={styles.postWriterBar}
-          >
+          <Pressable onPress={toMannerInfo} style={styles.postWriterBar}>
             <Image
               source={{ uri: `${url}/images/${writerImage}` }}
               style={styles.writerImage}
@@ -301,46 +377,46 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 <Text style={{ fontSize: 14 }}>{session?.firstTrack}</Text>
               </View>
             </View>
-              {session?.member_id === board.member_id ? (
-                <View style={styles.postSetting}>
-                  <View
-                    style={{
-                      flex: 1,
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <Pressable style={styles.updateButton} onPress={toUpdate}>
-                      <Text>수정</Text>
-                    </Pressable>
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <Pressable style={styles.deleteButton}>
-                      <Text>삭제</Text>
-                    </Pressable>
-                  </View>
+            {session?.member_id === board.member_id ? (
+              <View style={styles.postSetting}>
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Pressable style={styles.updateButton} onPress={toUpdate}>
+                    <Text>수정</Text>
+                  </Pressable>
                 </View>
-              ) : (
-                <View style={styles.mannerInfo}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text style={styles.mannerText}>매너학점</Text>
-                    <Text style={styles.mannerGrade}>{mannerGrade}</Text>
-                  </View>
-                  <View style={{ marginTop: 8, paddingRight: 15 }}>
-                    <ProgressBar
-                      progress={(manner % 100) / 100}
-                      color={"#3064e7"}
-                      style={styles.progress}
-                    />
-                  </View>
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Pressable style={styles.deleteButton}>
+                    <Text>삭제</Text>
+                  </Pressable>
                 </View>
-              )}
+              </View>
+            ) : (
+              <View style={styles.mannerInfo}>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={styles.mannerText}>매너학점</Text>
+                  <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+                </View>
+                <View style={{ marginTop: 8, paddingRight: 15 }}>
+                  <ProgressBar
+                    progress={(manner % 100) / 100}
+                    color={"#3064e7"}
+                    style={styles.progress}
+                  />
+                </View>
+              </View>
+            )}
           </Pressable>
           <View style={styles.hr} />
           <View style={styles.postTitle}>
@@ -375,16 +451,100 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           </View>
           <Text style={styles.postContent}>{board.text}</Text>
         </View>
-        <Pressable
-          onPress={toSalesList}
-          style={styles.salesListButton}  
-        >
-          <Text style={styles.salesListButtonText}>판매상품 {10}개</Text>
-          <SimpleLineIcons name="arrow-right" size={20} style={styles.salesListButtonArrow}/>
-        </Pressable>
-        <View>
-
+        <View style={styles.hr} />
+        {/* 소 표시 */}
+        <View style={styles.postLocationArea}>
+          <View style={styles.postLocationTitleBar}>
+            <View style={styles.postLocationTitleLeft}>
+              <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                거래 희망 장소
+              </Text>
+            </View>
+            <View style={styles.postLocationTitleRight}>
+              <Text style={{ color: "grey" }}>{board.locationType}</Text>
+            </View>
+          </View>
+          <View style={styles.postLocationMap}>
+            <View>
+              <Image
+                source={location}
+                style={{
+                  width: 360,
+                  height: 240,
+                  borderWidth: 1,
+                  borderColor: "lightgrey"
+                }}
+              />
+            </View>
+          </View>
         </View>
+
+        <Pressable onPress={toSalesList} style={styles.salesListButton}>
+          <Text style={styles.salesListButtonText}>
+            {writer}님이 판매중인 상품
+          </Text>
+          <SimpleLineIcons
+            name="arrow-right"
+            size={20}
+            style={styles.salesListButtonArrow}
+          />
+        </Pressable>
+        {sellerPosts.length > 0 ? (
+          <View
+            style={[styles.sameWriterArea, { height: (vh / 5) * sellerColumn }]}
+          >
+            <View style={[styles.sameWriterLeft]}></View>
+            <View style={[styles.sameWriterRight]}></View>
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.sameWriterArea,
+              {
+                height: (vh / 5) * sellerColumn,
+                justifyContent: "center",
+                alignItems: "center"
+              }
+            ]}
+          >
+            <Text
+              style={{ fontSize: 18, fontWeight: "bold", color: "lightgrey" }}
+            >
+              {writer} 님의 다른 게시글이 없습니다.
+            </Text>
+          </View>
+        )}
+        <View style={styles.hr} />
+        <Pressable
+          onPress={() => categorySearch()}
+          style={styles.sameCategoryTitle}
+        >
+          <Text style={styles.salesListButtonText}>이 글은 어떠세요?</Text>
+          <SimpleLineIcons
+            name="arrow-right"
+            size={20}
+            style={styles.salesListButtonArrow}
+          />
+        </Pressable>
+
+        {categoryPosts.length > 0 ? (
+          <View style={styles.sameCategoryArea}>
+            <View style={styles.sameCategoryLeft}>
+              {categoryPosts.map((item, index) => {
+                if (index < 4 && index % 2 === 0) {
+                  return renderAssociatedItem(item, index);
+                }
+              })}
+            </View>
+            <View style={styles.sameCategoryRight}>
+              {categoryPosts.map((item, index) => {
+                if (index < 4 && index % 2 === 1) {
+                  return renderAssociatedItem(item, index);
+                }
+              })}
+            </View>
+          </View>
+        ) : null}
       </ScrollView>
       <View style={styles.hr} />
       <View style={styles.buttonBar}>
@@ -629,7 +789,7 @@ const styles = StyleSheet.create({
   },
   mannerInfo: {
     width: vw / 4.5,
-    height: vh / 26,
+    height: vh / 26
   },
   mannerText: {
     fontSize: 16,
@@ -639,7 +799,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#3064e7",
     fontWeight: "500",
-    marginLeft: vw * 0.008,
+    marginLeft: vw * 0.008
   },
   mannerExp: {
     fontSize: 16,
@@ -660,17 +820,78 @@ const styles = StyleSheet.create({
     borderTopWidth: 0.4,
     borderTopColor: "gray",
     borderBottomWidth: 0.4,
-    borderBottomColor: "gray",
+    borderBottomColor: "gray"
   },
   salesListButtonText: {
     fontSize: 18,
     marginLeft: vw * 0.03,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   salesListButtonArrow: {
     fontWeight: "700",
     marginRight: vw * 0.03
   },
+  postLocationArea: {
+    width: vw,
+    height: 300
+  },
+  postLocationTitleBar: {
+    flexDirection: "row",
+    marginHorizontal: 10,
+    height: 40,
+    alignItems: "center"
+  },
+  postLocationTitleLeft: {},
+  postLocationTitleRight: { position: "absolute", right: 10 },
+  postLocationMap: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  sameWriterArea: {
+    width: vw - 20,
+    marginHorizontal: 10,
+    marginTop: 10,
+    flexDirection: "row"
+  },
+  sameWriterLeft: {
+    width: (vw - 20) / 2 - 5,
+    height: vh - vh / 5
+  },
+  sameWriterRight: {
+    width: (vw - 20) / 2 - 5,
+    height: vh - vh / 5,
+    marginLeft: 10
+  },
+  sameCategoryTitle: {
+    height: vh * 0.07,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopWidth: 0.4,
+    borderTopColor: "gray",
+    borderBottomWidth: 0.4,
+    borderBottomColor: "gray"
+  },
+  sameCategoryArea: {
+    width: vw - 20,
+    height: (vh - vh / 5) / 2,
+    marginHorizontal: 10,
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  sameCategoryLeft: {
+    width: (vw - 20) / 2 - 5,
+    height: (vh - vh / 5) / 2
+  },
+  sameCategoryRight: {
+    width: (vw - 20) / 2 - 5,
+    height: (vh - vh / 5) / 2,
+    marginLeft: 10
+  }
 });
 
 export default ItemDetail;

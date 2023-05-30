@@ -150,7 +150,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   function postAdd() {
     const request = {
       title: title,
-      user_id: session.member_id,
+      user_id: session?.member_id,
       category: category,
       content: text,
       price: price,
@@ -223,7 +223,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       })
       .catch((error) => console.log(error))
       .finally(() => {
-        setIsLoading(false); 
+        setIsLoading(false);
       });
   };
 
@@ -434,7 +434,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 setFilename(res.data);
               }
             })
-            .catch((error) => console.log("wf"));
+            .catch((err) => console.log(err));
         }
       }
     );
@@ -561,11 +561,11 @@ function AddScreen({ route, navigation }: AddScreenProps) {
                 <Pressable
                   style={styles.placeItem}
                   onPress={() => {
-                    setPlace(item.item);
+                    setPlace(item.item.label);
                     placeModalControl();
                   }}
                 >
-                  <Text>{item.item}</Text>
+                  <Text>{item.item.label}</Text>
                 </Pressable>
               );
             }}
@@ -798,35 +798,35 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           />
         </View>
         <View style={styles.categoryBar}>
-        {isLoading ? ( // 로딩 중인 경우 로딩 스피너를 표시
-          <ActivityIndicator size="small" color="black" />
-        ) : (
-          <Pressable
-            style={styles.categoryButton}
-            onPress={() => {
-              categoryModalControl();
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 15,
-                color: isCategoryRecommended ? "black" : "lightgrey",
+          {isLoading ? ( // 로딩 중인 경우 로딩 스피너를 표시
+            <ActivityIndicator size="small" color="black" />
+          ) : (
+            <Pressable
+              style={styles.categoryButton}
+              onPress={() => {
+                categoryModalControl();
               }}
             >
-              {board !== "new"
-                ? category
-                : !isCategoryRecommended
-                ? "카테고리 선택"
-                : category}
-            </Text>
-            <IonIcon
-              name={"chevron-forward-sharp"}
-              size={20}
-              style={styles.nextIcon}
-            />
-          </Pressable>
-        )}
-      </View>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: isCategoryRecommended ? "black" : "lightgrey"
+                }}
+              >
+                {board !== "new"
+                  ? category
+                  : !isCategoryRecommended
+                  ? "카테고리 선택"
+                  : category}
+              </Text>
+              <IonIcon
+                name={"chevron-forward-sharp"}
+                size={20}
+                style={styles.nextIcon}
+              />
+            </Pressable>
+          )}
+        </View>
         <View style={styles.priceBar}>
           <TextInput
             value={price?.toString()}

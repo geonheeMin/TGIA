@@ -7,25 +7,22 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
-  Image,
-  Modal,
   LayoutAnimation,
   PixelRatio,
   Platform
 } from "react-native";
 import * as React from "react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import MatIcon from "react-native-vector-icons/MaterialIcons";
-import api from "../../api";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import backIcon from "../../assets/design/backIcon.png";
 import { useIsFocused } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -41,7 +38,9 @@ type SearchResultScreenProps = NativeStackScreenProps<
 function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
   const { session, url } = useStore();
   const params = route.params;
-  const [searchWord, setSearchWord] = useState(params.word);
+  const insets = useSafeAreaInsets();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [searchWord, setSearchWord] = useState(params?.word);
   const [inputWidth, setInputWidth] = useState(vw - vw / 2.5);
   const [backWidth, setBackWidth] = useState(vw - vw / 4);
   const [isEditing, setIsEditing] = useState(false);
@@ -79,6 +78,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     Axios.post(`${url}/detailSearch`, searchFilterDto)
       .then((res) => {
         setResults(res.data);
+        setIsLoaded(true);
       })
       .catch((err) => console.log(err));
   };
@@ -126,6 +126,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
   const [placeModalTop, setPlaceModalTop] = useState(-vh / 1.65);
   const [placeModalVisible, setPlaceModalVisible] = useState(false);
   const [placeFilterList, setPlaceFilterList] = useState([
+    false,
     false,
     false,
     false,
@@ -193,6 +194,8 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         return "낙산관";
       case 6:
         return "풋살장";
+      case 7:
+        return "상상빌리지";
     }
   };
   const getPlaceList = () => {
@@ -202,6 +205,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         convertPlaceList.push(setPlaceText(index));
       }
     });
+    convertPlaceList.push("상관없음");
     return convertPlaceList;
   };
   const adjustPlaceFilter = () => {
@@ -287,7 +291,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       case 2:
         return "생활";
       case 3:
-        return "의류";
+        return "패션의류";
       case 4:
         return "전자기기";
       case 5:
@@ -958,8 +962,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
           <View style={{ flex: 7.5 }}>
             <FlatList
               style={{
-                paddingHorizontal: vh / 50,
-                paddingVertical: vw / 40
+                paddingHorizontal: vh / 50
               }}
               data={departmentFilterList}
               ItemSeparatorComponent={() => (
@@ -1311,15 +1314,30 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
           />
         </Pressable>
       </View>
-      <FlatList
-        data={results}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => (
-          <View
-            style={{ backgroundColor: "#727272", opacity: 0.4, height: 0.34 }}
-          />
-        )}
-      />
+      {isLoaded ? (
+        <FlatList
+          data={results}
+          renderItem={renderItem}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{ backgroundColor: "#727272", opacity: 0.4, height: 0.34 }}
+            />
+          )}
+        />
+      ) : (
+        <View
+          style={{
+            height: vh - vh / 20 - vh / 11 - vh / 17.5 - insets.top,
+            width: vw,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Text style={{ color: "#e1e1e1", fontSize: 20, fontWeight: "bold" }}>
+            검색중입니다. 잠시만 기다려주십시오.
+          </Text>
+        </View>
+      )}
       <BottomTabs navigation={navigation} screen="Search" />
     </SafeAreaView>
   );
