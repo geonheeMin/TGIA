@@ -321,7 +321,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         ) {
           console.log("Camera permission given");
 
-          launchCamera({ mediaType: "photo", saveToPhotos: true }, (res) => {
+          launchCamera({ mediaType: "photo", saveToPhotos: false }, (res) => {
             if (res.didCancel) {
               console.log("Canceled");
             } else if (res.errorCode) {
@@ -401,9 +401,10 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         } else {
           const formData = new FormData();
           res.assets?.forEach((asset) => {
-            const isImageExist = images.some((image) => image.image === asset.uri);
-            if (!isImageExist) {
+            if (images.length > 0) {
               setImages([...images, { image: asset.uri, boardImage: false }]);
+            } else {
+              images.push({ image: asset.uri, boardImage: false });
             }
             sendImages.push({
               uri: asset.uri,
@@ -427,13 +428,12 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             .then((res) => {
               if (!isCategoryRecommended) {
                 setFilename(res.data);
-                setIsLoading(true);
                 setTimeout(() => getCategoryRecommend(), 3000);
               } else {
                 setFilename(res.data);
               }
             })
-            .catch((err) => console.log(err));
+            .catch((error) => console.log("wf"));
         }
       }
     );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback,} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -17,16 +17,16 @@ import Axios from "axios";
 import { useIsFocused } from "@react-navigation/native";
 import Entypo from "react-native-vector-icons/Entypo";
 import IonIcon from "react-native-vector-icons/Ionicons";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
-const { width: vw, height: vh } = Dimensions.get('window');
+const { width: vw, height: vh } = Dimensions.get("window");
 
 type MannerInfoPramList = {
-  MannerInfo: undefined,
-}
+  MannerInfo: undefined;
+};
 type MannerInfoProps = NativeStackScreenProps<MannerInfoPramList, "MannerInfo">;
 
-function MannerInfo({navigation, route}: MannerInfoProps) {
+function MannerInfo({ navigation, route }: MannerInfoProps) {
   const { session, url } = useStore();
   const [memberId, setMemberId] = useState(route.params.member_Id); // 받아온 멤버 아이디
   const [nickName, setNickName] = useState(); // 유저 닉네임
@@ -36,7 +36,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
   const [trackSecond, setTrackSecond] = useState(session?.secondTrack); // 제 2트랙
   const [manner, setManner] = useState(455); // 매너 학점
   const [mannerGrade, setMannerGrade] = useState(""); // 매너 등급
-  const [subscription, setSubsction] = useState("2023년 6월 2일") // 가입 날짜
+  const [subscription, setSubsction] = useState("2023년 6월 2일"); // 가입 날짜
   const [reDealingRate, setReDealingRate] = useState(100); // 재거래 희망률
   const [responseRate, setResponseRate] = useState(100); // 응답률
   const [reviewData, setReviewData] = useState([]); // 받은 매너평가 순위 담는 배열
@@ -44,49 +44,51 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
   const [salesCount, setSalesCount] = useState(0); // 판매중인 게시물 개수
   const [purchaseReviews, setPurchaseReviews] = useState([]); // 구매자 리뷰 내용
   const isFocused = useIsFocused();
-  
 
   function updateReDealingRate(data) {
-    const reDealingRateValue = data.find(item => item.hasOwnProperty('reDealingRate'));
+    const reDealingRateValue = data.find((item) =>
+      item.hasOwnProperty("reDealingRate")
+    );
     if (reDealingRateValue) {
       setReDealingRate(reDealingRateValue.reDealingRate);
     }
   }
 
   function updateReviewRanking(data) {
-    const reviewDataValue = data.filter(item => !item.hasOwnProperty('reDealingRate'));
+    const reviewDataValue = data.filter(
+      (item) => !item.hasOwnProperty("reDealingRate")
+    );
     setReviewData(reviewDataValue);
   }
 
   useEffect(() => {
     Axios.get(`${url}/get_seller_profile?userId=` + memberId)
-    .then((res) => {
-      setNickName(res.data.profileListDto.username);
-      setTrackFirst(res.data.profileListDto.firstTrack);
-      setTrackSecond(res.data.profileListDto.secondTrack);
-      setProfileImg(res.data.profileListDto.imageFileName);
-      setManner(res.data.profileListDto.mannerscore);
-      setSubsction(res.data.createdDate);
-      setSalesCount(res.data.countSellPostbyUser);
-      setReviewCount(res.data.purchaseReview_전체개수);
-      setPurchaseReviews(res.data.latestPurchaseReviews);
-      console.log(res.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((res) => {
+        setNickName(res.data.profileListDto.username);
+        setTrackFirst(res.data.profileListDto.firstTrack);
+        setTrackSecond(res.data.profileListDto.secondTrack);
+        setProfileImg(res.data.profileListDto.imageFileName);
+        setManner(res.data.profileListDto.mannerscore);
+        setSubsction(res.data.createdDate);
+        setSalesCount(res.data.countSellPostbyUser);
+        setReviewCount(res.data.purchaseReview_전체개수);
+        setPurchaseReviews(res.data.latestPurchaseReviews);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     Axios.get(`${url}/manner/getTop3AndDealingRate?userId=` + memberId)
-    .then((res) => {
-      updateReDealingRate(res.data);
-      updateReviewRanking(res.data);
-      console.log(res.data);
-    })
-    .catch((error) => {
-      console.log("manner 에러" + error)
-    });
+      .then((res) => {
+        updateReDealingRate(res.data);
+        updateReviewRanking(res.data);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log("manner 에러" + error);
+      });
   }, [isFocused]);
-
 
   useEffect(() => {
     if (manner >= 600) {
@@ -104,19 +106,19 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
     } else {
       setMannerGrade("D0");
     }
-  }, [manner])
+  }, [manner]);
 
   const goBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const toSalesList = useCallback(() => {
+  const toSalesList = () => {
     navigation.navigate("SalesList", {
       member_Id: memberId,
       profile_Img: profileImg,
       nickName: nickName
     });
-  }, [navigation]);
+  };
 
   // const toOtherProfile = useCallback((buyerId) => {
   //   navigation.navigate("MannerInfo", {
@@ -130,7 +132,6 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
     });
   }, []);
 
-
   const renderPurchaseReviews = () => {
     const toOtherProfile = (buyerId) => {
       navigation.push("MannerInfo", {
@@ -139,7 +140,12 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
     };
 
     return purchaseReviews.map((review, index) => {
-      const { buyer_username, review: reviewText, imageFilename, buyer_id: buyerId } = review;
+      const {
+        buyer_username,
+        review: reviewText,
+        imageFilename,
+        buyer_id: buyerId
+      } = review;
       return (
         <Pressable
           style={styles.purchaseReviews}
@@ -161,7 +167,7 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
     });
   };
 
-  return(
+  return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -186,11 +192,13 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
             />
           </View>
           <View
-            style={{ flex: 0.8, alignItems: "center", justifyContent: "center" }}
+            style={{
+              flex: 0.8,
+              alignItems: "center",
+              justifyContent: "center"
+            }}
           >
-            <Text style={{ fontSize: 16 }}>
-              {nickName}
-            </Text>
+            <Text style={{ fontSize: 16 }}>{nickName}</Text>
           </View>
           <View style={{ flex: 2, paddingVertical: 18 }}>
             <View style={styles.trackzone}>
@@ -206,16 +214,12 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
           </View>
         </View>
         <View style={styles.mannerStatus}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-            <Text style={styles.mannerText}>
-              매너 학점 
-            </Text>
-            <Text style={styles.mannerGrade}>
-              {mannerGrade}
-            </Text>
-            <Text style={styles.mannerExp}>
-              {manner % 100 + "%"}
-            </Text>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={styles.mannerText}>매너 학점</Text>
+            <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+            <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
           </View>
           <View style={{ marginTop: 10, paddingRight: 15 }}>
             <ProgressBar
@@ -230,49 +234,67 @@ function MannerInfo({navigation, route}: MannerInfoProps) {
           <Text style={styles.dateOfSubscriptionData}>{subscription}</Text>
         </View>
         <View style={styles.statsZone}>
-          <Entypo name="heart-outlined" size={20} color={"gray"} style={styles.statusIndent}/>
+          <Entypo
+            name="heart-outlined"
+            size={20}
+            color={"gray"}
+            style={styles.statusIndent}
+          />
           <Text style={styles.statsText}>재거래 희망률 {reDealingRate}%</Text>
           <IonIcon name="chatbubble-outline" size={18} color={"gray"} />
           <Text style={styles.statsText}>응답률 {responseRate}%</Text>
         </View>
-        
-        <Pressable
-          onPress={toSalesList}
-          style={styles.salesListButton}  
-        >
-          <Text style={styles.salesListButtonText}>판매상품 {salesCount}개</Text>
-          <SimpleLineIcons name="arrow-right" size={20} style={styles.salesListButtonArrow}/>
+
+        <Pressable onPress={toSalesList} style={styles.salesListButton}>
+          <Text style={styles.salesListButtonText}>
+            판매상품 {salesCount}개
+          </Text>
+          <SimpleLineIcons
+            name="arrow-right"
+            size={20}
+            style={styles.salesListButtonArrow}
+          />
         </Pressable>
-        <View
-          style={styles.mannerTypeButton}  
-        >
+        <View style={styles.mannerTypeButton}>
           <Text style={styles.mannerTypeButtonText}>받은 매너 평가</Text>
         </View>
 
         <View style={styles.mannerTypeZone}>
-        {reviewData.length === 0 || reviewData[0] && reviewData[0][Object.keys(reviewData[0])[0]] === 0 ? (
-          <Text style={styles.noReviewText}>받은 리뷰가 없어요</Text>
-        ) : (
-          reviewData.map((reviewItem, index) => (
-            <View style={styles.mannerReview} key={index}>
-              <Image
-                source={require("../../assets/heartbugi.png")}
-                style={styles.heartbugi}
-              />
-              <Text style={styles.reviewCount}>{reviewItem[Object.keys(reviewItem)[0]]}</Text>
-              <View style={styles.reviewItem}>
-                <Text style={styles.reviewItemText}>{Object.keys(reviewItem)[0]}</Text>
+          {reviewData.length === 0 ||
+          (reviewData[0] &&
+            reviewData[0][Object.keys(reviewData[0])[0]] === 0) ? (
+            <Text style={styles.noReviewText}>받은 리뷰가 없어요</Text>
+          ) : (
+            reviewData.map((reviewItem, index) => (
+              <View style={styles.mannerReview} key={index}>
+                <Image
+                  source={require("../../assets/heartbugi.png")}
+                  style={styles.heartbugi}
+                />
+                <Text style={styles.reviewCount}>
+                  {reviewItem[Object.keys(reviewItem)[0]]}
+                </Text>
+                <View style={styles.reviewItem}>
+                  <Text style={styles.reviewItemText}>
+                    {Object.keys(reviewItem)[0]}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))
-        )}
-      </View>
+            ))
+          )}
+        </View>
         <Pressable
           onPress={toMannerReviewList}
-          style={styles.mannerReviewButton}  
+          style={styles.mannerReviewButton}
         >
-          <Text style={styles.mannerReviewButtonText}>받은 거래 후기 ({reviewCount})</Text>
-          <SimpleLineIcons name="arrow-right" size={20} style={styles.mannerReviewButtonArrow}/>
+          <Text style={styles.mannerReviewButtonText}>
+            받은 거래 후기 ({reviewCount})
+          </Text>
+          <SimpleLineIcons
+            name="arrow-right"
+            size={20}
+            style={styles.mannerReviewButtonArrow}
+          />
         </Pressable>
         {renderPurchaseReviews()}
       </ScrollView>
@@ -294,7 +316,7 @@ const styles = StyleSheet.create({
   },
   topBarText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   cancelButton: {
     flexDirection: "row",
@@ -311,7 +333,7 @@ const styles = StyleSheet.create({
   profile: {
     height: vh * 0.13,
     flexDirection: "row",
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
   },
   profileImg: {
     flex: 0.75,
@@ -340,7 +362,7 @@ const styles = StyleSheet.create({
   mannerStatus: {
     height: vh * 0.08,
     justifyContent: "center",
-    paddingHorizontal: vw * 0.028,
+    paddingHorizontal: vw * 0.028
   },
   mannerText: {
     fontSize: 16,
@@ -366,34 +388,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 0.4,
     borderBottomWidth: 0.4,
-    borderColor: "gray",
+    borderColor: "gray"
   },
   dateOfSubscription: {
     fontSize: 16,
     fontWeight: "500",
-    marginLeft: vw * 0.22,
+    marginLeft: vw * 0.22
   },
   dateOfSubscriptionData: {
     fontSize: 16,
     color: "gray",
     fontWeight: "500",
-    marginLeft: vw * 0.1,
+    marginLeft: vw * 0.1
   },
   statsZone: {
     height: vh * 0.06,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 0.4,
-    borderColor: "gray",
+    borderColor: "gray"
   },
   statusIndent: {
-    marginLeft: vw * 0.03,  
+    marginLeft: vw * 0.03
   },
   statsText: {
     fontSize: 16,
     fontWeight: "400",
     marginLeft: vw * 0.015,
-    marginRight: vw * 0.1,
+    marginRight: vw * 0.1
   },
   salesListButton: {
     height: vh * 0.07,
@@ -401,12 +423,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     borderBottomWidth: 0.4,
-    borderBottomColor: "gray",
+    borderBottomColor: "gray"
   },
   salesListButtonText: {
     fontSize: 18,
     marginLeft: vw * 0.03,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   salesListButtonArrow: {
     fontWeight: "700",
@@ -417,11 +439,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginLeft: vw * 0.03,
+    marginLeft: vw * 0.03
   },
   mannerTypeButtonText: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   mannerTypeButtonArrow: {
     fontWeight: "700",
@@ -431,22 +453,22 @@ const styles = StyleSheet.create({
     height: vh * 0.3,
     justifyContent: "flex-start",
     borderBottomWidth: 0.4,
-    borderBottomColor: "gray",
+    borderBottomColor: "gray"
   },
   mannerReview: {
     flexDirection: "row",
     marginHorizontal: vw * 0.02,
-    marginVertical: vh * 0.01,
+    marginVertical: vh * 0.01
   },
   heartbugi: {
     flex: 0.27,
     height: vh * 0.07,
-    alignSelf: "flex-start",
+    alignSelf: "flex-start"
   },
   reviewCount: {
     fontSize: 16,
     flex: 0.05,
-    alignSelf: "center",
+    alignSelf: "center"
   },
   reviewItem: {
     flex: 1.2,
@@ -455,27 +477,27 @@ const styles = StyleSheet.create({
     marginLeft: vw * 0.065,
     marginRight: vw * 0.03,
     backgroundColor: "#EFEFEF",
-    borderRadius: 17,
+    borderRadius: 17
   },
   reviewItemText: {
-    fontSize: 18,
+    fontSize: 18
   },
   noReviewText: {
     fontSize: 18,
     color: "gray",
     textAlign: "center",
-    marginTop: vh * 0.11,
+    marginTop: vh * 0.11
   },
   mannerReviewButton: {
     height: vh * 0.07,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginLeft: vw * 0.03,
+    marginLeft: vw * 0.03
   },
   mannerReviewButtonText: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   mannerReviewButtonArrow: {
     fontWeight: "700",
@@ -487,28 +509,28 @@ const styles = StyleSheet.create({
     marginHorizontal: vw * 0.03,
     marginTop: vh * 0.025,
     borderBottomWidth: 0.4,
-    borderBottomColor: "gray",
+    borderBottomColor: "gray"
   },
   reviewerImageZone: {
-    flex: 0.4,
+    flex: 0.4
   },
   reviewerImage: {
     width: "75%",
     height: "75%",
     borderRadius: 100,
-    borderWidth: 0.3,
+    borderWidth: 0.3
   },
   reviewInfo: {
     flex: 1.3
   },
   reviewWriter: {
     fontSize: 18,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   reviewText: {
     marginTop: vh * 0.01,
-    fontSize: 16,
+    fontSize: 16
   }
-})
+});
 
 export default MannerInfo;

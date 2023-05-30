@@ -85,7 +85,7 @@ function SalesList({ navigation, route }: SalesListScreenProps) {
       <View style={styles.profileZone}>
         <View style={styles.titleZone}>
           <View style={styles.title}>
-            <Text style={styles.sellerText}>{nickName}님 판매상품</Text>
+            <Text style={styles.sellerText}>{nickName}님의 판매상품</Text>
           </View>
         </View>
         <View style={styles.sellerImageZone}>

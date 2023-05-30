@@ -45,23 +45,20 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [typeZoneHeight, setTypeZoneHeight] = useState(0);
   useEffect(() => {
     console.log("useEffect");
-    if (!isLoaded) {
-      Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
-        .then((res) => {
-          setSellingPosts(res.data);
-          sellingPosts.sort((a, b) => b.post_id - a.post_id);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
-        .then((res) => {
-          setCompletedPosts(res.data);
-          completedPosts.sort((a, b) => b.post_id - a.post_id);
-          setIsLoaded(!isLoaded);
-        })
-        .catch((err) => console.log(err));
-    }
+    Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
+      .then((res) => {
+        setSellingPosts(res.data);
+        sellingPosts.sort((a, b) => b.post_id - a.post_id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
+      .then((res) => {
+        setCompletedPosts(res.data);
+        completedPosts.sort((a, b) => b.post_id - a.post_id);
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   const tabUnderline = (tabNum: number) => {
@@ -103,7 +100,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
       })
       .catch((err) => console.log(posts));
   }, []);
-
 
   const renderItem = ({ item }) => {
     const renderBoard = {
@@ -237,7 +233,7 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
         >
           <Image
             source={{
-              uri: `${url}/images/${session?.imageFileName}` 
+              uri: `${url}/images/${session?.imageFileName}`
             }}
             style={styles.profile}
           />

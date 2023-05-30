@@ -132,10 +132,16 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
 
   useEffect(() => {
     Axios.get(
-      `${url}/post/details3?postId=${board.post_id}&userId=${session?.member_id}`
+      `${url}/post/details3?postId=${board.post_id}&userId=${board.member_id}`
     )
       .then((res) => {
-        if (res.data.sellerPosts > 0) {
+        if (res.data.sellerPosts.length > 0) {
+          res.data.sellerPosts.map((item) =>
+            console.log(`sellerPosts: ${item.member_id}`)
+          );
+          res.data.postsByCategory.map((item) =>
+            console.log(`postsByCategory${item.member_id}`)
+          );
           setSellerPosts(res.data.sellerPosts);
           setSellerColumn(
             res.data.sellerPosts.length / 2 + (res.data.sellerPosts.length % 2)
@@ -459,8 +465,20 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
           <View
             style={[styles.sameWriterArea, { height: (vh / 5) * sellerColumn }]}
           >
-            <View style={[styles.sameWriterLeft]}></View>
-            <View style={[styles.sameWriterRight]}></View>
+            <View style={styles.sameWriterLeft}>
+              {sellerPosts.map((item, index) => {
+                if (index % 2 === 0) {
+                  return renderAssociatedItem(item, index);
+                }
+              })}
+            </View>
+            <View style={styles.sameWriterRight}>
+              {sellerPosts.map((item, index) => {
+                if (index % 2 === 1) {
+                  return renderAssociatedItem(item, index);
+                }
+              })}
+            </View>
           </View>
         ) : (
           <View
