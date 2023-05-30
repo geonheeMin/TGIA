@@ -2,20 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
-  Pressable,
   StyleSheet,
   Dimensions,
   SafeAreaView,
   Image,
-  TouchableHighlight,
-  Animated,
   TouchableOpacity,
   FlatList
 } from "react-native";
 import { RootStackParamList } from "../../../App";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ItemList from "../Board/ItemList";
-import { useIsFocused } from "@react-navigation/native";
 import Axios from "axios";
 import useStore from "../../../store";
 import IonIcon from "react-native-vector-icons/Ionicons";

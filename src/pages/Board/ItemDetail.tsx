@@ -188,13 +188,6 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       .catch((error) => {
         console.log(error);
       });
-    Axios.get(`${url}/get_seller_profile?userId=` + session?.member_id)
-    .then((res) => {
-      setManner(res.data.profileListDto.mannerscore);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
   }, []);
 
   useEffect(() => {

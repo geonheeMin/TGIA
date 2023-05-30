@@ -1,12 +1,9 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback } from "react";
 import {
   View,
-  Text,
-  Pressable,
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  Image,
   TouchableOpacity
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -30,15 +27,6 @@ function Settings({ navigation }: SettingsScreenProps) {
     navigation.navigate("Profile");
   }, [navigation]);
   
-  // useEffect(() => {
-  //   Axios.get(`${url}/purchasedlistV2`)
-  //   .then(res => {
-  //     console.log(res.data);
-  //   })
-  //   .catch(e => {
-  //     console.log(e);
-  //   })
-  // })
 
   return (
     <SafeAreaView style={styles.safeAreaView}>

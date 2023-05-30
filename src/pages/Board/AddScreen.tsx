@@ -401,10 +401,9 @@ function AddScreen({ route, navigation }: AddScreenProps) {
         } else {
           const formData = new FormData();
           res.assets?.forEach((asset) => {
-            if (images.length > 0) {
+            const isImageExist = images.some((image) => image.image === asset.uri);
+            if (!isImageExist) {
               setImages([...images, { image: asset.uri, boardImage: false }]);
-            } else {
-              images.push({ image: asset.uri, boardImage: false });
             }
             sendImages.push({
               uri: asset.uri,

@@ -137,7 +137,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         >
           <Image
             source={{
-              uri: `${url}/images/${session?.imageFileName}` //이미지 표시 안 되면 수정할 사항 1
+              uri: `${url}/images/${session?.imageFileName}` 
             }}
             style={styles.profile}
           />

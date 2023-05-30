@@ -8,7 +8,6 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  Image,
   FlatList
 } from "react-native";
 import Axios from "axios";
