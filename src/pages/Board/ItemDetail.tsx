@@ -35,7 +35,7 @@ const vh = Dimensions.get("window").height;
 
 function ItemDetail({ route, navigation }: ItemDetailProps) {
   const { session, url } = useStore();
-  const board = route.params.board;
+  const board = route.params?.board;
   const location = places.filter((item) => board.locationType === item.label)[0]
     .image;
   const [sellerPosts, setSellerPosts] = useState([]);
@@ -44,11 +44,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const [writer, setWriter] = useState("");
   const [writerImage, setWriterImage] = useState("");
   const [pressed, setPressed] = useState(false);
-  const [category, setCategory] = useState("");
   const [chatroom, setChatroom] = useState();
   const timestamp = board.createdDate;
-  const [isFav, setIsFav] = useState(route.params.isFav);
-  const [isFavOn, setIsFavOn] = useState(false);
+  const [isFav, setIsFav] = useState(false);
   const isFocused = useIsFocused();
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -80,23 +78,23 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   };
 
   const doFav = () => {
-    setIsFavOn(!isFavOn);
     Axios.post(
       `${url}/profile/add_favorite`,
       {},
       { params: { postId: board.post_id, userId: session?.member_id } }
     ).then((res) => {
       console.log("좋아요 Id : " + res.data);
+      setIsFav(true);
     });
   };
 
   const unFav = () => {
-    setIsFavOn(!isFavOn);
     Axios.delete(`${url}/profile/delete_favorite3`, {
       params: { postId: board.post_id, userId: session?.member_id }
     })
       .then((res) => {
         console.log("좋아요 취소");
+        setIsFav(false);
       })
       .catch((error) => {
         console.log(error);
@@ -132,35 +130,11 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     navigation.navigate("CategorySearch", { category: board.category });
   };
 
-  const matchingCategories = () => {
-    switch (board.category) {
-      case "book":
-        setCategory("도서");
-        break;
-      case "pencil":
-        setCategory("필기구");
-        break;
-      case "clothes":
-        setCategory("의류");
-        break;
-      case "digital":
-        setCategory("디지털 기기");
-        break;
-      case "beauty":
-        setCategory("뷰티/미용");
-        break;
-      case "goods":
-        setCategory("부기 굿즈");
-        break;
-    }
-  };
-
   useEffect(() => {
     Axios.get(
       `${url}/post/details3?postId=${board.post_id}&userId=${session?.member_id}`
     )
       .then((res) => {
-        console.log(res.data.sellerPosts);
         if (res.data.sellerPosts > 0) {
           setSellerPosts(res.data.sellerPosts);
           setSellerColumn(
@@ -188,12 +162,19 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       .catch((error) => {
         console.log(error);
       });
+    Axios.get(`${url}/get_seller_profile?userId=` + session?.member_id)
+      .then((res) => {
+        setManner(res.data.profileListDto.mannerscore);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    Axios.get(
+      `${url}/profile/is_favorite?postId=${board.post_id}&userId=${session?.member_id}`
+    )
+      .then((res) => setIsFav(res.data === 1 ? true : false))
+      .catch((err) => console.log(err));
   }, []);
-
-  useEffect(() => {
-    //Axios.get(`${url}`);
-    matchingCategories();
-  }, [isFav]);
 
   const DATA = board?.images?.map((item, index) => {
     return {
@@ -262,16 +243,8 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   }, [navigation]);
 
   const renderAssociatedItem = (item: Post, index: number) => {
-    let isFav = 0;
-    Axios.get(`${url}/profile/is_favorite`, {
-      params: { postId: item.post_id, userId: session?.member_id }
-    })
-      .then((res) => {
-        isFav = res.data;
-      })
-      .catch((error) => {});
     const toAssociatedItem = () => {
-      navigation.push("Detail", { board: item, isFav: isFav });
+      navigation.push("Detail", { board: item });
     };
     return (
       <Pressable
@@ -542,9 +515,9 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       <View style={styles.hr} />
       <View style={styles.buttonBar}>
         <View style={styles.favButton}>
-          <Pressable onPress={isFavOn ? unFav : doFav}>
+          <Pressable onPress={isFav ? unFav : doFav}>
             <Image
-              source={isFavOn ? fav : unfav}
+              source={isFav ? fav : unfav}
               style={{
                 width: 30,
                 height: 30,

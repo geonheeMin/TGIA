@@ -42,9 +42,10 @@ const vh = Dimensions.get("window").height;
 function ListScreen({ route, navigation }: ListScreenProps) {
   const moment = require("moment");
   const insets = useSafeAreaInsets();
-  const [bottomHeight, setBottomHeight] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const { session, url } = useStore();
-  const [posts, setPosts] = useState([{}]);
+  const [posts, setPosts] = useState<Array<Post>>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const filterList = [
@@ -147,22 +148,18 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         newPosts.sort((a, b) =>
           moment(a.createdDate).diff(moment(b.createdDate))
         );
-
         setPreviousChecked("old");
         break;
       case "much":
         newPosts.sort((a, b) => b.likes - a.likes);
-
         setPreviousChecked("much");
         break;
       case "little":
         newPosts.sort((a, b) => a.likes - b.likes);
-
         setPreviousChecked("little");
         break;
       case "high":
         newPosts.sort((a, b) => b.views - a.views);
-
         setPreviousChecked("high");
         break;
       case "little":
@@ -171,7 +168,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
         break;
       default:
         cancelFilter(previousChecked);
-
         break;
     }
     filterModalClose();
@@ -279,55 +275,24 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     return <ItemList board={item} navigation={navigation} />;
   };
 
-  const listRefresh = () => {
-    setIsRefreshing(true);
-    Axios.get(`${url}/post/all`)
-      .then((res) => {
-        res.data.sort((a: Post, b: Post) =>
-          moment(b.createdDate).diff(moment(a.createdDate))
-        );
-        setPosts(res.data);
-        setNewPosts(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    adjustFilter(currentChecked);
-    setIsRefreshing(false);
+  const loadPage = () => {
+    if (!isLoading) {
+      setIsLoading(true);
+      Axios.get(`${url}/post/all3?page=${currentPage}&size=15`)
+        .then((res) => {
+          setNewPosts([...newPosts, ...res.data]);
+          setCurrentPage(currentPage + 1);
+          adjustFilter(currentChecked);
+          setIsLoading(false);
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   useEffect(() => {
-    Axios.get(`${url}/post/all`)
-      .then((res) => {
-        res.data.sort((a: Post, b: Post) =>
-          moment(b.createdDate).diff(moment(a.createdDate))
-        );
-        setPosts(res.data);
-        setNewPosts(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [isFocused, filter]);
-
-  useEffect(() => {
-    console.log(session);
-    Axios.get(`${url}/post/all`)
-      .then((res) => {
-        res.data.sort((a: Post, b: Post) =>
-          moment(b.createdDate).diff(moment(a.createdDate))
-        );
-        setPosts(res.data);
-        setNewPosts(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  useEffect(() => {
     if (isFocused) {
-      listRefresh();
+      loadPage();
+      setCurrentPage(0);
     }
   }, [isFocused]);
 
@@ -471,7 +436,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             </Pressable>
             <Pressable
               onPress={() => {
-                listRefresh();
+                adjustFilter(currentChecked);
               }}
             >
               <View style={filterModalStyles.applyButton}>
@@ -982,11 +947,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       >
         <FlatList
           data={newPosts}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }: { item: Post }) => renderItem(item)}
           ItemSeparatorComponent={() => <View style={styles.seperator} />}
           refreshControl={
-            <RefreshControl onRefresh={listRefresh} refreshing={isRefreshing} />
+            <RefreshControl onRefresh={loadPage} refreshing={isRefreshing} />
           }
+          onEndReached={() => loadPage()}
+          onEndReachedThreshold={0.85}
+          disableVirtualization={false}
         />
       </View>
       <Pressable style={styles.writeButton} onPress={writePost}>

@@ -16,7 +16,6 @@ import Axios from "axios";
 import useStore from "../../../store";
 import IonIcon from "react-native-vector-icons/Ionicons";
 
-
 const { width: vw, height: vh } = Dimensions.get("window");
 
 type SalesListScreenProps = NativeStackScreenProps<
@@ -176,10 +175,13 @@ const styles = StyleSheet.create({
     flex: 7
   },
   salesNone: {
-    position: "absolute",
     alignItems: "center",
     marginVertical: vh / 3,
-    left: "27.5%"
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "black",
+    width: vw,
+    height: 50
   },
   salesNoneText: {
     fontSize: 16,

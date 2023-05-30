@@ -9,7 +9,8 @@ import {
   Image,
   Alert,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  Platform
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
@@ -27,7 +28,6 @@ type PurchaseHistoryScreenProps = NativeStackScreenProps<
   "PurchaseHistory"
 >;
 
-
 function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
   const { session, url } = useStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -38,16 +38,14 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
     navigation.navigate("Profile");
   }, [navigation]);
 
-
   const renderItem = ({ item }) => {
     const toReview = () => {
-      navigation.navigate("MannerReview"
-      , {
+      navigation.navigate("MannerReview", {
         seller_name: item.writer,
         seller_Id: item.member_id,
         post_Id: item.post_id
-      }
-    )};
+      });
+    };
 
     const renderBoard = {
       post_id: item.post_id,
@@ -71,7 +69,6 @@ function PurchaseHistory({ navigation }: PurchaseHistoryScreenProps) {
       reviewType: item.reviewType,
       statusType: item.statusType
     };
-
 
     return (
       <View>
@@ -142,7 +139,7 @@ const styles = StyleSheet.create({
   topBar: {
     borderBottomWidth: 0.2,
     borderColor: "gray",
-    height: vh / 18,
+    height: Platform.OS === "ios" ? vh / 18 : vh / 15,
     flexDirection: "row",
     alignItems: "center"
   },
@@ -155,7 +152,7 @@ const styles = StyleSheet.create({
   },
   topBarText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   reviewButton: {
     backgroundColor: "white",
@@ -177,10 +174,10 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   contentNone: {
-    position: "absolute",
-    alignItems: "center",
-    marginVertical: vh / 2.6,
-    left: "22%"
+    width: vw,
+    height: Platform.OS === "ios" ? vh - vh / 18 : vh - vh / 15,
+    justifyContent: "center",
+    alignItems: "center"
   },
   contentNoneText: {
     fontSize: 16,

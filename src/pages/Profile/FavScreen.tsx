@@ -8,7 +8,9 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  FlatList
+  Image,
+  FlatList,
+  Platform
 } from "react-native";
 import Axios from "axios";
 import ItemList from "../Board/ItemList";
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
   topBar: {
     borderBottomWidth: 0.2,
     borderColor: "gray",
-    height: vh / 18,
+    height: Platform.OS === "ios" ? vh / 18 : vh / 15,
     flexDirection: "row",
     alignItems: "center"
   },
@@ -113,13 +115,13 @@ const styles = StyleSheet.create({
   },
   topBarText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   contentNone: {
-    position: "absolute",
-    alignItems: "center",
-    marginVertical: vh / 2.6,
-    left: "30%"
+    width: vw,
+    height: Platform.OS === "ios" ? vh - vh / 18 : vh - vh / 15,
+    justifyContent: "center",
+    alignItems: "center"
   },
   contentNoneText: {
     fontSize: 16,

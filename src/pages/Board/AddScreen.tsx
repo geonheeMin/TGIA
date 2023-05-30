@@ -141,7 +141,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   function CancelButton() {
     Alert.alert("게시글 취소", "취소하시겠습니까?", [
-      { text: "예", onPress: toList },
+      { text: "예", onPress: () => goBack() },
       { text: "아니요", style: "cancel" }
     ]);
   }
@@ -202,8 +202,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   }
 
   /** 새 글 작성 후 목록으로 돌아가는 함수 */
-  const toList = useCallback(() => {
-    navigation.navigate("List");
+  const goBack = useCallback(() => {
+    navigation.goBack();
   }, [navigation]);
 
   /** 기존 글 수정 후 상세 화면으로 돌아가는 함수 */
