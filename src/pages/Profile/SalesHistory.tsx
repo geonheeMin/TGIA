@@ -41,6 +41,29 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [completedPosts, setCompletedPosts] = useState<Array<Post>>([]);
   const [profileImg, setProfileImg] = useState();
   const [img, setImg] = useState({});
+  const [topBarHeight, setTopBarHeight] = useState(0);
+  const [topZoneHeight, setTopZoneHeight] = useState(0);
+  const [typeZoneHeight, setTypeZoneHeight] = useState(0);
+  useEffect(() => {
+    console.log("useEffect");
+    if (!isLoaded) {
+      Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
+        .then((res) => {
+          setSellingPosts(res.data);
+          sellingPosts.sort((a, b) => b.post_id - a.post_id);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
+        .then((res) => {
+          setCompletedPosts(res.data);
+          completedPosts.sort((a, b) => b.post_id - a.post_id);
+          setIsLoaded(!isLoaded);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, []);
 
   const tabUnderline = (tabNum: number) => {
     Animated.spring(position, {
@@ -84,38 +107,22 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
       return <ItemList board={renderBoard} navigation={navigation} />;
     };
 
-    useEffect(() => {
-      if (!isLoaded) {
-        Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
-          .then((res) => {
-            setSellingPosts(res.data);
-            sellingPosts.sort((a, b) => b.post_id - a.post_id);
-          })
-          .catch((error) => {
-            console.log(error);
-            console.log(posts);
-          });
-        Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
-          .then((res) => {
-            setCompletedPosts(res.data);
-            completedPosts.sort((a, b) => b.post_id - a.post_id);
-            setIsLoaded(!isLoaded);
-          })
-          .catch((err) => console.log(posts));
-      }
-    }, []);
-
     return (
       <View>
         {posts.length >= 1 ? (
           <FlatList
             style={{ marginTop: 0 }}
-            data={posts}
+            data={sellingPosts}
             renderItem={renderItem}
             refreshing={isRefreshing}
           />
         ) : (
-          <View style={styles.tabContentNone}>
+          <View
+            style={[
+              styles.tabContentNone,
+              { height: vh - topBarHeight - topZoneHeight - typeZoneHeight }
+            ]}
+          >
             <Text style={styles.tabContentNoneText}>
               판매중인 게시물이 없어요.
             </Text>
@@ -134,7 +141,12 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
             <Text>test</Text>
           </View>
         ) : (
-          <View style={styles.tabContentNone}>
+          <View
+            style={[
+              styles.tabContentNone,
+              { height: vh - topBarHeight - topZoneHeight - typeZoneHeight }
+            ]}
+          >
             <Text style={styles.tabContentNoneText}>
               거래 완료된 게시글이 없어요.
             </Text>
@@ -155,7 +167,10 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <View style={styles.topBar}>
+      <View
+        style={styles.topBar}
+        onLayout={(e) => setTopBarHeight(e.nativeEvent.layout.height)}
+      >
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={toProfile}
@@ -165,7 +180,10 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
         </TouchableOpacity>
         <Text style={styles.topBarText}>판매내역</Text>
       </View>
-      <View style={styles.topzone}>
+      <View
+        style={styles.topzone}
+        onLayout={(e) => setTopZoneHeight(e.nativeEvent.layout.height)}
+      >
         <View style={{ flex: 2, paddingVertical: 18 }}>
           <View style={styles.titlezone}>
             <Text
@@ -201,7 +219,10 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
         </View>
       </View>
 
-      <View style={styles.typezone}>
+      <View
+        style={styles.typezone}
+        onLayout={(e) => setTypeZoneHeight(e.nativeEvent.layout.height)}
+      >
         {TABS.map((tab, index) => (
           <TouchableHighlight
             style={styles.menuButton}
@@ -250,7 +271,7 @@ const styles = StyleSheet.create({
   },
   topBarText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   cancelButton: {
     flexDirection: "row",
@@ -292,6 +313,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 15,
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: vw / 80,
     marginRight: vw / 3.1
   },
@@ -319,10 +342,9 @@ const styles = StyleSheet.create({
     backgroundColor: "skyblue"
   },
   tabContentNone: {
-    position: "absolute",
-    alignItems: "center",
-    marginVertical: vh / 3,
-    left: "27.5%"
+    width: vw,
+    justifyContent: "center",
+    alignItems: "center"
   },
   tabContentNoneText: {
     fontSize: 16,
