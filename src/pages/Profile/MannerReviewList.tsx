@@ -6,13 +6,8 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  ScrollView,
-  Alert,
   Image,
-  TouchableHighlight,
-  Animated,
   TouchableOpacity,
-  FlatList
 } from "react-native";
 import { RootStackParamList } from "../../../App";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";

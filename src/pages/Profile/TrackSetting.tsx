@@ -145,7 +145,7 @@ function TrackSetting({ navigation, route }: TrackSettingScreenProps) {
                   styles.trackZone,
                   {
                     backgroundColor:
-                      trackMenu === item.item ? "lightgrey" : "white"
+                      trackMenu === item.item ? "#E9E9E9" : "white"
                   }
                 ]}
               >
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3064e7",
     paddingVertical: 20
   },
-  departZone: { backgroundColor: "#3783ff", paddingVertical: 20 },
+  departZone: { backgroundColor: "#5496ff", paddingVertical: 20 },
   trackZone: { paddingVertical: 20 },
 
   menuButton: {
@@ -321,11 +321,15 @@ const styles = StyleSheet.create({
   collegeName: {
     fontSize: 18,
     color: "white",
-    marginLeft: 10
+    marginLeft: 10,
+    fontWeight: "bold",
+    letterSpacing: 1
   },
   departName: {
     fontSize: 15,
-    marginLeft: 15
+    marginLeft: 15,
+    color: "white",
+    fontWeight: "600"
   },
   trackName: { fontSize: 13.5, marginLeft: 20 },
 

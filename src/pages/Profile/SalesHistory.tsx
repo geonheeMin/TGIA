@@ -35,7 +35,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [content, setContent] = useState(0);
   const position = new Animated.Value(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [posts, setPosts] = useState<Array<Post>>([]);
   const [sellingPosts, setSellingPosts] = useState<Array<Post>>([]);
   const [completedPosts, setCompletedPosts] = useState<Array<Post>>([]);
@@ -76,40 +75,65 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
     navigation.navigate("Profile");
   }, [navigation]);
 
+  const toWrite = useCallback(() => {
+    navigation.navigate("Add");
+  }, [navigation]);
+
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
     console.log(profileImg);
   }, []);
 
+  useEffect(() => {
+    Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
+      .then((res) => {
+        setSellingPosts(res.data);
+        sellingPosts.sort((a, b) => b.post_id - a.post_id);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(posts);
+      });
+    Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
+      .then((res) => {
+        setCompletedPosts(res.data);
+        completedPosts.sort((a, b) => b.post_id - a.post_id);
+        //setIsLoaded(!isLoaded);
+      })
+      .catch((err) => console.log(posts));
+  }, []);
+
+
+  const renderItem = ({ item }) => {
+    const renderBoard = {
+      post_id: item.post_id,
+      title: item.title,
+      price: item.price,
+      locationType: item.locationType,
+      location_text: item.location_text,
+      writer: item.writer,
+      category: item.category,
+      text: item.text,
+      date: item.date,
+      track: item.track,
+      images: item.images,
+      member_id: item.member_id,
+      likes: item.likes,
+      views: item.views,
+      department: item.department,
+      createdDate: item.createdDate,
+      item_name: item.item_name
+    };
+    return <ItemList board={renderBoard} navigation={navigation} />;
+  };
+
   function OnSale() {
     tabUnderline(0);
 
-    const renderItem = ({ item }) => {
-      const renderBoard = {
-        post_id: item.post_id,
-        title: item.title,
-        price: item.price,
-        locationType: item.locationType,
-        location_text: item.location_text,
-        writer: item.writer,
-        category: item.category,
-        text: item.text,
-        date: item.date,
-        track: item.track,
-        images: item.images,
-        member_id: item.member_id,
-        likes: item.likes,
-        views: item.views,
-        department: item.department,
-        createdDate: item.createdDate,
-        item_name: item.item_name
-      };
-      return <ItemList board={renderBoard} navigation={navigation} />;
-    };
-
     return (
       <View>
-        {posts.length >= 1 ? (
+        {sellingPosts.length >= 1 ? (
           <FlatList
             style={{ marginTop: 0 }}
             data={sellingPosts}
@@ -137,9 +161,12 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
     return (
       <View>
         {completedPosts.length >= 1 ? (
-          <View>
-            <Text>test</Text>
-          </View>
+          <FlatList
+            style={{ marginTop: 0 }}
+            data={completedPosts}
+            renderItem={renderItem}
+            refreshing={isRefreshing}
+          />
         ) : (
           <View
             style={[
@@ -196,7 +223,7 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
             <TouchableHighlight
               style={styles.writeButton}
               underlayColor="#4e77e1"
-              onPress={onSubmit}
+              onPress={toWrite}
             >
               <Text style={{ color: "white" }}>글쓰기</Text>
             </TouchableHighlight>
@@ -209,11 +236,9 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <Image
-            source={
-              Object.keys(img).length === 0
-                ? { uri: `${url}/images/${profileImg}` }
-                : { uri: img?.uri }
-            }
+            source={{
+              uri: `${url}/images/${session?.imageFileName}` 
+            }}
             style={styles.profile}
           />
         </View>
