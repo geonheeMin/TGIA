@@ -7,7 +7,7 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
-  TouchableOpacity,
+  TouchableOpacity
 } from "react-native";
 import { RootStackParamList } from "../../../App";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -15,11 +15,14 @@ import Axios from "axios";
 import useStore from "../../../store";
 import IonIcon from "react-native-vector-icons/Ionicons";
 
-const { width: vw, height: vh } = Dimensions.get('window');
+const { width: vw, height: vh } = Dimensions.get("window");
 
-type MannerReviewListScreenProps = NativeStackScreenProps<RootStackParamList, "MannerReviewList">;
+type MannerReviewListScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  "MannerReviewList"
+>;
 
-function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
+function MannerReviewList({ navigation, route }: MannerReviewListScreenProps) {
   const { session, url } = useStore();
   const [memberId, setMemberId] = useState(route.params.member_Id); // 받아온 멤버 아이디
   const [purchaseReviews, setPurchaseReviews] = useState([]); // 구매자 리뷰 내용
@@ -29,15 +32,15 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
   }, [navigation]);
 
   useEffect(() => {
-    Axios.get(`${url}/get_all_pruchase_review?userId=` + memberId)
-    .then((res) => {
-      console.log(res.data);
-      console.log("dd");
-      setPurchaseReviews(res.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    Axios.get(`${url}/get_all_purchase_review?userId=` + memberId)
+      .then((res) => {
+        console.log(res.data);
+        console.log("dd");
+        setPurchaseReviews(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   const renderPurchaseReviews = () => {
@@ -48,7 +51,12 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
     };
 
     return purchaseReviews.map((review, index) => {
-      const { buyer_username, review: reviewText, imageFilename, buyer_id: buyerId } = review;
+      const {
+        buyer_username,
+        review: reviewText,
+        imageFilename: buyer_image,
+        buyer_id: buyerId
+      } = review;
       return (
         <Pressable
           style={styles.purchaseReviews}
@@ -57,7 +65,7 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
         >
           <View style={styles.reviewerImageZone}>
             <Image
-              source={{ uri: `${url}/images/${imageFilename}` }}
+              source={{ uri: `${url}/images/${buyer_image}` }}
               style={styles.reviewerImage}
             />
           </View>
@@ -70,7 +78,7 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
     });
   };
 
-  return(
+  return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -83,13 +91,11 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
         <Text style={styles.topBarText}>거래 후기 상세</Text>
       </View>
       <View style={styles.reviewList}>
-        {purchaseReviews.length >= 1 ? 
+        {purchaseReviews.length >= 1 ? (
           renderPurchaseReviews()
-        : (
+        ) : (
           <View style={styles.reviewNone}>
-            <Text style={styles.reviewNoneText}>
-              받은 거래 후기가 없어요.
-            </Text>
+            <Text style={styles.reviewNoneText}>받은 거래 후기가 없어요.</Text>
           </View>
         )}
       </View>
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
   },
   topBarText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   cancelButton: {
     flexDirection: "row",
@@ -127,20 +133,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: vw * 0.04,
     borderBottomWidth: 0.4,
-    borderColor: "gray",
-  }, 
+    borderColor: "gray"
+  },
   reviewList: {
-    flex : 1,
+    flex: 1
   },
   reviewNone: {
     position: "absolute",
     alignItems: "center",
-    marginVertical: vh * 0.4,
+    marginVertical: vh * 0.4
   },
   reviewNoneText: {
     fontSize: 16,
     color: "gray",
-    marginLeft: vw * 0.3  
+    marginLeft: vw * 0.3
   },
   purchaseReviews: {
     height: vh * 0.1,
@@ -148,16 +154,16 @@ const styles = StyleSheet.create({
     marginHorizontal: vw * 0.03,
     marginTop: vh * 0.025,
     borderBottomWidth: 0.4,
-    borderBottomColor: "gray",
+    borderBottomColor: "gray"
   },
   reviewerImageZone: {
-    flex: 0.4,
+    flex: 0.4
   },
   reviewerImage: {
     width: "75%",
     height: "75%",
     borderRadius: 100,
-    borderWidth: 0.3,
+    borderWidth: 0.3
   },
   reviewInfo: {
     flex: 1.3
@@ -165,10 +171,11 @@ const styles = StyleSheet.create({
   reviewWriter: {
     fontSize: 18,
     fontWeight: "500",
+    marginTop: vh * 0.01
   },
   reviewText: {
     marginTop: vh * 0.01,
-    fontSize: 16,
+    fontSize: 16
   }
 });
 

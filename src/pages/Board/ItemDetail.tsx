@@ -168,7 +168,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       .catch((error) => {
         console.log(error);
       });
-    Axios.get(`${url}/get_seller_profile?userId=` + session?.member_id)
+    Axios.get(`${url}/get_seller_profile?userId=` + board.member_id)
       .then((res) => {
         setManner(res.data.profileListDto.mannerscore);
       })
@@ -246,7 +246,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       //profile_Img: profileImg,
       nickName: writer
     });
-  }
+  };
 
   const renderAssociatedItem = (item: Post, index: number) => {
     const toAssociatedItem = () => {

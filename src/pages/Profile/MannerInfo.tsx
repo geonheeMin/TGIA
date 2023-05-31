@@ -34,10 +34,10 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
   const [img, setImg] = useState({});
   const [trackFirst, setTrackFirst] = useState(session?.firstTrack); // 제 1트랙
   const [trackSecond, setTrackSecond] = useState(session?.secondTrack); // 제 2트랙
-  const [manner, setManner] = useState(455); // 매너 학점
+  const [manner, setManner] = useState(330); // 매너 학점
   const [mannerGrade, setMannerGrade] = useState(""); // 매너 등급
   const [subscription, setSubsction] = useState("2023년 6월 2일"); // 가입 날짜
-  const [reDealingRate, setReDealingRate] = useState(100); // 재거래 희망률
+  const [reDealingRate, setReDealingRate] = useState(0); // 재거래 희망률
   const [responseRate, setResponseRate] = useState(100); // 응답률
   const [reviewData, setReviewData] = useState([]); // 받은 매너평가 순위 담는 배열
   const [reviewCount, setReviewCount] = useState(0);
@@ -120,12 +120,6 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
     });
   };
 
-  // const toOtherProfile = useCallback((buyerId) => {
-  //   navigation.navigate("MannerInfo", {
-  //     member_Id: buyerId
-  //   })
-  // }, [])
-
   const toMannerReviewList = useCallback(() => {
     navigation.navigate("MannerReviewList", {
       member_Id: memberId
@@ -143,7 +137,7 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
       const {
         buyer_username,
         review: reviewText,
-        imageFilename,
+        imageFilename: buyer_image,
         buyer_id: buyerId
       } = review;
       return (
@@ -154,7 +148,7 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
         >
           <View style={styles.reviewerImageZone}>
             <Image
-              source={{ uri: `${url}/images/${imageFilename}` }}
+              source={{ uri: `${url}/images/${buyer_image}` }}
               style={styles.reviewerImage}
             />
           </View>
@@ -219,6 +213,7 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
           >
             <Text style={styles.mannerText}>매너 학점</Text>
             <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+            <Text style={styles.expText}>Exp</Text>
             <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
           </View>
           <View style={{ marginTop: 10, paddingRight: 15 }}>
@@ -240,11 +235,15 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
             color={"gray"}
             style={styles.statusIndent}
           />
-          <Text style={styles.statsText}>재거래 희망률 {reDealingRate}%</Text>
+          <Text style={styles.statsText}>
+            재거래 희망률{" "}
+            {reDealingRate === 0 && reviewCount === 0 ? "-" : reDealingRate}%
+          </Text>
           <IonIcon name="chatbubble-outline" size={18} color={"gray"} />
-          <Text style={styles.statsText}>응답률 {responseRate}%</Text>
+          <Text style={styles.statsText}>
+            응답률 {reviewCount === 0 ? "-" : responseRate}%
+          </Text>
         </View>
-
         <Pressable onPress={toSalesList} style={styles.salesListButton}>
           <Text style={styles.salesListButtonText}>
             판매상품 {salesCount}개
@@ -366,18 +365,25 @@ const styles = StyleSheet.create({
   },
   mannerText: {
     fontSize: 16,
-    textAlign: "left"
+    textAlign: "left",
+    marginRight: vw * 0.01
   },
   mannerGrade: {
     fontSize: 16,
-    marginRight: vw * 0.55,
+    marginRight: vw * 0.51,
+    color: "#3064e7",
+    fontWeight: "500"
+  },
+  expText: {
+    fontSize: 16,
+    marginRight: vw * 0.01,
     color: "#3064e7",
     fontWeight: "500"
   },
   mannerExp: {
     fontSize: 16,
     textAlign: "right",
-    marginRight: vw * 0.04,
+    marginRight: vw * 0.1,
     color: "#3064e7",
     fontWeight: "500"
   },
@@ -525,7 +531,8 @@ const styles = StyleSheet.create({
   },
   reviewWriter: {
     fontSize: 18,
-    fontWeight: "500"
+    fontWeight: "500",
+    marginTop: vh * 0.01
   },
   reviewText: {
     marginTop: vh * 0.01,

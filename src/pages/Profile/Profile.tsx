@@ -39,17 +39,16 @@ function Profile({ navigation, route }: ProfileScreenProps) {
   const isFocused = useIsFocused();
   const [profileImg, setProfileImg] = useState();
 
-
   useEffect(() => {
     Axios.get(`${url}/get_seller_profile?userId=` + session?.member_id)
-    .then((res) => {
-      setProfileImg(res.data.profileListDto.imageFileName);
-      setManner(res.data.profileListDto.mannerscore);
-      console.log(res.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((res) => {
+        setProfileImg(res.data.profileListDto.imageFileName);
+        setManner(res.data.profileListDto.mannerscore);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   useEffect(() => {
@@ -137,7 +136,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         >
           <Image
             source={{
-              uri: `${url}/images/${session?.imageFileName}` 
+              uri: `${url}/images/${session?.imageFileName}`
             }}
             style={styles.profile}
           />
@@ -171,9 +170,16 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </View>
       <Pressable onPress={toMannerInfo} style={styles.mannerStatus}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'center' }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
           <Text style={styles.mannerText}>매너학점</Text>
           <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+          <Text style={styles.expText}>Exp</Text>
           <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
         </View>
         <View style={{ marginTop: 10, paddingRight: 15 }}>
@@ -185,9 +191,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </Pressable>
       <View style={styles.menuZoneTop}>
-        <Text style={styles.menuTitleText}>
-          나의 거래
-        </Text>
+        <Text style={styles.menuTitleText}>나의 거래</Text>
         <View style={{ paddingTop: vh / 100 }}>
           <Pressable style={styles.menuButton} onPress={toSalesHistory}>
             <View style={styles.menuButtonContent}>
@@ -226,9 +230,7 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         </View>
       </View>
       <View style={styles.menuZoneBottom}>
-        <Text style={styles.menuTitleText}>
-          기타
-        </Text>
+        <Text style={styles.menuTitleText}>기타</Text>
         <View style={{ paddingTop: 8 }}>
           <TouchableHighlight
             style={styles.menuButton}
@@ -307,6 +309,12 @@ const styles = StyleSheet.create({
   mannerGrade: {
     fontSize: 16,
     marginRight: vw * 0.55,
+    color: "#3064e7",
+    fontWeight: "500"
+  },
+  expText: {
+    fontSize: 16,
+    marginRight: vw * 0.01,
     color: "#3064e7",
     fontWeight: "500"
   },

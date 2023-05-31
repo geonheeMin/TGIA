@@ -68,7 +68,7 @@ function SalesList({ navigation, route }: SalesListScreenProps) {
       .catch((error) => {
         console.log(error);
       });
-      Axios.get(`${url}/member/get_image?member_id=${sellerId}`)
+    Axios.get(`${url}/member/get_image?member_id=${sellerId}`)
       .then((res) => {
         setProfileImg(res.data);
       })
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: vh / 3,
     justifyContent: "center",
-    borderWidth: 1,
     borderColor: "black",
     width: vw,
     height: 50

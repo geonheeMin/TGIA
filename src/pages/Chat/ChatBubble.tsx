@@ -49,7 +49,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-          <Image source={ChatApis[0].img} style={styles.myApiImage}/>
+            <Image source={ChatApis[0].img} style={styles.myApiImage} />
           </View>
         </View>
       );
@@ -61,7 +61,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-            <Image source={ChatApis[1].img} style={styles.myApiImage}/>
+            <Image source={ChatApis[1].img} style={styles.myApiImage} />
           </View>
         </View>
       );
@@ -73,7 +73,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-           <Image source={ChatApis[2].img} style={styles.myApiImage}/>
+            <Image source={ChatApis[2].img} style={styles.myApiImage} />
           </View>
         </View>
       );
@@ -85,7 +85,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-          <Image source={ChatApis[3].img} style={styles.myApiImage}/>
+            <Image source={ChatApis[3].img} style={styles.myApiImage} />
           </View>
         </View>
       );
@@ -110,9 +110,7 @@ function ChatBubble(chat: chat) {
               style={styles.otherImage}
             />
             <View style={styles.otherBubbleStartArea}>
-            <Image
-              source={ChatApis[0].img}
-              style={styles.otherApiImage} />
+              <Image source={ChatApis[0].img} style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -130,9 +128,7 @@ function ChatBubble(chat: chat) {
               style={styles.otherImage}
             />
             <View style={styles.otherBubbleStartArea}>
-              <Image
-                source={ChatApis[1].img}
-                style={styles.otherApiImage} />
+              <Image source={ChatApis[1].img} style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -150,9 +146,7 @@ function ChatBubble(chat: chat) {
               style={styles.otherImage}
             />
             <View style={styles.otherBubbleStartArea}>
-              <Image
-                source={ChatApis[2].img}
-                style={styles.otherApiImage} />
+              <Image source={ChatApis[2].img} style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -170,9 +164,7 @@ function ChatBubble(chat: chat) {
               style={styles.otherImage}
             />
             <View style={styles.otherBubbleStartArea}>
-              <Image
-                source={ChatApis[3].img}
-                style={styles.otherApiImage} />
+              <Image source={ChatApis[3].img} style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -258,13 +250,12 @@ const styles = StyleSheet.create({
     borderRadius: 30
   },
   myApiBox: {
-    alignSelf: "flex-end",
-    borderWidth: 1
+    alignSelf: "flex-end"
   },
   myApiImage: {
     alignSelf: "flex-end",
     width: 450 / 2.5,
-    height: 463 / 2.5,
+    height: 463 / 2.5
   },
   otherApiBox: {
     alignSelf: "flex-start",

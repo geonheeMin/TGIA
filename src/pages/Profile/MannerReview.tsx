@@ -9,20 +9,24 @@ import {
   TouchableOpacity,
   Alert,
   Pressable,
-  TextInput,
+  TextInput
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import Axios from "axios";
 
-const { width: vw, height: vh } = Dimensions.get('window');
+const { width: vw, height: vh } = Dimensions.get("window");
 
 type MannerReviewPramList = {
-  MannerInfo: undefined,
-}
-type MannerReviewProps = NativeStackScreenProps<MannerReviewPramList, "MannerReview">;
+  MannerInfo: undefined;
+};
+type MannerReviewProps = NativeStackScreenProps<
+  MannerReviewPramList,
+  "MannerReview"
+>;
 
-function MannerReview({navigation, route}: MannerReviewProps) {
+function MannerReview({ navigation, route }: MannerReviewProps) {
   const { session, url } = useStore();
   const [buyerName, setBuyerName] = useState(session.username);
   const [sellerName, setSellerName] = useState(route.params.seller_name);
@@ -31,16 +35,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   const [postId, setPostId] = useState(route.params.post_Id);
   const [currentIndex, setCurrentIndex] = useState(4);
   const [score, setScore] = useState(10);
-  const data = [
-    "F",
-    "D",
-    "C0",
-    "C+",
-    "B0",
-    "B+",
-    "A0",
-    "A+",
-  ];
+  const data = ["F", "D", "C0", "C+", "B0", "B+", "A0", "A+"];
   const [newIndex, setNewIndex] = useState(4);
   const [goodPrice, setGoodPrice] = useState(false);
   const [goodTime, setGoodTime] = useState(false);
@@ -50,51 +45,50 @@ function MannerReview({navigation, route}: MannerReviewProps) {
   const [text, setText] = useState("");
   const [reDealing, setReDealing] = useState(false);
   const [announcement, setAnnouncement] = useState(0);
-  
 
   const goBack = useCallback(() => {
     navigation.goBack();
-  }, [navigation])
+  }, [navigation]);
 
   const handleButtonPress = (direction) => {
     if (direction === "prev") {
-      setNewIndex((prevIndex) => (prevIndex === 0 ? data.length - 1 : prevIndex - 1));
+      setCurrentIndex(currentIndex - 1);
     } else if (direction === "next") {
-      setNewIndex((prevIndex) => (prevIndex + 1) % data.length);
+      setCurrentIndex(currentIndex + 1);
     }
+  };
 
-    setCurrentIndex(newIndex);
-
-    switch (data[newIndex]) {
-      case "F":
+  useEffect(() => {
+    switch (currentIndex) {
+      case 0:
         setScore(-15);
         setReDealing(false);
         break;
-      case "D":
+      case 1:
         setScore(-5);
         setReDealing(false);
         break;
-      case "C0":
+      case 2:
         setScore(5);
         setReDealing(false);
         break;
-      case "C+":
+      case 3:
         setScore(10);
         setReDealing(false);
         break;
-      case "B0":
+      case 4:
         setScore(15);
         setReDealing(false);
         break;
-      case "B+":
+      case 5:
         setScore(20);
         setReDealing(true);
         break;
-      case "A0":
+      case 6:
         setScore(25);
         setReDealing(true);
         break;
-      case "A+":
+      case 7:
         setScore(30);
         setReDealing(true);
         break;
@@ -103,18 +97,24 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         setReDealing(false);
         break;
     }
-  };
+  }, [currentIndex]);
 
   function submitButton() {
-    Alert.alert("후기 전송", "매너 평가를 완료하시겠습니까?", [
-      { text: "취소", style: "cancel" },
-      { text: "등록", onPress: submitReview }
-    ]);
+    if (text === "") {
+      Alert.alert("후기 내용을 입력해야 합니다", "", [
+        { text: "확인", style: "cancel" }
+      ]);
+    } else {
+      Alert.alert("후기 전송", "매너 평가를 완료하시겠습니까?", [
+        { text: "취소", style: "cancel" },
+        { text: "등록", onPress: submitReview }
+      ]);
+    }
   }
 
   function submitReview() {
     const request = {
-      buyerId: session.member_id, 
+      buyerId: session.member_id,
       sellerId: sellerId,
       post_id: postId,
       mannerScore: score,
@@ -123,55 +123,52 @@ function MannerReview({navigation, route}: MannerReviewProps) {
       fastResponse: fastResponse,
       badQuality: badQuality,
       noResponse: noResponse,
-      reDealing: reDealing,
-    }
-  
+      reDealing: reDealing
+    };
+
     const purchaseReviewDTO = {
       buyer_id: session.member_id,
       seller_id: sellerId,
       review: text,
-      post_id: postId,
-    }
+      post_id: postId
+    };
 
     Axios.post(`${url}/manner/set_score`, request)
-    .then((res) => {
-      console.log(res)
-    })
-    .catch((error) => {
-      console.log("set errer" + error)
-    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log("set errer" + error);
+      });
 
     Axios.post(`${url}/add_purchase_review`, purchaseReviewDTO)
-    .then((res) => {
-      console.log(res)
-      goBack()
-    })
-    .catch((error) => {
-      console.log("review error" + error)
-    })
+      .then((res) => {
+        console.log(res);
+        goBack();
+      })
+      .catch((error) => {
+        console.log("review error" + error);
+      });
   }
-  
-  return(
+
+  return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={goBack}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={styles.topBarName}>
-          거래 후기 보내기
-        </Text>
+        <Text style={styles.topBarText}>거래 후기 보내기</Text>
       </View>
       <View style={styles.messageZone}>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.questionText}></Text>
-          <Text style={styles.questionText}>{sellerName}님과 거래가 어떠셨나요?</Text>
+          <Text style={styles.questionText}>
+            {sellerName}님과 거래가 어떠셨나요?
+          </Text>
           <Text style={styles.tipText}>거래 선호도는 나만 볼 수 있어요.</Text>
         </View>
         <Image
@@ -183,26 +180,32 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         <Pressable
           onPress={() => handleButtonPress("prev")}
           style={styles.gradeControlButton}
+          disabled={currentIndex === 0 ? true : false}
         >
-          <Text style={styles.gradeControlText}>
-            {"<"}
-          </Text>
+          <IonIcon
+            name={"chevron-back-sharp"}
+            size={50}
+            style={{ color: currentIndex > 0 ? "black" : "lightgrey" }}
+          />
         </Pressable>
         <View style={styles.gradeTextSpace}>
-          <Text style={styles.gradeText}>
-            {data[(newIndex)]}
-          </Text>
+          <Text style={styles.gradeText}>{data[currentIndex]}</Text>
         </View>
         <Pressable
           onPress={() => handleButtonPress("next")}
           style={styles.gradeControlButton}
+          disabled={currentIndex === data.length - 1 ? true : false}
         >
-          <Text style={styles.gradeControlText}>
-            {">"}
-          </Text>
+          <IonIcon
+            name={"chevron-forward-sharp"}
+            size={50}
+            style={{
+              color: currentIndex < data.length - 1 ? "black" : "lightgrey"
+            }}
+          />
         </Pressable>
       </View>
-    
+
       <View style={styles.reviewZone}>
         {goodPrice ? (
           <Pressable
@@ -212,7 +215,9 @@ function MannerReview({navigation, route}: MannerReviewProps) {
             }}
             style={[styles.reviewItem, { backgroundColor: "#3064e7" }]}
           >
-            <Text style={styles.reviewTextTrue}>좋은 상품을 저렴하게 판매해요</Text>
+            <Text style={styles.reviewTextTrue}>
+              좋은 상품을 저렴하게 판매해요
+            </Text>
           </Pressable>
         ) : (
           <Pressable
@@ -222,7 +227,9 @@ function MannerReview({navigation, route}: MannerReviewProps) {
             }}
             style={styles.reviewItem}
           >
-            <Text style={styles.reviewTextFalse}>좋은 상품을 저렴하게 판매해요</Text>
+            <Text style={styles.reviewTextFalse}>
+              좋은 상품을 저렴하게 판매해요
+            </Text>
           </Pressable>
         )}
         {goodTime ? (
@@ -311,19 +318,19 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         )}
       </View>
       <View style={styles.guideZone}>
-        {announcement === 0 ?
+        {announcement === 0 ? (
           <Text style={styles.guideTextA}>
             {sellerName}님에게 거래 후기를 남겨보세요.
           </Text>
-          : announcement > 0 ?
-            <Text style={styles.guideTextA}>
-              {sellerName}님에게 감사 인사를 남겨보세요.
-            </Text>
-            : 
-            <Text style={styles.guideTextA}>
-              {sellerName}님에게 아쉬웠던 점을 남겨보세요.
-            </Text>
-        }
+        ) : announcement > 0 ? (
+          <Text style={styles.guideTextA}>
+            {sellerName}님에게 따듯한 거래 경험을 남겨보세요.
+          </Text>
+        ) : (
+          <Text style={styles.guideTextA}>
+            {sellerName}님에게 아쉬웠던 점을 남겨보세요.
+          </Text>
+        )}
         <Text style={styles.guideTextB}>
           작성한 내용은 상대방 프로필에 공개됩니다.
         </Text>
@@ -339,13 +346,8 @@ function MannerReview({navigation, route}: MannerReviewProps) {
           textAlignVertical="top"
         />
       </View>
-      <Pressable
-        onPress={submitButton}
-        style={styles.submitButton}
-      >
-        <Text style={styles.submitButtonText}>
-          전송
-        </Text>
+      <Pressable onPress={submitButton} style={styles.submitButton}>
+        <Text style={styles.submitButtonText}>전송</Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -363,9 +365,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600"
   },
   cancelButton: {
     flexDirection: "row",
@@ -374,11 +376,6 @@ const styles = StyleSheet.create({
     paddingRight: vw / 35,
     height: vh / 17.5
   },
-  topBarName: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: vw / 4,
-  },
   messageZone: {
     flex: 0.45,
     height: vh * 0.2,
@@ -386,33 +383,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: vw * 0.04,
     borderBottomWidth: 0.4,
-    borderColor: "gray",
+    borderColor: "gray"
   },
   questionText: {
-    fontSize: 18,
+    fontSize: 18
   },
   tipText: {
     color: "gray",
-    marginTop: vh * 0.01,
+    marginTop: vh * 0.01
   },
   heartbugi: {
     flex: 0.3,
-    height: vh / 7,
+    height: vh / 7
   },
   gradeZone: {
     flex: 0.5,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   gradeControlButton: {
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: vw * 0.05,
-    paddingVertical: vh * 0.015,
+    paddingVertical: vh * 0.015
   },
   gradeControlText: {
-    fontSize: 80,
+    fontSize: 80
   },
   gradeTextSpace: {
     flex: 1,
@@ -421,13 +418,13 @@ const styles = StyleSheet.create({
   gradeText: {
     fontSize: 90,
     color: "#3064e7",
-    fontWeight: "700",
+    fontWeight: "700"
   },
   reviewZone: {
-    flex : 1,
+    flex: 1,
     lignItems: "center",
     justifyContent: "center",
-    marginHorizontal: vw * 0.05,
+    marginHorizontal: vw * 0.05
   },
   reviewItem: {
     flex: 0.2,
@@ -435,10 +432,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: vh * 0.009,
     backgroundColor: "#DDDDDD",
-    borderRadius: 60,  
+    borderRadius: 60
   },
   reviewTextFalse: {
-    fontSize: 16,
+    fontSize: 16
   },
   reviewTextTrue: {
     fontSize: 16,
@@ -447,12 +444,12 @@ const styles = StyleSheet.create({
   guideZone: {
     flex: 0.4,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   guideTextA: {
     fontSize: 18,
     fontWeight: "500",
-    marginBottom: 8,
+    marginBottom: 8
   },
   guideTextB: {
     fontSize: 16,
@@ -464,13 +461,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: "#EDEDED",
     paddingVertical: vh * 0.01,
-    marginHorizontal: vw * 0.05,
+    marginHorizontal: vw * 0.05
   },
   textInput: {
     justifyContent: "center",
     alignSelf: "flex-start",
     width: vw - vw / 12.5,
-    height: vh * 0.02,
+    height: vh * 0.14,
     textAlignVertical: "top",
     color: "black"
   },
@@ -481,12 +478,12 @@ const styles = StyleSheet.create({
     marginVertical: vh * 0.015,
     marginHorizontal: vw * 0.33,
     backgroundColor: "#1440af",
-    borderRadius: 20,
+    borderRadius: 20
   },
   submitButtonText: {
     fontSize: 16,
-    color: "white",
-  },
-})
+    color: "white"
+  }
+});
 
 export default MannerReview;
