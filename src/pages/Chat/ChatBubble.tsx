@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   PixelRatio,
+  Platform,
   Image
 } from "react-native";
 import { ChatApis } from "./ChatApis";
@@ -48,11 +49,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-            <Image
-              source={ChatApis[0].img}
-              style={styles.myApiImage}
-              resizeMode={"contain"}
-            />
+          <Image source={ChatApis[0].img} style={styles.myApiImage}/>
           </View>
         </View>
       );
@@ -64,11 +61,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-            <Image
-              source={ChatApis[1].img}
-              style={styles.myApiImage}
-              resizeMode={"contain"}
-            />
+            <Image source={ChatApis[1].img} style={styles.myApiImage}/>
           </View>
         </View>
       );
@@ -80,11 +73,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-            <Image
-              source={ChatApis[2].img}
-              style={styles.myApiImage}
-              resizeMode={"contain"}
-            />
+           <Image source={ChatApis[2].img} style={styles.myApiImage}/>
           </View>
         </View>
       );
@@ -96,11 +85,7 @@ function ChatBubble(chat: chat) {
             <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
           </View>
           <View style={styles.myApiBox}>
-            <Image
-              source={ChatApis[3].img}
-              style={styles.myApiImage}
-              resizeMode={"contain"}
-            />
+          <Image source={ChatApis[3].img} style={styles.myApiImage}/>
           </View>
         </View>
       );
@@ -125,11 +110,9 @@ function ChatBubble(chat: chat) {
               style={styles.otherImage}
             />
             <View style={styles.otherBubbleStartArea}>
-              <Image
-                source={ChatApis[0].img}
-                style={styles.otherApiImage}
-                resizeMode={"contain"}
-              />
+            <Image
+              source={ChatApis[0].img}
+              style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -149,9 +132,7 @@ function ChatBubble(chat: chat) {
             <View style={styles.otherBubbleStartArea}>
               <Image
                 source={ChatApis[1].img}
-                style={styles.otherApiImage}
-                resizeMode={"contain"}
-              />
+                style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -171,9 +152,7 @@ function ChatBubble(chat: chat) {
             <View style={styles.otherBubbleStartArea}>
               <Image
                 source={ChatApis[2].img}
-                style={styles.otherApiImage}
-                resizeMode={"contain"}
-              />
+                style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -193,9 +172,7 @@ function ChatBubble(chat: chat) {
             <View style={styles.otherBubbleStartArea}>
               <Image
                 source={ChatApis[3].img}
-                style={styles.otherApiImage}
-                resizeMode={"contain"}
-              />
+                style={styles.otherApiImage} />
             </View>
             <View style={styles.otherBubbleTimeArea}>
               <Text style={{ fontSize: 10, color: "grey" }}>{chat.time}</Text>
@@ -281,13 +258,13 @@ const styles = StyleSheet.create({
     borderRadius: 30
   },
   myApiBox: {
-    alignSelf: "flex-end"
+    alignSelf: "flex-end",
+    borderWidth: 1
   },
   myApiImage: {
     alignSelf: "flex-end",
-    width: vw / 2,
-    height: vh / 4,
-    overflow: "visible"
+    width: 450 / 2.5,
+    height: 463 / 2.5,
   },
   otherApiBox: {
     alignSelf: "flex-start",
@@ -296,7 +273,6 @@ const styles = StyleSheet.create({
   },
   otherApiImage: {
     alignSelf: "flex-start",
-    overflow: "visible",
     width: 450 / 2.5,
     height: 463 / 2.5
   },

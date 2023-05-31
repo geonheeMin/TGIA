@@ -240,13 +240,13 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
     }
   }, [manner]);
 
-  const toSalesList = useCallback(() => {
+  const toSalesList = () => {
     navigation.navigate("SalesList", {
       member_Id: board.member_id,
       //profile_Img: profileImg,
-      nickName: board.writer
+      nickName: writer
     });
-  }, [navigation]);
+  }
 
   const renderAssociatedItem = (item: Post, index: number) => {
     const toAssociatedItem = () => {
@@ -616,15 +616,13 @@ const styles = StyleSheet.create({
   },
   propsTop: {
     height: vh / 20,
-    paddingTop: 20,
     width: vw - vw / 2.25,
-    justifyContent: "center"
+    justifyContent: "flex-end"
   },
   propsBottom: {
     height: vh / 20,
     width: vw - vw / 2.25,
-    paddingBottom: 20,
-    justifyContent: "center"
+    justifyContent: "flex-start"
   },
   postImage: {
     width: vw,

@@ -27,7 +27,7 @@ function SalesList({ navigation, route }: SalesListScreenProps) {
   const { session, url } = useStore();
   const [sellerId, setSellerId] = useState(route.params.member_Id); // 받아온 판매자 아이디
   const [nickName, setNickName] = useState(route.params.nickName); // 유저 닉네임
-  const [profileImg, setProfileImg] = useState(route.params.profile_Img); // 프로필 이미지
+  const [profileImg, setProfileImg] = useState(); // 프로필 이미지
   const [img, setImg] = useState({});
   const [posts, setPosts] = useState([]);
 
@@ -64,6 +64,13 @@ function SalesList({ navigation, route }: SalesListScreenProps) {
       .then((res) => {
         setPosts(res.data);
         posts.sort((a, b) => b.post_id - a.post_id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+      Axios.get(`${url}/member/get_image?member_id=${sellerId}`)
+      .then((res) => {
+        setProfileImg(res.data);
       })
       .catch((error) => {
         console.log(error);

@@ -22,6 +22,7 @@ import BottomTabs from "../../components/BottomTabs";
 import chatlist from "../../assets/dummy/chatlist.json";
 import chats from "../../assets/dummy/chat.json";
 import { useIsFocused } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type RootStackParamList = {
   ChatList: undefined;
@@ -35,6 +36,7 @@ const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
 
 function ChatListScreen({ route, navigation }: ChatListScreenProps) {
+  const insets = useSafeAreaInsets();
   const post = route.params?.post_id;
   const [chats, setChats] = useState([]);
   const { session, url } = useStore();
@@ -46,11 +48,10 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
 
   const getMyChats = () => {
     Axios.get(
-      `${url}/chat/get_chatroom_member_id?member_id=${session.member_id}`
+      `${url}/chat/get_chatroom_member_id?member_id=${session?.member_id}`
     ).then((res) => {
       setChats(res.data);
-      console.log(res.data);
-    });
+    }).catch(err => console.log(err));
   };
 
   const refreshChats = () => {
@@ -80,17 +81,22 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
         <Text style={{ fontSize: 17, fontWeight: "bold" }}>채팅</Text>
       </View>
       {chats.length === 0 ? (
-        <Text
-          style={{
-            marginHorizontal: "auto",
-            marginVertical: "auto",
-            color: "white",
-            fontSize: 25,
-            fontWeight: "bold"
-          }}
-        >
-          아직 채팅을 하지 않았습니다
-        </Text>
+        <View style={{
+          width: vw, 
+          height : vh - insets.top - vh / 15 - vh / 11,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <Text
+            style={{
+              color: "lightgrey",
+              fontSize: 25,
+              fontWeight: "bold"
+            }}
+          >
+            아직 채팅을 하지 않았습니다
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={chats.sort((a, b) => b.last_chatMessage - a.last_chatMessage)}

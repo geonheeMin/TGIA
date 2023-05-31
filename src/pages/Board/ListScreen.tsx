@@ -942,7 +942,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       <View
         style={{
           marginTop: 0,
-          height: vh - vh / 11 - vh / 17.5 - insets.top
+          height: vh - vh / 11 - vh / 15 - insets.top
         }}
       >
         <FlatList
@@ -1069,7 +1069,7 @@ const rangeModalStyles = StyleSheet.create({
     borderTopRightRadius: 20,
     height: vh / 2.3,
     position: "absolute",
-    paddingBottom: vh / 20,
+    paddingBottom: vh / 50,
     bottom: 0
   },
   filterContainer: {
@@ -1151,7 +1151,7 @@ const styles = StyleSheet.create({
   },
   topBar: {
     borderBottomWidth: 0.2,
-    height: Platform.OS === "ios" ? vh / 17.5 : vh / 15,
+    height: Platform.OS === "ios" ? vh / 15 : vh / 15,
     flexDirection: "row",
     alignItems: "center"
   },

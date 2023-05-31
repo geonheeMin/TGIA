@@ -11,6 +11,7 @@ import {
   Image,
   Platform,
   KeyboardAvoidingView,
+  Keyboard,
   BackHandler,
   Alert
 } from "react-native";
@@ -261,10 +262,10 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       <View
         style={{
           position: "absolute",
-          bottom: Platform.OS === "ios" ? vh / 33 + keyHeight : vh / 66,
+          bottom: Platform.OS === "ios" ? keyHeight : vh / 66,
           flexDirection: "row",
           width: vw,
-          height: vh / 20,
+          height: Platform.OS === "ios" ? vh / 12 : vh / 15,
           justifyContent: "space-between",
           alignItems: "center",
           borderTopWidth: 0.34,
@@ -457,6 +458,12 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
         );
       })
       .catch((err) => console.log(err));
+    const keyUpListener = Keyboard.addListener(
+      "keyboardWillShow", (event) => {setKeyHeight(event.endCoordinates.height)}
+    )
+    const keyDownListener = Keyboard.addListener(
+      "keyboardWillHide", (e) => setKeyHeight(0)
+    )
     const backListener = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
@@ -517,7 +524,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             marginRight: "auto"
           }}
         >
-          <Text style={{ fontSize: 20 }}>{post.title}</Text>
+          <Text style={{ fontSize: 20 }}>{post.title.length > 8 ? post.title.slice(0, 8) + "..." : post.title}</Text>
         </View>
       </View>
       <View
@@ -542,7 +549,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
         style={{
           borderBottomWidth: 1,
           borderBottomColor: "#d7d7d7",
-          height: vh / 20,
+          height: vh / 15,
           width: vw,
           flexDirection: "row",
           alignItems: "center"
@@ -573,8 +580,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       </View>
       <View
         style={{
-          paddingTop: 5,
-          height: isMenuOpened ? vh - vh / 3.64 : vh - vh / 3.9
+          height: isMenuOpened ? vh - vh / 15 - vh / 7.5 : vh - vh / 15 - vh / 12,
         }}
       >
         <FlatList

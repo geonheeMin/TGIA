@@ -80,7 +80,7 @@ function ChatListFromPostScreen({
           <IonIcon name={"chevron-back-sharp"} size={25} />
         </Pressable>
         <Text style={{ marginLeft: "auto", marginRight: "auto", fontSize: 20 }}>
-          {post.title}
+         {post.title.length > 11 ? post.title.slice(0, 11) + "..." : post.title}
         </Text>
       </View>
       <FlatList
