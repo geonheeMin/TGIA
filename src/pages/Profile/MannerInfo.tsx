@@ -34,10 +34,10 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
   const [img, setImg] = useState({});
   const [trackFirst, setTrackFirst] = useState(session?.firstTrack); // 제 1트랙
   const [trackSecond, setTrackSecond] = useState(session?.secondTrack); // 제 2트랙
-  const [manner, setManner] = useState(455); // 매너 학점
+  const [manner, setManner] = useState(330); // 매너 학점
   const [mannerGrade, setMannerGrade] = useState(""); // 매너 등급
   const [subscription, setSubsction] = useState("2023년 6월 2일"); // 가입 날짜
-  const [reDealingRate, setReDealingRate] = useState(100); // 재거래 희망률
+  const [reDealingRate, setReDealingRate] = useState(0); // 재거래 희망률
   const [responseRate, setResponseRate] = useState(100); // 응답률
   const [reviewData, setReviewData] = useState([]); // 받은 매너평가 순위 담는 배열
   const [reviewCount, setReviewCount] = useState(0);
@@ -120,11 +120,6 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
     });
   };
 
-  // const toOtherProfile = useCallback((buyerId) => {
-  //   navigation.navigate("MannerInfo", {
-  //     member_Id: buyerId
-  //   })
-  // }, [])
 
   const toMannerReviewList = useCallback(() => {
     navigation.navigate("MannerReviewList", {
@@ -240,11 +235,14 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
             color={"gray"}
             style={styles.statusIndent}
           />
-          <Text style={styles.statsText}>재거래 희망률 {reDealingRate}%</Text>
+          <Text style={styles.statsText}>
+            재거래 희망률 {reDealingRate === 0 && reviewCount === 0 ? "-" : reDealingRate}%
+          </Text>
           <IonIcon name="chatbubble-outline" size={18} color={"gray"} />
-          <Text style={styles.statsText}>응답률 {responseRate}%</Text>
+          <Text style={styles.statsText}>
+            응답률 {reviewCount === 0 ? "-" : responseRate}%
+          </Text>
         </View>
-
         <Pressable onPress={toSalesList} style={styles.salesListButton}>
           <Text style={styles.salesListButtonText}>
             판매상품 {salesCount}개

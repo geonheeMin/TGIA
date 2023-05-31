@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import Axios from "axios";
 
 const { width: vw, height: vh } = Dimensions.get('window');
@@ -58,43 +59,43 @@ function MannerReview({navigation, route}: MannerReviewProps) {
 
   const handleButtonPress = (direction) => {
     if (direction === "prev") {
-      setNewIndex((prevIndex) => (prevIndex === 0 ? data.length - 1 : prevIndex - 1));
+      setCurrentIndex(currentIndex - 1);
     } else if (direction === "next") {
-      setNewIndex((prevIndex) => (prevIndex + 1) % data.length);
+      setCurrentIndex(currentIndex + 1);
     }
+  };
 
-    setCurrentIndex(newIndex);
-
-    switch (data[newIndex]) {
-      case "F":
+  useEffect(() => {
+    switch (currentIndex) {
+      case 0:
         setScore(-15);
         setReDealing(false);
         break;
-      case "D":
+      case 1:
         setScore(-5);
         setReDealing(false);
         break;
-      case "C0":
+      case 2:
         setScore(5);
         setReDealing(false);
         break;
-      case "C+":
+      case 3:
         setScore(10);
         setReDealing(false);
         break;
-      case "B0":
+      case 4:
         setScore(15);
         setReDealing(false);
         break;
-      case "B+":
+      case 5:
         setScore(20);
         setReDealing(true);
         break;
-      case "A0":
+      case 6:
         setScore(25);
         setReDealing(true);
         break;
-      case "A+":
+      case 7:
         setScore(30);
         setReDealing(true);
         break;
@@ -103,13 +104,20 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         setReDealing(false);
         break;
     }
-  };
+  }, [currentIndex])
 
   function submitButton() {
-    Alert.alert("후기 전송", "매너 평가를 완료하시겠습니까?", [
-      { text: "취소", style: "cancel" },
-      { text: "등록", onPress: submitReview }
-    ]);
+    if (text === "") {
+      Alert.alert("후기 내용을 입력해야 합니다", "",[
+        { text: "확인", style: "cancel" }
+      ]);
+    }
+    else {
+      Alert.alert("후기 전송", "매너 평가를 완료하시겠습니까?", [
+        { text: "취소", style: "cancel" },
+        { text: "등록", onPress: submitReview }
+      ]);
+    }  
   }
 
   function submitReview() {
@@ -157,16 +165,11 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={goBack}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
-          <Image
-            source={require("../../assets/design/backIcon.png")}
-            style={styles.backButton}
-          />
+          <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
-        <Text style={styles.topBarName}>
-          거래 후기 보내기
-        </Text>
+        <Text style={styles.topBarText}>거래 후기 보내기</Text>
       </View>
       <View style={styles.messageZone}>
         <View style={{flex: 1}}>
@@ -183,23 +186,29 @@ function MannerReview({navigation, route}: MannerReviewProps) {
         <Pressable
           onPress={() => handleButtonPress("prev")}
           style={styles.gradeControlButton}
+          disabled={currentIndex === 0 ? true : false}
         >
-          <Text style={styles.gradeControlText}>
-            {"<"}
-          </Text>
+          <IonIcon
+            name={"chevron-back-sharp"}
+            size={50}
+            style={{color: currentIndex > 0 ? 'black' : 'lightgrey'}}
+          />
         </Pressable>
         <View style={styles.gradeTextSpace}>
           <Text style={styles.gradeText}>
-            {data[(newIndex)]}
+            {data[(currentIndex)]}
           </Text>
         </View>
         <Pressable
           onPress={() => handleButtonPress("next")}
           style={styles.gradeControlButton}
+          disabled={currentIndex === data.length - 1 ? true : false}
         >
-          <Text style={styles.gradeControlText}>
-            {">"}
-          </Text>
+          <IonIcon
+            name={"chevron-forward-sharp"}
+            size={50}
+            style={{color: currentIndex < data.length - 1 ? 'black' : 'lightgrey'}}
+          />
         </Pressable>
       </View>
     
@@ -363,9 +372,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center"
   },
-  backButton: {
-    width: vw / 22,
-    height: vh / 36
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600"
   },
   cancelButton: {
     flexDirection: "row",
@@ -373,11 +382,6 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5
-  },
-  topBarName: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: vw / 4,
   },
   messageZone: {
     flex: 0.45,
@@ -470,7 +474,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "flex-start",
     width: vw - vw / 12.5,
-    height: vh * 0.02,
+    height: vh * 0.14,
     textAlignVertical: "top",
     color: "black"
   },
