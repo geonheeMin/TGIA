@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  TouchableOpacity
+  TouchableOpacity,
+  Text
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../App";
@@ -23,8 +24,8 @@ type SettingsScreenProps = NativeStackScreenProps<
 function Settings({ navigation }: SettingsScreenProps) {
   const { session, url } = useStore();
 
-  const toProfile = useCallback(() => {
-    navigation.navigate("Profile");
+  const goBack = useCallback(() => {
+    navigation.goBack();
   }, [navigation]);
   
 
@@ -33,13 +34,13 @@ function Settings({ navigation }: SettingsScreenProps) {
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.cancelButton}
-          onPress={toProfile}
+          onPress={goBack}
           activeOpacity={0.5}
         >
           <IonIcon name={"chevron-back-sharp"} size={25} />
         </TouchableOpacity>
+        <Text style={styles.topBarText}>환경 설정</Text>
       </View>
-      <LocationCalc />
     </SafeAreaView>
   );
 }
@@ -63,7 +64,11 @@ const styles = StyleSheet.create({
     paddingLeft: vw / 35,
     paddingRight: vw / 35,
     height: vh / 17.5,
-  }
+  },
+  topBarText: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
 });
 
 export default Settings;
