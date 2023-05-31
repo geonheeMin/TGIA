@@ -173,16 +173,19 @@ function Profile({ navigation, route }: ProfileScreenProps) {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center"
           }}
         >
-          <Text style={styles.mannerText}>매너학점</Text>
-          <Text style={styles.mannerGrade}>{mannerGrade}</Text>
-          <Text style={styles.expText}>Exp</Text>
-          <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.mannerText}>매너학점</Text>
+            <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'flex-end', position: 'absolute', right: 0}}>
+            <Text style={styles.expText}>Exp</Text>
+            <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
+          </View>
         </View>
-        <View style={{ marginTop: 10, paddingRight: 15 }}>
+        <View style={{ marginTop: 10}}>
           <ProgressBar
             progress={(manner % 100) / 100}
             color={"#3064e7"}
@@ -275,16 +278,16 @@ const styles = StyleSheet.create({
     flex: 1
   },
   profile: {
-    flex: 0.65,
-    width: "85%",
-    height: "85%",
+    width: vw / 5,
+    height: vw / 5,
+    borderRadius: vw / 5,
     alignItems: "baseline",
-    borderRadius: 100,
-    borderWidth: 0.3
+    borderWidth: 0.3,
+    borderColor: 'black'
   },
   progress: {
     height: 10,
-    borderRadius: 30
+    borderRadius: 30,
   },
   trackzone: {
     flex: 1,
@@ -300,7 +303,7 @@ const styles = StyleSheet.create({
   mannerStatus: {
     flex: 0.4,
     justifyContent: "center",
-    paddingHorizontal: vw / 30
+    paddingHorizontal: vw / 30,
   },
   mannerText: {
     fontSize: 16,
@@ -308,7 +311,7 @@ const styles = StyleSheet.create({
   },
   mannerGrade: {
     fontSize: 16,
-    marginRight: vw * 0.55,
+    marginLeft: 4,
     color: "#3064e7",
     fontWeight: "500"
   },
@@ -321,7 +324,6 @@ const styles = StyleSheet.create({
   mannerExp: {
     fontSize: 16,
     textAlign: "right",
-    marginRight: vw * 0.04,
     color: "#3064e7",
     fontWeight: "500"
   },

@@ -1315,6 +1315,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         </Pressable>
       </View>
       {isLoaded ? (
+        <View style={{width: vw, height: vh - vh / 17.5 - vh / 20 - vh / 11 - vh / 90 - vh / 77 - insets.top}}>
         <FlatList
           data={results}
           renderItem={renderItem}
@@ -1324,6 +1325,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
             />
           )}
         />
+        </View>
       ) : (
         <View
           style={{

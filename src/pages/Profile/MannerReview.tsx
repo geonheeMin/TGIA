@@ -9,7 +9,9 @@ import {
   TouchableOpacity,
   Alert,
   Pressable,
-  TextInput
+  TextInput,
+  Keyboard,
+  TouchableWithoutFeedback
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import useStore from "../../../store";
@@ -152,6 +154,7 @@ function MannerReview({ navigation, route }: MannerReviewProps) {
   }
 
   return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -350,6 +353,7 @@ function MannerReview({ navigation, route }: MannerReviewProps) {
         <Text style={styles.submitButtonText}>전송</Text>
       </Pressable>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 

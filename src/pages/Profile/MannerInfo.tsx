@@ -209,14 +209,18 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
         </View>
         <View style={styles.mannerStatus}>
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{ flexDirection: "row", alignItems: 'center' }}
           >
-            <Text style={styles.mannerText}>매너 학점</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.mannerText}>매너학점</Text>
             <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'flex-end', position: 'absolute', right: 0}}>
             <Text style={styles.expText}>Exp</Text>
             <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
           </View>
-          <View style={{ marginTop: 10, paddingRight: 15 }}>
+          </View>
+          <View style={{ marginTop: 10}}>
             <ProgressBar
               progress={(manner % 100) / 100}
               color={"#3064e7"}
@@ -335,12 +339,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   profileImg: {
-    flex: 0.75,
-    width: "85%",
-    height: "85%",
+    width: vw / 5,
+    height: vw / 5,
+    borderRadius: vw / 5,
     alignItems: "baseline",
-    borderRadius: 100,
-    borderWidth: 0.3
+    borderWidth: 0.3,
+    borderColor: 'black'
   },
   progress: {
     height: 10,
@@ -361,7 +365,7 @@ const styles = StyleSheet.create({
   mannerStatus: {
     height: vh * 0.08,
     justifyContent: "center",
-    paddingHorizontal: vw * 0.028
+    paddingHorizontal: vw / 30
   },
   mannerText: {
     fontSize: 16,
@@ -376,14 +380,13 @@ const styles = StyleSheet.create({
   },
   expText: {
     fontSize: 16,
-    marginRight: vw * 0.01,
     color: "#3064e7",
-    fontWeight: "500"
+    fontWeight: "500",
+    marginRight: vw * 0.01
   },
   mannerExp: {
     fontSize: 16,
     textAlign: "right",
-    marginRight: vw * 0.1,
     color: "#3064e7",
     fontWeight: "500"
   },
@@ -499,7 +502,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginLeft: vw * 0.03
+    marginLeft: vw * 0.03,
   },
   mannerReviewButtonText: {
     fontSize: 18,
@@ -513,18 +516,21 @@ const styles = StyleSheet.create({
     height: vh * 0.1,
     flexDirection: "row",
     marginHorizontal: vw * 0.03,
-    marginTop: vh * 0.025,
     borderBottomWidth: 0.4,
-    borderBottomColor: "gray"
+    borderBottomColor: "gray",
   },
   reviewerImageZone: {
-    flex: 0.4
+    flex: 0.35,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   reviewerImage: {
-    width: "75%",
-    height: "75%",
-    borderRadius: 100,
-    borderWidth: 0.3
+    width: vw / 7,
+    height: vw / 7,
+    borderRadius: vw / 7,
+    alignItems: "baseline",
+    borderWidth: 0.3,
+    borderColor: 'black'
   },
   reviewInfo: {
     flex: 1.3

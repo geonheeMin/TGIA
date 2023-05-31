@@ -42,7 +42,7 @@ const vh = Dimensions.get("window").height;
 function ListScreen({ route, navigation }: ListScreenProps) {
   const moment = require("moment");
   const insets = useSafeAreaInsets();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const { session, url } = useStore();
   const [posts, setPosts] = useState<Array<Post>>([]);
@@ -275,15 +275,35 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     return <ItemList board={item} navigation={navigation} />;
   };
 
+  const loadFirstPage = () => {
+    console.log("loadFirstPage");
+    if(!isLoading) {
+      setIsLoading(true);
+      setIsRefreshing(true);
+      Axios.get(`${url}/post/all3?page=0&size=15`)
+        .then(res => {
+            setNewPosts(res.data);
+            newPosts.sort((a, b) =>
+            moment(b.createdDate).diff(moment(a.createdDate))
+          );
+          setIsLoading(false);
+          setIsRefreshing(false);
+        })
+        .catch(err => console.log(err));
+    }
+  };
+
   const loadPage = () => {
     if (!isLoading) {
       setIsLoading(true);
+      setIsRefreshing(true);
       Axios.get(`${url}/post/all3?page=${currentPage}&size=15`)
         .then((res) => {
           setNewPosts([...newPosts, ...res.data]);
           setCurrentPage(currentPage + 1);
           adjustFilter(currentChecked);
           setIsLoading(false);
+          setIsRefreshing(false);
         })
         .catch((err) => console.log(err));
     }
@@ -291,8 +311,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
 
   useEffect(() => {
     if (isFocused) {
-      loadPage();
-      setCurrentPage(0);
+      loadFirstPage();
     }
   }, [isFocused]);
 

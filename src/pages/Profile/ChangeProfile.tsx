@@ -208,11 +208,12 @@ const styles = StyleSheet.create({
     marginHorizontal: vh / 7
   },
   buttonImg: {
-    flex: 0.6,
-    width: "80%",
-    height: "80%",
-    borderRadius: 100,
-    borderWidth: 0.3
+    width: vw / 3,
+    height: vw / 3,
+    borderRadius: vw / 3,
+    alignItems: "baseline",
+    borderWidth: 0.3,
+    borderColor: 'black'
   },
   inputBox: {
     borderWidth: 1,

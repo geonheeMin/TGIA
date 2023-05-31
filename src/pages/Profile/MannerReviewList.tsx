@@ -160,10 +160,12 @@ const styles = StyleSheet.create({
     flex: 0.4
   },
   reviewerImage: {
-    width: "75%",
-    height: "75%",
-    borderRadius: 100,
-    borderWidth: 0.3
+    width: vw / 7,
+    height: vw / 7,
+    borderRadius: vw / 7,
+    alignItems: "baseline",
+    borderWidth: 0.3,
+    borderColor: 'black'
   },
   reviewInfo: {
     flex: 1.3

@@ -302,12 +302,12 @@ const styles = StyleSheet.create({
     height: vh / 17.5
   },
   profile: {
-    flex: 0.56,
-    width: "77%",
-    height: "77%",
+    width: vw / 5,
+    height: vw / 5,
+    borderRadius: vw / 5,
     alignItems: "baseline",
-    borderRadius: 100,
-    borderWidth: 0.3
+    borderWidth: 0.3,
+    borderColor: 'black'
   },
   topzone: {
     flex: 1.4,

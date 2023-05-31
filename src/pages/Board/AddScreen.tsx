@@ -55,6 +55,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
     board === "new" ? "등록" : "수정"
   );
   const [title, setTitle] = useState(""); //게시글 제목
+  const [itemName, setItemName] = useState(""); // 물품명
   const [category, setCategory] = useState(""); //게시글 카테고리
   const [text, setText] = useState(""); //게시글 내용
   const [time, setTime] = useState(""); //게시글 작성 시간
@@ -90,6 +91,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
   function renderScreen() {
     if (board !== "new") {
       setTitle(board.title);
+      setItemName(board.item_name);
       setCategory(board.category);
       setText(board.text);
       setPrice(board.price);
@@ -108,6 +110,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   const formCheck = () => {
     if (title === "") return false;
+    if (itemName === "") return false;
     if (category === "") return false;
     if (images.length === 0) return false;
     if (text === "") return false;
@@ -158,7 +161,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       track: track,
       department: department,
       locationType: place,
-      item_name: board.item_name
+      item_name: itemName,
     };
 
     Axios.post(`${url}/post/insert`, request, {
@@ -187,9 +190,8 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       content: text,
       track: track,
       department: department,
-      image_id: 1,
-      locationType: board.locationType,
-      item_name: board.item_name,
+      locationType: place,
+      item_name: itemName,
       statusType: board.statusType
     };
     console.log(request);
@@ -796,6 +798,15 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             onChangeText={setTitle}
           />
         </View>
+        <View style={styles.itemBar}>
+          <TextInput
+            placeholder={"물품명"}
+            placeholderTextColor={"lightgrey"}
+            style={styles.itemInput}
+            value={itemName}
+            onChangeText={setItemName}
+          />
+        </View>
         <View style={styles.categoryBar}>
           {isLoading ? ( // 로딩 중인 경우 로딩 스피너를 표시
             <ActivityIndicator size="small" color="black" />
@@ -1010,6 +1021,20 @@ const styles = StyleSheet.create({
   },
   titleInput: {
     fontSize: 17.5,
+    width: vw - vw / 20,
+    paddingLeft: 5,
+    color: "black"
+  },
+  itemBar: {
+    height: vh / 20,
+    borderBottomWidth: 0.2,
+    borderBottomColor: "#e9e9e9",
+    marginHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  itemInput: {
+    fontSize: 15.5,
     width: vw - vw / 20,
     paddingLeft: 5,
     color: "black"

@@ -30,6 +30,8 @@ import OctIcon from "react-native-vector-icons/Octicons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { tracks } from "../../assets/data/track";
 import { Post } from "../../types/PostType";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 type RootStackParamList = {
   CaegorySearch: undefined;
 };
@@ -45,6 +47,7 @@ const sh = Dimensions.get("screen").height;
 
 function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
   const moment = require("moment");
+  const insets = useSafeAreaInsets();
   const { session, url } = useStore();
   const [posts, setPosts] = useState([{}]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -936,7 +939,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
         </View> */}
       </View>
       <View
-        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - (sh - vh) }}
+        style={{ marginTop: 0, height: vh - vh / 11 - vh / 17.5 - insets.top }}
       >
         <FlatList
           data={newPosts}
