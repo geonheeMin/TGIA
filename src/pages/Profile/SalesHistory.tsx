@@ -53,7 +53,7 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
       .catch((error) => {
         console.log(error);
       });
-    Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
+    Axios.get(`${url}/post/my_SellList?userId=${session?.member_id}`)
       .then((res) => {
         setCompletedPosts(res.data);
         completedPosts.sort((a, b) => b.post_id - a.post_id);

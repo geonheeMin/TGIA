@@ -575,7 +575,7 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             marginRight: "auto"
           }}
         >
-          <Text style={{ fontSize: 20 }}>{post.title}</Text>
+          <Text style={{ fontSize: 20 }}>{post.title.length > 8 ? post.title.slice(0,8) + "..." : post.title}</Text>
         </View>
       </View>
       <View

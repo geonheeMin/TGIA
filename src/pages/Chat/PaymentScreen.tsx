@@ -31,7 +31,7 @@ function PaymentScreen({ route, navigation }: PaymentProps) {
     user_id: post.member_id,
     buyer_id: session?.member_id,
     price: post.price,
-    item_name: post.title
+    item_name: post.item_name
   };
 
   const toChat = () => {
