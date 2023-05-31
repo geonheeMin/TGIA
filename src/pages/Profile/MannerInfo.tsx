@@ -138,7 +138,7 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
       const {
         buyer_username,
         review: reviewText,
-        imageFilename,
+        imageFilename: buyer_image,
         buyer_id: buyerId
       } = review;
       return (
@@ -149,7 +149,7 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
         >
           <View style={styles.reviewerImageZone}>
             <Image
-              source={{ uri: `${url}/images/${imageFilename}` }}
+              source={{ uri: `${url}/images/${buyer_image}` }}
               style={styles.reviewerImage}
             />
           </View>
@@ -214,6 +214,7 @@ function MannerInfo({ navigation, route }: MannerInfoProps) {
           >
             <Text style={styles.mannerText}>매너 학점</Text>
             <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+            <Text style={styles.expText}>Exp</Text>
             <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
           </View>
           <View style={{ marginTop: 10, paddingRight: 15 }}>
@@ -364,18 +365,25 @@ const styles = StyleSheet.create({
   },
   mannerText: {
     fontSize: 16,
-    textAlign: "left"
+    textAlign: "left",
+    marginRight: vw * 0.01,
   },
   mannerGrade: {
     fontSize: 16,
-    marginRight: vw * 0.55,
+    marginRight: vw * 0.51,
+    color: "#3064e7",
+    fontWeight: "500"
+  },
+  expText: {
+    fontSize: 16,
+    marginRight: vw * 0.01,
     color: "#3064e7",
     fontWeight: "500"
   },
   mannerExp: {
     fontSize: 16,
     textAlign: "right",
-    marginRight: vw * 0.04,
+    marginRight: vw * 0.1,
     color: "#3064e7",
     fontWeight: "500"
   },
@@ -523,7 +531,8 @@ const styles = StyleSheet.create({
   },
   reviewWriter: {
     fontSize: 18,
-    fontWeight: "500"
+    fontWeight: "500",
+    marginTop: vh * 0.01,
   },
   reviewText: {
     marginTop: vh * 0.01,

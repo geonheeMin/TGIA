@@ -29,7 +29,7 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
   }, [navigation]);
 
   useEffect(() => {
-    Axios.get(`${url}/get_all_pruchase_review?userId=` + memberId)
+    Axios.get(`${url}/get_all_purchase_review?userId=` + memberId)
     .then((res) => {
       console.log(res.data);
       console.log("dd");
@@ -48,7 +48,12 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
     };
 
     return purchaseReviews.map((review, index) => {
-      const { buyer_username, review: reviewText, imageFilename, buyer_id: buyerId } = review;
+      const {
+        buyer_username,
+        review: reviewText,
+        imageFilename: buyer_image,
+        buyer_id: buyerId
+      } = review;
       return (
         <Pressable
           style={styles.purchaseReviews}
@@ -57,7 +62,7 @@ function MannerReviewList({navigation, route}: MannerReviewListScreenProps) {
         >
           <View style={styles.reviewerImageZone}>
             <Image
-              source={{ uri: `${url}/images/${imageFilename}` }}
+              source={{ uri: `${url}/images/${buyer_image}` }}
               style={styles.reviewerImage}
             />
           </View>
@@ -165,6 +170,7 @@ const styles = StyleSheet.create({
   reviewWriter: {
     fontSize: 18,
     fontWeight: "500",
+    marginTop: vh * 0.01,
   },
   reviewText: {
     marginTop: vh * 0.01,

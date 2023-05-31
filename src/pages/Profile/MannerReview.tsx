@@ -326,7 +326,7 @@ function MannerReview({navigation, route}: MannerReviewProps) {
           </Text>
           : announcement > 0 ?
             <Text style={styles.guideTextA}>
-              {sellerName}님에게 감사 인사를 남겨보세요.
+              {sellerName}님에게 따듯한 거래 경험을 남겨보세요.
             </Text>
             : 
             <Text style={styles.guideTextA}>

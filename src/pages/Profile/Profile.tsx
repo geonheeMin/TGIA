@@ -172,9 +172,10 @@ function Profile({ navigation, route }: ProfileScreenProps) {
       </View>
       <Pressable onPress={toMannerInfo} style={styles.mannerStatus}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'center' }}>
-          <Text style={styles.mannerText}>매너학점</Text>
-          <Text style={styles.mannerGrade}>{mannerGrade}</Text>
-          <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
+            <Text style={styles.mannerText}>매너 학점</Text>
+            <Text style={styles.mannerGrade}>{mannerGrade}</Text>
+            <Text style={styles.expText}>Exp</Text>
+            <Text style={styles.mannerExp}>{(manner % 100) + "%"}</Text>
         </View>
         <View style={{ marginTop: 10, paddingRight: 15 }}>
           <ProgressBar
@@ -296,24 +297,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: vw / 20
   },
   mannerStatus: {
-    flex: 0.4,
+    height: vh * 0.08,
     justifyContent: "center",
-    paddingHorizontal: vw / 30
+    paddingHorizontal: vw * 0.028
   },
   mannerText: {
     fontSize: 16,
-    textAlign: "left"
+    textAlign: "left",
+    marginRight: vw * 0.01,
   },
   mannerGrade: {
     fontSize: 16,
-    marginRight: vw * 0.55,
+    marginRight: vw * 0.51,
+    color: "#3064e7",
+    fontWeight: "500"
+  },
+  expText: {
+    fontSize: 16,
+    marginRight: vw * 0.01,
     color: "#3064e7",
     fontWeight: "500"
   },
   mannerExp: {
     fontSize: 16,
     textAlign: "right",
-    marginRight: vw * 0.04,
+    marginRight: vw * 0.1,
     color: "#3064e7",
     fontWeight: "500"
   },
