@@ -44,7 +44,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const [topZoneHeight, setTopZoneHeight] = useState(0);
   const [typeZoneHeight, setTypeZoneHeight] = useState(0);
   useEffect(() => {
-    console.log("useEffect");
     Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
       .then((res) => {
         setSellingPosts(res.data);
@@ -79,26 +78,6 @@ function SalesHistory({ navigation, route }: ChangeProfileScreenProps) {
   const onSubmit = useCallback(() => {
     Alert.alert("알림", "ㅎㅇ");
     console.log(profileImg);
-  }, []);
-
-  useEffect(() => {
-    Axios.get(`${url}/post/my_list?userId=` + session?.member_id)
-      .then((res) => {
-        setSellingPosts(res.data);
-        sellingPosts.sort((a, b) => b.post_id - a.post_id);
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(posts);
-      });
-    Axios.get(`${url}/post/my_sell_list?userId=${session?.member_id}`)
-      .then((res) => {
-        setCompletedPosts(res.data);
-        completedPosts.sort((a, b) => b.post_id - a.post_id);
-        //setIsLoaded(!isLoaded);
-      })
-      .catch((err) => console.log(posts));
   }, []);
 
   const renderItem = ({ item }) => {
