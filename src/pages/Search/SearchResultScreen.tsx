@@ -23,6 +23,7 @@ import ItemList from "../Board/ItemList";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useIsFocused } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Post } from "../../types/PostType";
 
 const vw = Dimensions.get("window").width;
 const vh = Dimensions.get("window").height;
@@ -479,26 +480,8 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
     navigation.goBack();
   };
 
-  const renderItem = ({ item }) => {
-    const renderBoard = {
-      post_id: item.post_id,
-      title: item.title,
-      price: item.price,
-      locationType: item.locationType,
-      location_text: item.location_text,
-      writer: item.writer,
-      category: item.category,
-      text: item.text,
-      date: item.date,
-      track: item.track,
-      images: item.images,
-      member_id: item.member_id,
-      likes: item.likes,
-      views: item.views,
-      department: item.department,
-      createdDate: item.createdDate
-    };
-    return <ItemList board={renderBoard} navigation={navigation} />;
+  const renderItem = ({ item }: Post) => {
+    return <ItemList board={item} navigation={navigation} />;
   };
 
   const newHandle = () => {
@@ -1315,16 +1298,32 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         </Pressable>
       </View>
       {isLoaded ? (
-        <View style={{width: vw, height: vh - vh / 17.5 - vh / 20 - vh / 11 - vh / 90 - vh / 77 - insets.top}}>
-        <FlatList
-          data={results}
-          renderItem={renderItem}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{ backgroundColor: "#727272", opacity: 0.4, height: 0.34 }}
-            />
-          )}
-        />
+        <View
+          style={{
+            width: vw,
+            height:
+              vh -
+              vh / 17.5 -
+              vh / 20 -
+              vh / 11 -
+              vh / 90 -
+              vh / 77 -
+              insets.top
+          }}
+        >
+          <FlatList
+            data={results}
+            renderItem={renderItem}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  backgroundColor: "#727272",
+                  opacity: 0.4,
+                  height: 0.34
+                }}
+              />
+            )}
+          />
         </View>
       ) : (
         <View

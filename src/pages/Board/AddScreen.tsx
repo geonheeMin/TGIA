@@ -161,7 +161,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
       track: track,
       department: department,
       locationType: place,
-      item_name: itemName,
+      item_name: itemName
     };
 
     Axios.post(`${url}/post/insert`, request, {
@@ -220,7 +220,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
           setCategory(res.data);
           setIsCategoryRecommended(!isCategoryRecommended);
         } else {
-          setTimeout(() => getCategoryRecommend(), 2000);
+          setTimeout(() => getCategoryRecommend(), 5000);
         }
       })
       .catch((error) => console.log(error))
@@ -430,6 +430,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
             .then((res) => {
               if (!isCategoryRecommended) {
                 setFilename(res.data);
+                setIsLoading(true);
                 setTimeout(() => getCategoryRecommend(), 3000);
               } else {
                 setFilename(res.data);
