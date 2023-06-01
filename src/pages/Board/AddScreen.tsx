@@ -90,13 +90,14 @@ function AddScreen({ route, navigation }: AddScreenProps) {
 
   function renderScreen() {
     if (board !== "new") {
+      console.log(board);
       setTitle(board.title);
       setItemName(board.item_name);
       setCategory(board.category);
       setText(board.text);
       setPrice(board.price);
       setFree(board.free);
-      setPlace(board.place);
+      setPlace(board.locationType);
       setTrack(board.track);
       setDepartment(board.department);
       board.images.map((item) => {
@@ -375,13 +376,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               Alert.alert("photo is empty");
               return;
             }
-            CameraRoll.save(photo, "photo")
-              .then(() => {
-                pickImage();
-              })
-              .catch((e) => {
-                console.log(e);
-              });
+            pickImage();
           }
         });
       }
@@ -431,7 +426,7 @@ function AddScreen({ route, navigation }: AddScreenProps) {
               if (!isCategoryRecommended) {
                 setFilename(res.data);
                 setIsLoading(true);
-                setTimeout(() => getCategoryRecommend(), 3000);
+                setTimeout(() => getCategoryRecommend(), 4500);
               } else {
                 setFilename(res.data);
               }

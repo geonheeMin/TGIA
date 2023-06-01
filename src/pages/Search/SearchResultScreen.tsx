@@ -76,7 +76,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
         departmentFilterChecked === false ? null : getDepartmentList()
     };
     console.log(searchFilterDto);
-    Axios.post(`${url}/detailSearch`, searchFilterDto)
+    Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
       .then((res) => {
         setResults(res.data);
         setIsLoaded(true);
@@ -290,7 +290,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       case 1:
         return "필기구";
       case 2:
-        return "생활";
+        return "생활가전";
       case 3:
         return "패션의류";
       case 4:
@@ -400,11 +400,11 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       case 2:
         return "사회과학부";
       case 3:
-        return "글로벌패션과학부";
+        return "글로벌패션산업학부";
       case 4:
         return "ICT디자인학부";
       case 5:
-        return "뷰티디자인매니지먼학부";
+        return "뷰티디자인매니지먼트학부";
       case 6:
         return "컴퓨터공학부";
       case 7:
@@ -414,7 +414,7 @@ function SearchResultScreen({ route, navigation }: SearchResultScreenProps) {
       case 9:
         return "스마트경영공학부";
       case 10:
-        return "스마팩토리컨설팅학부";
+        return "스마트팩토리컨설팅학부";
     }
   };
   const getDepartmentList = () => {

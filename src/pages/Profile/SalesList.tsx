@@ -62,6 +62,7 @@ function SalesList({ navigation, route }: SalesListScreenProps) {
   useEffect(() => {
     Axios.get(`${url}/post/my_list?userId=` + sellerId)
       .then((res) => {
+        console.log(res.data);
         setPosts(res.data);
         posts.sort((a, b) => b.post_id - a.post_id);
       })

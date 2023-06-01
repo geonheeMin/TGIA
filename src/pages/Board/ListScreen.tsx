@@ -563,24 +563,15 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const adjustRange = () => {
     setRangeCategory(getRangeCategory(rangeValue));
     if (rangeValue === 4) {
-      Axios.get(`${url}/post/all`)
-        .then((res) => {
-          res.data.sort((a: Post, b: Post) =>
-            moment(b.createdDate).diff(moment(a.createdDate))
-          );
-          setPosts(res.data);
-          setNewPosts(res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      loadFirstPage();
     } else {
       const searchFilterDto = {
         track: rangeValue === 1 ? rangeText : null,
         departments: rangeValue === 2 ? [rangeText] : null,
-        college: rangeValue === 3 ? rangeText : null
+        college: rangeValue === 3 ? rangeText : null,
+        ys: 1
       };
-      Axios.post(`${url}/detailSearch`, searchFilterDto)
+      Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
         .then((res) => {
           console.log(res.data.map((item) => item.department));
           setNewPosts(res.data);
@@ -759,9 +750,9 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             <Pressable
               style={{
                 position: "absolute",
-                height: 15,
+                height: 32,
                 width: rangeWidth / 6,
-                left: 60
+                left: 60,
               }}
               onPress={() => moveRange(1)}
             >
@@ -771,7 +762,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
               <Pressable
                 style={{
                   position: "absolute",
-                  height: 15,
+                  height: 19,
                   width: 20,
                   alignItems: "center",
                   left: 50 + ((value - 1) * rangeWidth) / 3
@@ -781,8 +772,8 @@ function ListScreen({ route, navigation }: ListScreenProps) {
               >
                 <View
                   style={{
-                    height: 15,
-                    width: 3,
+                    height: 19,
+                    width: 3.5,
                     borderRadius: 5,
                     backgroundColor: rangeValue >= value ? "#1e52fe" : "grey"
                   }}
@@ -792,7 +783,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             <Pressable
               style={{
                 position: "absolute",
-                height: 15,
+                height: 32,
                 width: rangeWidth / 3,
                 left: 60 + rangeWidth / 6
               }}
@@ -803,7 +794,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             <Pressable
               style={{
                 position: "absolute",
-                height: 15,
+                height: 32,
                 width: rangeWidth / 3,
                 left: 60 + rangeWidth / 2
               }}
@@ -814,7 +805,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
             <Pressable
               style={{
                 position: "absolute",
-                height: 15,
+                height: 32,
                 width: rangeWidth / 6,
                 left: 60 + (5 * rangeWidth) / 6
               }}

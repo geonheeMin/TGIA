@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import ChatTitle from "./ChatTitle";
 import Axios from "axios";
+import {useNavigationState} from "@react-navigation/native";
 import useStore from "../../../store";
 import BottomTabs from "../../components/BottomTabs";
 import chatlist from "../../assets/dummy/chatlist.json";
@@ -42,6 +43,7 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
   const { session, url } = useStore();
   const isFocused = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigationState = useNavigationState((state) => state);
   const renderItem = ({ item }) => {
     return <ChatTitle chat={item} navigation={navigation} />;
   };
@@ -50,6 +52,7 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
     Axios.get(
       `${url}/chat/get_chatroom_member_id?member_id=${session?.member_id}`
     ).then((res) => {
+      console.log(res.data);
       setChats(res.data);
     }).catch(err => console.log(err));
   };
@@ -61,6 +64,7 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
   };
 
   useEffect(() => {
+    console.log(navigationState.routes);
     if (isFocused) {
       refreshChats();
     }
@@ -99,7 +103,7 @@ function ChatListScreen({ route, navigation }: ChatListScreenProps) {
         </View>
       ) : (
         <FlatList
-          data={chats.sort((a, b) => b.last_chatMessage - a.last_chatMessage)}
+          data={chats}
           renderItem={renderItem}
           refreshControl={
             <RefreshControl

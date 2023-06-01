@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
-  LayoutAnimation
+  LayoutAnimation,
+  TouchableOpacity
 } from "react-native";
 import * as React from "react";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -64,8 +65,8 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
     setInputWidth(vw - vw / 3);
   };
 
-  const searchByWord = () => {
-    navigation.navigate("SearchResult", { word: searchWord });
+  const searchByWord = (word: string) => {
+    navigation.navigate("SearchResult", { word: word });
   };
 
   useEffect(() => {
@@ -117,7 +118,7 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
             }}
             ref={inputRef}
             onChangeText={setSearchWord}
-            onSubmitEditing={searchByWord}
+            onSubmitEditing={() => searchByWord(searchWord)}
             returnKeyType="search"
             value={searchWord}
             onPressIn={searchInputFocusedIn}
@@ -170,19 +171,24 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
                 return (
                   <View key={index}>
                     <View style={{ flexDirection: "row" }}>
-                      <Text
-                        style={{
-                          marginLeft: 5,
-                          fontWeight: "bold",
-                          width: 20,
-                          color: "blue"
-                        }}
+                      <TouchableOpacity
+                        onPress={() => searchByWord(item)}
+                        style={{ flexDirection: "row" }} 
                       >
-                        {index + 1}
-                      </Text>
-                      <Text style={{ paddingLeft: 10, fontWeight: "600" }}>
-                        {item}
-                      </Text>
+                        <Text
+                          style={{
+                            marginLeft: 5,
+                            fontWeight: "bold",
+                            width: 20,
+                            color: "blue"
+                          }}
+                        >
+                          {index + 1}
+                        </Text>
+                        <Text style={{ paddingLeft: 10, fontWeight: "600" }}>
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                     <View
                       style={{
@@ -210,19 +216,24 @@ function SearchScreen({ route, navigation }: SearchScreenProps) {
                 return (
                   <View key={index}>
                     <View style={{ flexDirection: "row" }}>
-                      <Text
-                        style={{
-                          marginLeft: 5,
-                          fontWeight: "bold",
-                          width: 20,
-                          color: "blue"
-                        }}
+                      <TouchableOpacity
+                        onPress={() => searchByWord(item)}
+                        style={{ flexDirection: "row" }}  
                       >
-                        {index + 1}
-                      </Text>
-                      <Text style={{ fontWeight: "600", paddingLeft: 10 }}>
-                        {item}
-                      </Text>
+                        <Text
+                          style={{
+                            marginLeft: 5,
+                            fontWeight: "bold",
+                            width: 20,
+                            color: "blue"
+                          }}
+                        >
+                          {index + 1}
+                        </Text>
+                        <Text style={{ fontWeight: "600", paddingLeft: 10 }}>
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                     <View
                       style={{

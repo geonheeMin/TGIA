@@ -76,6 +76,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
 
   const searchFilterDto = {
     keyword: "",
+    ys: 1,
     categories: [route.params?.category]
   };
   const modalOpenAnimation = () => {
@@ -280,7 +281,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
 
   const listRefresh = () => {
     setIsRefreshing(true);
-    Axios.post(`${url}/detailSearch`, searchFilterDto)
+    Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -296,7 +297,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
   };
 
   useEffect(() => {
-    Axios.post(`${url}/detailSearch`, searchFilterDto)
+    Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -311,7 +312,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
 
   useEffect(() => {
     console.log(searchFilterDto);
-    Axios.post(`${url}/detailSearch`, searchFilterDto)
+    Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -578,7 +579,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
   const adjustRange = () => {
     setRangeCategory(getRangeCategory(rangeValue));
     if (rangeValue === 4) {
-      Axios.post(`${url}/detailSearch  `, searchFilterDto)
+      Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
         .then((res) => {
           res.data.sort((a: Post, b: Post) =>
             moment(b.createdDate).diff(moment(a.createdDate))
@@ -595,7 +596,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
         departments: rangeValue === 2 ? [rangeText] : null,
         college: rangeValue === 3 ? rangeText : null
       };
-      Axios.post(`${url}/detailSearch`, searchFilterDto)
+      Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
         .then((res) => {
           console.log(res.data.map((item) => item.department));
           setNewPosts(res.data);
@@ -609,7 +610,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
     setRangeText(getRange(true, 1));
     setWhichTrack(true);
     moveRange(1);
-    Axios.post(`${url}/detailSearch`, searchFilterDto)
+    Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
       .then((res) => {
         res.data.sort((a: Post, b: Post) =>
           moment(b.createdDate).diff(moment(a.createdDate))
@@ -918,7 +919,7 @@ function CategorySearchScreen({ route, navigation }: CategorySearchProps) {
           <View style={styles.searchButton}>
             <Pressable
               onPress={() => {
-                navigation.navigate(["Search"]);
+                navigation.navigate("Search");
               }}
             >
               <OctIcon name="search" size={20} style={{ marginRight: 10 }} />

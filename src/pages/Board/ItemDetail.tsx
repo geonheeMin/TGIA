@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -10,7 +10,7 @@ import {
   Image,
   Pressable,
   StatusBar,
-  Modal
+  Modal,
 } from "react-native";
 import Axios from "axios";
 import useStore from "../../../store";
@@ -57,6 +57,11 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const toUpdate = useCallback(() => {
     navigation.navigate("Add", { board: board });
   }, [board, navigation]);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    scrollRef.current.scrollTo({x:0, y:0, animated:true});
+  }, [isFocused])
 
   const timeCalc = () => {
     const now = new moment();
@@ -302,7 +307,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   return (
     <View style={pressed ? { backgroundColor: "black" } : styles.container}>
       <StatusBar barStyle={pressed ? "light-content" : "dark-content"} />
-      <ScrollView>
+      <ScrollView ref={scrollRef}>
         <View style={styles.carouselContainer}>
           <Carousel
             layout="default"
@@ -359,7 +364,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                   }}
                 >
                   <Pressable style={styles.updateButton} onPress={toUpdate}>
-                    <Text>수정</Text>
+                    <Text style={{color: "white"}}>수정</Text>
                   </Pressable>
                 </View>
                 <View
@@ -370,7 +375,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                   }}
                 >
                   <Pressable style={styles.deleteButton}>
-                    <Text>삭제</Text>
+                    <Text style={{color: "white"}}>삭제</Text>
                   </Pressable>
                 </View>
               </View>
@@ -622,7 +627,8 @@ const styles = StyleSheet.create({
   propsBottom: {
     height: vh / 20,
     width: vw - vw / 2.25,
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    marginTop: vh * 0.008,
   },
   postImage: {
     width: vw,
@@ -648,7 +654,7 @@ const styles = StyleSheet.create({
     width: vw / 5.5,
     height: vh / 32,
     borderRadius: 30,
-    backgroundColor: "#c3c2d0"
+    backgroundColor: "#333333"
   },
   deleteButton: {
     justifyContent: "center",
@@ -656,7 +662,7 @@ const styles = StyleSheet.create({
     width: vw / 5.5,
     height: vh / 32,
     borderRadius: 30,
-    backgroundColor: "#c3c2d0"
+    backgroundColor: "#333333"
   },
   postTitle: {
     FlexDirection: "row",

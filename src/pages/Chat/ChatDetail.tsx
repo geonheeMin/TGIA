@@ -18,6 +18,7 @@ import {
 import { useState, useCallback, useEffect, useRef } from "react";
 import Axios from "axios";
 import useStore from "../../../store";
+import { useNavigationState } from "@react-navigation/native";
 import sendIcon from "../../assets/design/sendIcon2.png";
 import ChatBubble from "./ChatBubble";
 import FeatherIcon from "react-native-vector-icons/Feather";
@@ -39,6 +40,8 @@ const vh = Dimensions.get("window").height;
 const sh = Dimensions.get("screen").height;
 
 function ChatDetail({ route, navigation }: ChatDetailProps) {
+  const navigationState = useNavigationState((state) => state);
+
   const chatRef = useRef(null);
   const { session, url } = useStore();
   const isFocused = useIsFocused();
@@ -176,7 +179,15 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
 
   const backward = () => {
     stopChat();
-    navigation.goBack();
+    // navigation.goBack();
+    if (
+      navigationState.routes[navigationState.routes.length - 2].name ===
+      "ChatList"
+    ) {
+      navigation.replace("ChatList");
+    } else {
+      navigation.goBack();
+    }
   };
 
   const renderChat = ({ item }) => {
@@ -452,26 +463,28 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
       `${url}/chat/get_chat_members?chatroom_id=${chatroom.chatroom_id}`
     )
       .then((res) => {
-        console.log(res.data);
         setOther(
           res.data.aid === session?.member_id ? res.data.bid : res.data.aid
         );
       })
       .catch((err) => console.log(err));
-    const keyUpListener = Keyboard.addListener(
-      "keyboardWillShow", (event) => {setKeyHeight(event.endCoordinates.height)}
-    )
-    const keyDownListener = Keyboard.addListener(
-      "keyboardWillHide", (e) => setKeyHeight(0)
-    )
-    const backListener = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        stopChat();
-        return false;
-      }
+    const keyUpListener = Keyboard.addListener("keyboardWillShow", (event) => {
+      setKeyHeight(event.endCoordinates.height);
+    });
+    const keyDownListener = Keyboard.addListener("keyboardWillHide", (e) =>
+      setKeyHeight(0)
     );
-    return () => backListener.remove();
+    // const backListener = BackHandler.addEventListener(
+    //   "hardwareBackPress",
+    //   () => {
+    //     stopChat();
+    //     return false;
+    //   }
+    // );
+    // return () => backListener.remove();
+    navigation.addListener("beforeRemove", (e) => {
+      stopChat();
+    });
   }, []);
 
   useEffect(() => {
@@ -524,7 +537,11 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             marginRight: "auto"
           }}
         >
-          <Text style={{ fontSize: 20 }}>{post.title.length > 8 ? post.title.slice(0, 8) + "..." : post.title}</Text>
+          <Text style={{ fontSize: 20 }}>
+            {post.title.length > 8
+              ? post.title.slice(0, 8) + "..."
+              : post.title}
+          </Text>
         </View>
       </View>
       <View
@@ -575,12 +592,18 @@ function ChatDetail({ route, navigation }: ChatDetailProps) {
             marginRight: "auto"
           }}
         >
-          <Text style={{ fontSize: 20 }}>{post.title.length > 8 ? post.title.slice(0,8) + "..." : post.title}</Text>
+          <Text style={{ fontSize: 20 }}>
+            {post.title.length > 8
+              ? post.title.slice(0, 8) + "..."
+              : post.title}
+          </Text>
         </View>
       </View>
       <View
         style={{
-          height: isMenuOpened ? vh - vh / 15 - vh / 7.5 : vh - vh / 15 - vh / 12,
+          height: isMenuOpened
+            ? vh - vh / 15 - vh / 7.5
+            : vh - vh / 15 - vh / 12
         }}
       >
         <FlatList

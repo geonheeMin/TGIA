@@ -14,6 +14,7 @@ import { useCallback, useState, useEffect } from "react";
 import Axios from "axios";
 import { ChatApis } from "./ChatApis";
 import useStore from "../../../store";
+import { useIsFocused } from "@react-navigation/native";
 type RootStackParamList = {
   ChatTitle: undefined;
 };
@@ -30,6 +31,7 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
   const [otherName, setOtherName] = useState("");
   const [latestMsg, setLatestMsg] = useState("");
   const [post, setPost] = useState();
+  const isFocused = useIsFocused();
   const [otherImg, setOtherImg] = useState();
   const count = chat.count;
 
@@ -62,7 +64,9 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
       })
       .catch((error) => console.log(error));
     Axios.get(`${url}/chat/get_last_message?id=${chat.last_chatMessage}`)
-      .then((res) => setLatestMsg(res.data))
+      .then((res) => {
+        console.log(res.data);
+        setLatestMsg(res.data)})
       .catch((error) => console.log(error));
     Axios.get(`${url}/post/get_info?post_id=${chat.post_id}`)
       .then((res) => setPost(res.data))
@@ -75,7 +79,7 @@ function ChatTitle({ chat, navigation }: ChatTitleProps) {
 
     console.log(chat.memberA);
     console.log(chat.count);
-  }, []);
+  }, [isFocused]);
 
   return (
     <Pressable
