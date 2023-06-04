@@ -44,7 +44,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
   const insets = useSafeAreaInsets();
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const { session, url } = useStore();
+  const { session, url, rangeValue, setRangeValue } = useStore();
   const [posts, setPosts] = useState<Array<Post>>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
@@ -280,16 +280,35 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     if(!isLoading) {
       setIsLoading(true);
       setIsRefreshing(true);
-      Axios.get(`${url}/post/all3?page=0&size=15`)
-        .then(res => {
+      if (rangeValue === 4) {
+        Axios.get(`${url}/post/all3?page=0&size=15`)
+          .then(res => {
+              setNewPosts(res.data);
+              newPosts.sort((a, b) =>
+              moment(b.createdDate).diff(moment(a.createdDate))
+            );
+            setIsLoading(false);
+            setIsRefreshing(false);
+          })
+          .catch(err => console.log(err));
+      }
+      else {
+        setIsLoading(true);
+        setIsRefreshing(true);
+        const searchFilterDto = {
+          track: rangeValue === 1 ? rangeText : null,
+          departments: rangeValue === 2 ? [rangeText] : null,
+          college: rangeValue === 3 ? rangeText : null,
+          ys: 1
+        };
+        Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
+          .then((res) => {
             setNewPosts(res.data);
-            newPosts.sort((a, b) =>
-            moment(b.createdDate).diff(moment(a.createdDate))
-          );
-          setIsLoading(false);
-          setIsRefreshing(false);
-        })
-        .catch(err => console.log(err));
+            setIsLoading(false);
+            setIsRefreshing(false);
+          })
+          .catch((err) => console.log(err));
+      }
     }
   };
 
@@ -503,7 +522,7 @@ function ListScreen({ route, navigation }: ListScreenProps) {
     rangeModalCloseAnimation();
   };
 
-  const [rangeValue, setRangeValue] = useState(4);
+  // const [rangeValue, setRangeValue] = useState(4);
   const [rangeAnimatedValue, setRangeAnimatedValue] = useState(
     new Animated.Value(55)
   );
@@ -573,7 +592,6 @@ function ListScreen({ route, navigation }: ListScreenProps) {
       };
       Axios.post(`${url}/detailSearchWithPaging`, searchFilterDto)
         .then((res) => {
-          console.log(res.data.map((item) => item.department));
           setNewPosts(res.data);
         })
         .catch((err) => console.log(err));

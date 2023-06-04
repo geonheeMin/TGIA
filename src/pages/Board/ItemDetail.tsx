@@ -43,6 +43,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
   const [categoryPosts, setCategoryPosts] = useState([]);
   const [writer, setWriter] = useState("");
   const [writerImage, setWriterImage] = useState("");
+  const [writerTrack, setWriterTrack] = useState("");
   const [pressed, setPressed] = useState(false);
   const [chatroom, setChatroom] = useState();
   const timestamp = board.createdDate;
@@ -184,6 +185,11 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
       `${url}/profile/is_favorite?postId=${board.post_id}&userId=${session?.member_id}`
     )
       .then((res) => setIsFav(res.data === 1 ? true : false))
+      .catch((err) => console.log(err));
+    Axios.get(
+        `${url}/member/getFirstTrack?member_id=${board.member_id}`
+    )
+      .then((res) => {console.log(res.data);setWriterTrack(res.data)})
       .catch((err) => console.log(err));
   }, []);
 
@@ -351,7 +357,7 @@ function ItemDetail({ route, navigation }: ItemDetailProps) {
                 <Text style={{ fontSize: 20 }}>{writer}</Text>
               </View>
               <View style={styles.propsBottom}>
-                <Text style={{ fontSize: 14 }}>{session?.firstTrack}</Text>
+                <Text style={{ fontSize: 14 }}>{writerTrack}</Text>
               </View>
             </View>
             {session?.member_id === board.member_id ? (

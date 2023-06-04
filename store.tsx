@@ -23,6 +23,8 @@ interface preset {
   url: string;
   paymentSuccess: boolean | null;
   setPaymentSuccess: (result: boolean | null) => void;
+  rangeValue: number;
+  setRangeValue: (value: number) => void;
 }
 
 const useStore = create<preset>((set) => ({
@@ -34,11 +36,15 @@ const useStore = create<preset>((set) => ({
   setHasSession: (result: boolean) => {
     set((state) => ({ hasSession: result }));
   },
-  url: "http://223.194.128.109:8080", //geonhee,
+  url: "http://223.194.128.33:8080", //geonhee,
 
   paymentSuccess: null,
   setPaymentSuccess: (result: boolean | null) => {
     set((state) => ({ paymentSuccess: result }));
+  },
+  rangeValue: 4,
+  setRangeValue: (value: number) => {
+    set((state) => ({rangeValue: value}));
   }
 }));
 
